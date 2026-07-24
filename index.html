@@ -1179,6 +1179,33 @@
         </div>
     </div>
 
+    <!-- Mobile Bottom Fixed Navigation Dock Bar -->
+    <nav class="mobile-bottom-nav">
+        <a href="javascript:void(0)" class="mobile-nav-item active" id="mobile-nav-explore" onclick="showSection('explore'); updateMobileNavActive(this);">
+            <i class="fa-solid fa-house"></i>
+            <span data-i18n="nav_explore">Explore</span>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-auctions" onclick="showSection('auctions'); updateMobileNavActive(this);">
+            <i class="fa-solid fa-gavel"></i>
+            <span data-i18n="nav_auctions">Live</span>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-chat" onclick="showSection('chat'); updateMobileNavActive(this);">
+            <i class="fa-solid fa-comment"></i>
+            <span>Chat</span>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-cart" onclick="toggleCartModal()">
+            <div style="position:relative; display:inline-block;">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-count-badge" id="mobile-cart-badge" style="display:none; position:absolute; top:-6px; right:-8px; font-size:0.6rem; padding:1px 5px; background:#ff4d6d; color:#fff; border-radius:10px; font-weight:800;">0</span>
+            </div>
+            <span>Cart</span>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-profile" onclick="handleMobileProfileClick(); updateMobileNavActive(this);">
+            <i class="fa-solid fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
     <script src="app.js"></script>
 </body>
 </html>

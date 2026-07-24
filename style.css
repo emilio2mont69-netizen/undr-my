@@ -2454,3 +2454,110 @@ body.creator-mode-active .nav-item.active {
     transform: scale(1.05);
 }
 
+/* Mobile Tailored Responsive & Bottom Dock Navigation */
+.mobile-bottom-nav {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: 9999;
+        border-top: 1px solid var(--border-color);
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+        padding-bottom: max(env(safe-area-inset-bottom), 4px);
+    }
+
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.68rem;
+        font-weight: 600;
+        gap: 3px;
+        flex: 1;
+        height: 100%;
+        transition: all 0.2s ease;
+    }
+
+    .mobile-nav-item i {
+        font-size: 1.25rem;
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-nav-item.active {
+        color: var(--accent-hover);
+        font-weight: 800;
+    }
+
+    .mobile-nav-item.active i {
+        transform: translateY(-2px) scale(1.15);
+        color: var(--accent-hover);
+    }
+
+    /* Content spacing for bottom nav clearance */
+    .main-content {
+        padding-bottom: 84px !important;
+    }
+
+    /* Mobile 2-column Product Grid */
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        padding: 8px !important;
+    }
+
+    .product-card {
+        border-radius: 14px !important;
+    }
+
+    .card-body {
+        padding: 10px !important;
+    }
+
+    .card-title {
+        font-size: 0.85rem !important;
+        line-height: 1.25 !important;
+        height: 2.5em !important;
+        overflow: hidden !important;
+    }
+
+    .btn-buy-item {
+        padding: 6px 10px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Mobile Sheet Modals */
+    .modal {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+
+    .modal-content {
+        border-radius: 24px 24px 0 0 !important;
+        max-height: 90vh !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        animation: mobileSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    @keyframes mobileSlideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+}
+

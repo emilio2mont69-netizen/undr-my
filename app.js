@@ -816,6 +816,11 @@ window.toggleLike = function(btnElement, productId) {
 function updateCartUI() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     cartBadge.textContent = totalItems;
+    const mobileCartBadge = document.getElementById("mobile-cart-badge");
+    if (mobileCartBadge) {
+        mobileCartBadge.textContent = totalItems;
+        mobileCartBadge.style.display = totalItems > 0 ? "block" : "none";
+    }
     
     const countWord = totalItems === 1 ? translations[currentLang].item_word : translations[currentLang].items_word;
     cartCountPreview.textContent = `${totalItems} ${countWord}`;
@@ -4099,3 +4104,23 @@ window.addEventListener("popstate", handleHashRouting);
 setTimeout(() => {
     handleHashRouting();
 }, 100);
+
+// Mobile Dock Navigation Helpers
+window.updateMobileNavActive = function(element) {
+    const items = document.querySelectorAll(".mobile-nav-item");
+    items.forEach(i => i.classList.remove("active"));
+    if (element) element.classList.add("active");
+};
+
+window.handleMobileProfileClick = function() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user === "null") {
+        loginModal.style.display = "flex";
+        return;
+    }
+    if (user.role === "creator") {
+        showSection("creator");
+    } else {
+        showSection("buyer-settings");
+    }
+};

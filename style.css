@@ -2508,36 +2508,134 @@ body.creator-mode-active .nav-item.active {
         color: var(--accent-hover);
     }
 
-    /* Content spacing for bottom nav clearance */
+    /* Mobile Sidebar & Container Adjustments */
+    .sidebar-left {
+        display: none !important;
+    }
+
+    .app-container {
+        grid-template-columns: 1fr !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
     .main-content {
-        padding-bottom: 84px !important;
+        padding: 10px 10px 84px 10px !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Top Header Mobile Optimization */
+    .top-header {
+        padding: 8px 12px !important;
+        gap: 8px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(12px) !important;
+    }
+
+    .mobile-logo-trigger img {
+        height: 32px !important;
+    }
+
+    .search-bar-container {
+        flex: 1 !important;
+        max-width: 100% !important;
+    }
+
+    .search-bar-container input {
+        font-size: 0.82rem !important;
+        padding: 8px 12px 8px 34px !important;
+    }
+
+    .header-actions {
+        gap: 6px !important;
+    }
+
+    .currency-select {
+        padding: 4px 6px !important;
+        font-size: 0.72rem !important;
     }
 
     /* Mobile 2-column Product Grid */
     .products-grid {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px !important;
-        padding: 8px !important;
+        gap: 10px !important;
+        padding: 4px 0 !important;
     }
 
     .product-card {
-        border-radius: 14px !important;
-    }
-
-    .card-body {
-        padding: 10px !important;
-    }
-
-    .card-title {
-        font-size: 0.85rem !important;
-        line-height: 1.25 !important;
-        height: 2.5em !important;
+        border-radius: 12px !important;
         overflow: hidden !important;
     }
 
+    .card-body {
+        padding: 8px !important;
+    }
+
+    .card-title {
+        font-size: 0.82rem !important;
+        line-height: 1.2 !important;
+        height: 2.4em !important;
+        overflow: hidden !important;
+        margin-bottom: 4px !important;
+    }
+
+    .card-spec-tags {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 3px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .spec-tag {
+        font-size: 0.65rem !important;
+        padding: 2px 6px !important;
+    }
+
     .btn-buy-item {
-        padding: 6px 10px !important;
-        font-size: 0.75rem !important;
+        padding: 6px 8px !important;
+        font-size: 0.72rem !important;
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Creator Profile Mobile Layout */
+    .profile-cover {
+        height: 150px !important;
+        border-radius: 12px !important;
+    }
+
+    .profile-avatar-wrapper {
+        margin-top: -40px !important;
+    }
+
+    .profile-avatar {
+        width: 80px !important;
+        height: 80px !important;
+        border-width: 3px !important;
+    }
+
+    .profile-actions-row {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+
+    .profile-actions-row .btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 10px !important;
+        font-size: 0.82rem !important;
+    }
+
+    /* Chat Mobile Responsive */
+    .chat-container {
+        grid-template-columns: 1fr !important;
+        height: calc(100vh - 160px) !important;
+        border-radius: 12px !important;
     }
 
     /* Mobile Sheet Modals */
@@ -2548,10 +2646,11 @@ body.creator-mode-active .nav-item.active {
 
     .modal-content {
         border-radius: 24px 24px 0 0 !important;
-        max-height: 90vh !important;
+        max-height: 88vh !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
+        padding: 24px 18px !important;
         animation: mobileSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 

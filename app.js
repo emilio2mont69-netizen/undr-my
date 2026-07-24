@@ -1,0 +1,4101 @@
+// ==========================================
+// PERSISTED LOCAL DATABASE INITIALIZATION
+// ==========================================
+
+let currentCurrency = localStorage.getItem("undr_currency") || "USD";
+const currencyRates = {
+    "USD": { symbol: "$", rate: 1.0 },
+    "EUR": { symbol: "€", rate: 0.92 },
+    "GBP": { symbol: "£", rate: 0.78 },
+    "MXN": { symbol: "$", rate: 18.2 },
+    "CAD": { symbol: "$", rate: 1.36 }
+};
+
+window.formatPrice = function(amountUsd) {
+    if (typeof amountUsd !== "number") amountUsd = parseFloat(amountUsd) || 0;
+    const info = currencyRates[currentCurrency] || currencyRates["USD"];
+    const converted = amountUsd * info.rate;
+    return `${info.symbol}${converted.toFixed(2)} ${currentCurrency}`;
+};
+
+// Prepopulated Users
+const DEFAULT_USERS = [
+    {
+        username: "Guest Buyer",
+        handle: "@guest",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+        balance: 250.00,
+        role: "buyer",
+        kycStatus: "not_applied"
+    },
+    {
+        username: "Luna Diamond",
+        handle: "@lunadiamond",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100",
+        balance: 45.00,
+        role: "creator",
+        kycStatus: "approved",
+        age: 23,
+        nationality: "American"
+    },
+    {
+        username: "Aria Fox",
+        handle: "@ariafox",
+        avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=100&h=100",
+        balance: 18.00,
+        role: "creator",
+        kycStatus: "approved",
+        age: 25,
+        nationality: "Canadian"
+    },
+    {
+        username: "Staff Admin",
+        handle: "@admin_staff",
+        avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=100&h=100",
+        balance: 0.00,
+        role: "admin",
+        kycStatus: "not_applied"
+    }
+];
+
+const DEFAULT_PRODUCTS = [
+    {
+        id: 1,
+        price: 89.00,
+        size: "S",
+        style: "Lace",
+        isFeatured: true,
+        isNew: false,
+        isAvailableToday: true,
+        isAuction: false,
+        wearTime: "24h wear",
+        includesSignedPhoto: true,
+        image: "https://images.unsplash.com/photo-1616166330003-8e550d40d023?auto=format&fit=crop&q=80&w=600&h=600",
+        creator: {
+            name: "Luna Diamond",
+            handle: "@lunadiamond",
+            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100",
+            verified: true
+        },
+        likes: 154,
+        date: "2026-07-21T10:00:00Z",
+        en: {
+            title: "Custom Worn Satin Lace Set",
+            description: "Signature premium lace underwear set. Custom worn during a full day photoshoot.",
+            extraTag: "Includes signed photo"
+        },
+        es: {
+            title: "Conjunto de Encaje de Satén Personalizado",
+            description: "Conjunto de ropa interior de encaje premium. Usado durante una sesión de fotos completa.",
+            extraTag: "Incluye foto firmada"
+        }
+    },
+    {
+        id: 2,
+        price: 65.00,
+        size: "M",
+        style: "Silk",
+        isFeatured: false,
+        isNew: true,
+        isAvailableToday: true,
+        isAuction: false,
+        wearTime: "12h wear",
+        includesSignedPhoto: true,
+        image: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&q=80&w=600&h=600",
+        creator: {
+            name: "Aria Fox",
+            handle: "@ariafox",
+            avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=100&h=100",
+            verified: true
+        },
+        likes: 88,
+        date: "2026-07-20T14:30:00Z",
+        en: {
+            title: "Lavender Silk Slip Panty",
+            description: "Very soft pure silk underwear worn during gym workout. Extra fragrance preserved.",
+            extraTag: "Fragrance sealed"
+        },
+        es: {
+            title: "Braguita de Seda Lavanda",
+            description: "Ropa interior de seda pura muy suave usada durante entrenamiento. Fragancia preservada.",
+            extraTag: "Fragancia sellada"
+        }
+    },
+    {
+        id: 3,
+        price: 110.00,
+        size: "S",
+        style: "Lace",
+        isFeatured: true,
+        isNew: false,
+        isAvailableToday: true,
+        isAuction: false,
+        wearTime: "48h wear",
+        includesSignedPhoto: true,
+        image: "https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&q=80&w=600&h=600",
+        creator: {
+            name: "Luna Diamond",
+            handle: "@lunadiamond",
+            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100",
+            verified: true
+        },
+        likes: 245,
+        date: "2026-07-21T02:15:00Z",
+        en: {
+            title: "48-Hour Worn Intimate Bodysuit",
+            description: "Worn continuously for 48 hours. Double vacuum sealed to guarantee high scent profile.",
+            extraTag: "Scent & Photo included"
+        },
+        es: {
+            title: "Body Íntimo Usado 48 Horas",
+            description: "Usado continuamente durante 48 horas. Con doble sellado al vacío para garantizar la fragancia.",
+            extraTag: "Scent y Foto incluidos"
+        }
+    }
+];
+
+const DEFAULT_CHATS = [
+    {
+        creatorName: "Luna Diamond",
+        handle: "@lunadiamond",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100",
+        messages: [
+            { sender: "creator", text: "Hey love! Welcome to my private page. Let me know if you want any custom wear items or special activity during my wear time.", time: "10:14 AM" }
+        ]
+    },
+    {
+        creatorName: "Aria Fox",
+        handle: "@ariafox",
+        avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=100&h=100",
+        messages: [
+            { sender: "creator", text: "Hey! Just listed my workout slips. Let me know if you want them freshly packed today.", time: "Yesterday" }
+        ]
+    }
+];
+
+// Initialize Storage Database
+if (!localStorage.getItem("undr_users")) {
+    localStorage.setItem("undr_users", JSON.stringify(DEFAULT_USERS));
+}
+if (!localStorage.getItem("undr_current_user")) {
+    localStorage.setItem("undr_current_user", "null"); // Starts as Anonymous Guest
+}
+if (!localStorage.getItem("undr_products")) {
+    localStorage.setItem("undr_products", JSON.stringify(DEFAULT_PRODUCTS));
+}
+if (!localStorage.getItem("undr_chats")) {
+    localStorage.setItem("undr_chats", JSON.stringify(DEFAULT_CHATS));
+}
+if (!localStorage.getItem("undr_kyc_applications")) {
+    localStorage.setItem("undr_kyc_applications", JSON.stringify([
+        {
+            id: 101,
+            username: "Sophia Rose",
+            handle: "@sophiarose",
+            legalFirstName: "Sophia",
+            legalLastName: "Rose",
+            ssn: "9876",
+            idCard: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=150&h=150",
+            selfie: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150",
+            status: "pending"
+        }
+    ]));
+}
+if (!localStorage.getItem("creator_orders")) {
+    localStorage.setItem("creator_orders", JSON.stringify([]));
+}
+if (!localStorage.getItem("admin_gmv")) {
+    localStorage.setItem("admin_gmv", "0.00");
+}
+if (!localStorage.getItem("undr_addresses")) {
+    localStorage.setItem("undr_addresses", JSON.stringify([
+        { id: 1, name: "John Doe (Secure Route)", street: "405 Lexington Ave", city: "New York", zip: "10174" }
+    ]));
+}
+if (!localStorage.getItem("undr_subscriptions")) {
+    localStorage.setItem("undr_subscriptions", JSON.stringify([]));
+}
+if (!localStorage.getItem("undr_notifications")) {
+    localStorage.setItem("undr_notifications", JSON.stringify([
+        { id: 1, text: "Welcome to UNDR. Direct wear verified thongs are ready today!", time: "5m ago", unread: true },
+        { id: 2, text: "Luna Diamond posted a locked PPV photoset in direct messages.", time: "1h ago", unread: true }
+    ]));
+}
+
+// Current runtime state
+let currentLang = "en";
+let cart = [];
+let activeChatCreator = "Luna Diamond";
+let cartAddonsCost = 0;
+let ccbillPaymentCallback = null; // callback for paying invoice/checkout
+let uploadedListingImageBase64 = ""; // Base64 cache for product photos
+
+// DOM Elements Selection
+const ageModal = document.getElementById("age-modal");
+const ageAcceptBtn = document.getElementById("age-accept-btn");
+const ageRejectBtn = document.getElementById("age-reject-btn");
+
+const productsGrid = document.getElementById("products-feed");
+const categoryChips = document.querySelectorAll(".category-chip");
+const searchInput = document.getElementById("search-input");
+const sortSelect = document.getElementById("sort-select");
+
+// Search bar filters
+const searchFilterTrigger = document.getElementById("search-filter-trigger");
+const advancedFiltersPanel = document.getElementById("advanced-filters-panel");
+const applyAdvFiltersBtn = document.getElementById("apply-adv-filters-btn");
+const filterSize = document.getElementById("filter-size");
+const filterStyle = document.getElementById("filter-style");
+const filterAvailability = document.getElementById("filter-availability");
+
+// Language Toggle
+const langToggleBtn = document.getElementById("lang-toggle-btn");
+
+// Sidebar user profile DOM
+const sidebarAvatar = document.getElementById("sidebar-avatar");
+const userNameDisplay = document.getElementById("user-name-display");
+const userRoleDisplay = document.getElementById("user-role-display");
+const userBalanceDisplay = document.getElementById("user-balance-display");
+const applyToSellBtn = document.getElementById("apply-to-sell-btn");
+
+// Navigation bar role triggers
+const navMessagesItem = document.getElementById("nav-messages-item");
+const navCreatorItem = document.getElementById("nav-creator-item");
+const navAdminItem = document.getElementById("nav-admin-item");
+
+// Cart components
+const cartBadge = document.getElementById("cart-badge");
+const cartCountPreview = document.getElementById("cart-count-preview");
+const cartItemsPreview = document.getElementById("cart-items-preview");
+const cartSubtotal = document.getElementById("cart-subtotal");
+const cartAddonsRow = document.getElementById("cart-addons-row");
+const cartAddonsTotal = document.getElementById("cart-addons-total");
+const cartShippingCost = document.getElementById("cart-shipping-cost");
+const cartGrandTotal = document.getElementById("cart-grand-total");
+const checkoutBtn = document.getElementById("checkout-btn");
+const cartAddonsGroup = document.getElementById("cart-addons-group");
+
+// Modals
+const loginModal = document.getElementById("login-modal");
+const registerModal = document.getElementById("register-modal");
+const loginTrigger = document.getElementById("login-trigger-btn");
+const registerTrigger = document.getElementById("register-trigger-btn");
+const closeLogin = document.getElementById("close-login");
+const closeRegister = document.getElementById("close-register");
+
+const customModal = document.getElementById("custom-modal");
+const customRequestForm = document.getElementById("custom-request-form");
+const customCreatorInput = document.getElementById("custom-creator-input");
+const closeCustom = document.getElementById("close-custom");
+
+const authModal = document.getElementById("auth-modal");
+const authInfoBtn = document.getElementById("auth-info-btn");
+const closeAuth = document.getElementById("close-auth");
+
+const gatewayModal = document.getElementById("gateway-modal");
+const gatewayTotalAmount = document.getElementById("gateway-total-amount");
+const gatewayPaymentForm = document.getElementById("gateway-payment-form");
+
+const productDetailsModal = document.getElementById("product-details-modal");
+const closeDetails = document.getElementById("close-details");
+
+// Chat proposal modal
+const chatProposalModal = document.getElementById("chat-proposal-modal");
+const chatProposalForm = document.getElementById("chat-proposal-form");
+const closeProposalModal = document.getElementById("close-proposal-modal");
+
+// Content section panels
+const exploreSection = document.getElementById("section-explore");
+const chatSection = document.getElementById("section-chat");
+const creatorSection = document.getElementById("section-creator");
+const adminSection = document.getElementById("section-admin");
+const creatorProfileSection = document.getElementById("section-creator-profile");
+const buyerSettingsSection = document.getElementById("section-buyer-settings");
+const auctionsSection = document.getElementById("section-auctions");
+const liveAuctionsFeed = document.getElementById("live-auctions-feed");
+
+const notificationBellBtn = document.getElementById("notification-bell-btn");
+const notificationsDropdownPanel = document.getElementById("notifications-dropdown-panel");
+const notificationsListContainer = document.getElementById("notifications-list-container");
+const notificationsCountBadge = document.getElementById("notifications-count-badge");
+
+// Creator portal dashboards
+const kycOnboardingPanel = document.getElementById("kyc-onboarding-panel");
+const kycPendingPanel = document.getElementById("kyc-pending-panel");
+const creatorVerifiedPanel = document.getElementById("creator-verified-panel");
+const startKycMockBtn = document.getElementById("start-kyc-mock-btn");
+const newGarmentForm = document.getElementById("new-item-form");
+const creatorBalanceVal = document.getElementById("creator-balance-val");
+const creatorPendingOrdersList = document.getElementById("creator-pending-orders-list");
+const creatorWithdrawBtn = document.getElementById("creator-withdraw-btn");
+
+// Admin panel operations
+const adminStatGmv = document.getElementById("admin-stat-gmv");
+const adminStatRevenue = document.getElementById("admin-stat-revenue");
+const adminStatEscrow = document.getElementById("admin-stat-escrow");
+const adminKycQueueList = document.getElementById("admin-kyc-queue-list");
+const adminModerationList = document.getElementById("admin-moderation-list");
+const adminDisputesList = document.getElementById("admin-disputes-list");
+
+// Chat conversation elements
+const chatUsersList = document.getElementById("chat-users-list");
+const chatMessagesContainer = document.getElementById("chat-messages-container");
+const chatActiveAvatar = document.getElementById("chat-active-avatar");
+const chatActiveName = document.getElementById("chat-active-name");
+const chatActiveVerified = document.getElementById("chat-active-verified");
+const chatActiveHandle = document.getElementById("chat-active-handle");
+const chatTextInput = document.getElementById("chat-text-input");
+const chatSendMsgBtn = document.getElementById("chat-send-msg-btn");
+const simulatePpvTriggerBtn = document.getElementById("simulate-ppv-trigger-btn");
+
+// ==========================================
+// CORE APP ENGINE & STATE LIFECYCLE
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    checkAgeVerification();
+    applyLanguage(currentLang);
+    setupEventListeners();
+});
+
+// Sync layout to currently logged in profile
+function syncUserSessionUI() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    
+    // Sync Quick Role Toolbar Pills
+    const rolePills = document.querySelectorAll(".role-pill");
+    rolePills.forEach(p => p.classList.remove("active"));
+    if (!user || user === "null") {
+        const guestPill = document.getElementById("pill-guest");
+        if (guestPill) guestPill.classList.add("active");
+    } else {
+        const activePill = document.getElementById(`pill-${user.role}`);
+        if (activePill) activePill.classList.add("active");
+    }
+    
+    // Header actions element selector
+    const sessionButtonsContainer = document.getElementById("session-buttons-container");
+
+    if (!user || user === "null") {
+        // Logged Out State (Guest View)
+        sidebarAvatar.src = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+        userNameDisplay.textContent = currentLang === "es" ? "Invitado" : "Guest";
+        userRoleDisplay.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
+        userRoleDisplay.style.color = "var(--text-muted)";
+        userBalanceDisplay.textContent = "";
+
+        applyToSellBtn.style.display = "none";
+        navMessagesItem.style.display = "flex";
+        navCreatorItem.style.display = "none";
+        navAdminItem.style.display = "none";
+        document.getElementById("nav-buyer-settings-item").style.display = "none";
+        cartAddonsGroup.style.display = "none";
+
+        // Header buttons show Log In / Sign Up
+        if (sessionButtonsContainer) {
+            sessionButtonsContainer.innerHTML = `
+                <button class="btn btn-login" id="login-trigger-btn" data-i18n="nav_login">${currentLang === "es" ? "Iniciar Sesión" : "Log In"}</button>
+                <button class="btn btn-register" id="register-trigger-btn" data-i18n="nav_register">${currentLang === "es" ? "Registrarse" : "Sign Up"}</button>
+            `;
+        }
+    } else {
+        // Logged In State
+        sidebarAvatar.src = user.avatar;
+        userNameDisplay.textContent = user.username;
+        userBalanceDisplay.textContent = formatPrice(user.balance);
+        
+        // User Role translations
+        if (user.role === "buyer") {
+            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
+            userRoleDisplay.style.color = "var(--text-muted)";
+            applyToSellBtn.style.display = "block";
+            navMessagesItem.style.display = "flex";
+            navCreatorItem.style.display = "none";
+            navAdminItem.style.display = "none";
+            document.getElementById("nav-buyer-settings-item").style.display = "flex";
+            cartAddonsGroup.style.display = "block"; // Buyers see cart extras
+        } else if (user.role === "creator") {
+            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
+            userRoleDisplay.style.color = "var(--accent-hover)";
+            applyToSellBtn.style.display = "none";
+            navMessagesItem.style.display = "flex";
+            navCreatorItem.style.display = "flex";
+            navAdminItem.style.display = "none";
+            document.getElementById("nav-buyer-settings-item").style.display = "none";
+            cartAddonsGroup.style.display = "none"; // Creators don't see cart extras
+        } else if (user.role === "admin") {
+            userRoleDisplay.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
+            userRoleDisplay.style.color = "#ff4d6d";
+            applyToSellBtn.style.display = "none";
+            navMessagesItem.style.display = "none";
+            navCreatorItem.style.display = "none";
+            navAdminItem.style.display = "flex";
+            document.getElementById("nav-buyer-settings-item").style.display = "none";
+            cartAddonsGroup.style.display = "none";
+        }
+
+        // Toggle auth action buttons in header
+        if (sessionButtonsContainer) {
+            sessionButtonsContainer.innerHTML = `
+                <button class="btn btn-login" onclick="logoutCurrentSession()"><i class="fa-solid fa-sign-out-alt"></i> ${currentLang === 'es' ? 'Salir' : 'Log Out'}</button>
+            `;
+        }
+    }
+
+    // Refresh language globe text
+    const toggleBtn = document.getElementById("lang-toggle-btn");
+    if (toggleBtn) {
+        toggleBtn.innerHTML = `<i class="fa-solid fa-globe"></i> ${currentLang.toUpperCase()}`;
+    }
+
+    // Bind event triggers
+    const loginTrig = document.getElementById("login-trigger-btn");
+    const regTrig = document.getElementById("register-trigger-btn");
+    if (loginTrig) loginTrig.addEventListener("click", () => loginModal.style.display = "flex");
+    if (regTrig) regTrig.addEventListener("click", () => registerModal.style.display = "flex");
+
+
+
+    // Populate data panels
+    filterAndSortProducts();
+    updateCartUI();
+    renderChatSidebar();
+    loadCreatorPortalPanel();
+    loadAdminDashboard();
+}
+
+// Dynamic Demo Quick Role Switcher
+window.quickSwitchRole = function(role) {
+    if (role === "guest") {
+        localStorage.setItem("undr_current_user", "null");
+        cart = [];
+        syncUserSessionUI();
+        showSection("explore");
+        showToast(currentLang === "es" ? "Modo Invitado activo (Guest)" : "Guest Mode Active");
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("undr_users")) || DEFAULT_USERS;
+    let target = users.find(u => u.role === role);
+    if (!target) {
+        if (role === "creator") {
+            target = users.find(u => u.username === "Luna Diamond") || DEFAULT_USERS[1];
+        } else if (role === "admin") {
+            target = users.find(u => u.role === "admin") || DEFAULT_USERS[3];
+        } else {
+            target = users.find(u => u.role === "buyer") || DEFAULT_USERS[0];
+        }
+    }
+
+    localStorage.setItem("undr_current_user", JSON.stringify(target));
+    syncUserSessionUI();
+
+    if (role === "creator") {
+        showSection("creator");
+        showToast(currentLang === "es" ? `Modo Creadora activo (@${target.username})` : `Creator Mode Active (@${target.username})`);
+    } else if (role === "admin") {
+        showSection("admin");
+        showToast(currentLang === "es" ? "Modo Administración activo" : "Admin Staff Mode Active");
+    } else {
+        showSection("explore");
+        showToast(currentLang === "es" ? `Sesión iniciada como ${target.username}` : `Logged in as ${target.username}`);
+    }
+};
+
+window.demoLogin = function(role) {
+    window.quickSwitchRole(role);
+};
+
+window.instantVerifyCreator = function() {
+    let user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user === "null") {
+        user = {
+            username: "Luna Diamond",
+            handle: "@lunadiamond",
+            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100",
+            balance: 150.00,
+            role: "creator",
+            kycStatus: "approved"
+        };
+    } else {
+        user.role = "creator";
+        user.kycStatus = "approved";
+    }
+
+    localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+    const users = JSON.parse(localStorage.getItem("undr_users")) || DEFAULT_USERS;
+    const uIdx = users.findIndex(u => u.handle === user.handle);
+    if (uIdx !== -1) {
+        users[uIdx].role = "creator";
+        users[uIdx].kycStatus = "approved";
+    } else {
+        users.push(user);
+    }
+    localStorage.setItem("undr_users", JSON.stringify(users));
+
+    syncUserSessionUI();
+    loadCreatorPortalPanel();
+    showToast(currentLang === "es" ? "¡Cuenta de Creadora Verificada al Instante! 🎉" : "Creator Account Verified Instantly! 🎉");
+};
+
+window.quickFillNewItemForm = function() {
+    const titleInput = document.getElementById("new-item-title");
+    const priceInput = document.getElementById("new-item-price");
+    const descInput = document.getElementById("new-item-desc");
+    if (titleInput) titleInput.value = "Custom Worn Lace Thong (Photoshoot Edition)";
+    if (priceInput) priceInput.value = "85.00";
+    if (descInput) descInput.value = "Worn for 24 hours continuously during studio photoshoot. Sealed in double airtight vacuum pouch.";
+    showToast(currentLang === "es" ? "Formulario auto-completado con éxito." : "Sample garment details auto-filled!");
+};
+
+window.instantApproveAllKyc = function() {
+    const kycApps = JSON.parse(localStorage.getItem("undr_kyc_applications")) || [];
+    kycApps.forEach(a => a.status = "approved");
+    localStorage.setItem("undr_kyc_applications", JSON.stringify(kycApps));
+    loadAdminDashboard();
+    showToast(currentLang === "es" ? "Todas las solicitudes KYC fueron aprobadas." : "All pending KYC applications approved!");
+};
+
+window.instantApproveAllListings = function() {
+    loadAdminDashboard();
+    showToast(currentLang === "es" ? "Todas las publicaciones fueron verificadas y aprobadas." : "All marketplace listings approved!");
+};
+
+window.autoFillTestCard = function() {
+    const form = document.getElementById("gateway-payment-form");
+    if (form) {
+        const inputs = form.querySelectorAll("input");
+        if (inputs[0]) inputs[0].value = "John Doe";
+        if (inputs[1]) inputs[1].value = "4000 1234 5678 9010";
+        if (inputs[2]) inputs[2].value = "12/28";
+        if (inputs[3]) inputs[3].value = "888";
+    }
+    showToast(currentLang === "es" ? "Tarjeta de prueba auto-llenada." : "Test card details auto-filled!");
+};
+
+window.toggleCardBlur = function(event, productId) {
+    if (event) event.stopPropagation();
+    const imgs = document.querySelectorAll(`.card-img-blur-${productId}`);
+    imgs.forEach(img => {
+        if (img.style.filter === "none") {
+            img.style.filter = "blur(14px)";
+        } else {
+            img.style.filter = "none";
+        }
+    });
+};
+
+// Logging out session
+window.logoutCurrentSession = function() {
+    localStorage.setItem("undr_current_user", "null");
+    cart = [];
+    syncUserSessionUI();
+    showSection('explore');
+    showToast(currentLang === 'es' ? "Sesión cerrada." : "Logged out successfully.");
+};
+
+// Global dynamic Section switcher
+window.showSection = function(sectionName, element = null, updateHash = true) {
+    exploreSection.classList.remove("active");
+    chatSection.classList.remove("active");
+    creatorSection.classList.remove("active");
+    adminSection.classList.remove("active");
+    creatorProfileSection.classList.remove("active");
+    buyerSettingsSection.classList.remove("active");
+    auctionsSection.classList.remove("active");
+
+    const navItems = document.querySelectorAll(".nav-item");
+    navItems.forEach(item => item.classList.remove("active"));
+
+    const sidebarLeft = document.querySelector(".sidebar-left");
+    if (sidebarLeft && window.innerWidth <= 900) {
+        sidebarLeft.style.display = "";
+    }
+
+    const activeSection = document.getElementById(`section-${sectionName}`);
+    if (activeSection) {
+        activeSection.classList.add("active");
+    }
+
+    if (updateHash && sectionName !== "creator-profile") {
+        const targetHash = `#/${sectionName}`;
+        if (window.location.hash !== targetHash) {
+            history.pushState(null, "", targetHash);
+        }
+    }
+
+    if (element) {
+        element.classList.add("active");
+    } else {
+        const idMap = {
+            "explore": "nav-explore-item",
+            "chat": "nav-messages-item",
+            "auctions": "nav-auctions-item",
+            "creator": "nav-creator-item",
+            "buyer-settings": "nav-buyer-settings-item",
+            "admin": "nav-admin-item"
+        };
+        const targetId = idMap[sectionName];
+        if (targetId) {
+            const navEl = document.getElementById(targetId);
+            if (navEl) navEl.classList.add("active");
+        }
+    }
+
+    // Load dynamic updates
+    if (sectionName === "chat") {
+        renderChatMessages(activeChatCreator);
+    } else if (sectionName === "creator") {
+        loadCreatorPortalPanel();
+    } else if (sectionName === "admin") {
+        loadAdminDashboard();
+    } else if (sectionName === "buyer-settings") {
+        renderSettingsAddresses();
+        renderSettingsSubscriptions();
+        renderSettingsOrders();
+        renderFavoritesGrid();
+    } else if (sectionName === "auctions") {
+        renderLiveAuctionsGrid();
+    }
+};
+
+// ==========================================
+// MARKETPLACE & FEED ENGINE
+// ==========================================
+function renderProducts(productsList) {
+    productsGrid.innerHTML = "";
+    if (productsList.length === 0) {
+        const noResultsText = currentLang === "es" ? "No se encontraron prendas." : "No garments found.";
+        productsGrid.innerHTML = `
+            <div class="no-products-msg" style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fa-solid fa-face-frown" style="font-size: 2rem; margin-bottom: 12px; color: var(--accent-color);"></i>
+                <p>${noResultsText}</p>
+            </div>
+        `;
+        return;
+    }
+
+    productsList.forEach(product => {
+        const localData = product[currentLang] || product["en"] || {};
+        const titleText = localData.title || product.title || "";
+        const descText = localData.description || product.description || "";
+        const verifiedBadge = product.creator.verified ? `<i class="fa-solid fa-circle-check verified-icon" style="color:var(--accent-color);"></i>` : "";
+        const timeText = currentLang === "es" ? "Hace 3 horas" : "3h ago";
+        
+        const card = document.createElement("article");
+        card.className = "product-card";
+        card.innerHTML = `
+            <div class="card-creator-header" onclick="openCreatorProfile('${product.creator.name}')" style="cursor: pointer;">
+                <img src="${product.creator.avatar}" alt="${product.creator.name}" class="creator-avatar-card">
+                <div class="creator-info-card">
+                    <span class="card-creator-name">${product.creator.name} ${verifiedBadge}</span>
+                    <span class="card-post-time">${timeText}</span>
+                </div>
+            </div>
+            
+            <div class="product-image-wrapper" onclick="openProductDetailModal(${product.id}, false)" style="cursor:pointer; overflow:hidden; position:relative;">
+                <img src="${product.image}" alt="${titleText}" class="product-image card-img-blur-${product.id}" loading="lazy" style="filter: blur(14px); transition: filter 0.3s ease, transform 0.3s ease; transform: scale(1.05);">
+                <span class="price-tag">${formatPrice(product.price)}</span>
+                <button class="btn-reveal-card" onclick="toggleCardBlur(event, ${product.id})" title="${currentLang === 'es' ? 'Ver / Previsualizar' : 'Preview Photo'}">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            
+            <div class="card-body">
+                <span class="card-category">${product.style}</span>
+                <h3 class="card-title">${titleText}</h3>
+                <p class="card-description">${descText}</p>
+                
+                <div class="card-spec-tags">
+                    <span class="spec-tag">Size ${product.size}</span>
+                    <span class="spec-tag">${product.wearTime}</span>
+                </div>
+
+                <div class="card-footer">
+                    <div class="card-actions-row">
+                        <button class="btn-buy-item" onclick="addToCart(${product.id})">
+                            <i class="fa-solid fa-bag-shopping"></i> ${currentLang === "es" ? "Comprar" : "Buy Item"}
+                        </button>
+                        ${(() => {
+                            const favs = JSON.parse(localStorage.getItem("undr_favorites")) || [];
+                            const isLiked = favs.includes(product.id);
+                            const heartClass = isLiked ? "fa-solid fa-heart" : "fa-regular fa-heart";
+                            const btnStyle = isLiked ? "style='color:#ff4d6d; border-color:#ffa6b5;'" : "";
+                            return `
+                                <button class="btn-like-post" onclick="toggleLike(this, ${product.id})" ${btnStyle}>
+                                    <i class="${heartClass}"></i>
+                                </button>
+                            `;
+                        })()}
+                    </div>
+                    <button class="btn-request-custom" onclick="openCustomRequest('${product.creator.name}')">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> ${currentLang === "es" ? "Pedido a medida" : "Request Custom"}
+                    </button>
+                </div>
+            </div>
+        `;
+        productsGrid.appendChild(card);
+    });
+}
+
+// Add item to shopping cart
+window.addToCart = function(productId) {
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    // Check pre-sale restriction
+    if (product.isPresale) {
+        const user = JSON.parse(localStorage.getItem("undr_current_user"));
+        if (!user) {
+            alert(currentLang === "es" ?
+                "Pre-venta Exclusiva: Debes iniciar sesión y suscribirte a esta creadora para comprar durante la fase de prioridad." :
+                "Exclusive Pre-sale: You must log in and subscribe to this creator to purchase this early-access item.");
+            loginModal.style.display = "flex";
+            return;
+        }
+        const subs = JSON.parse(localStorage.getItem("undr_subscriptions")) || [];
+        if (!subs.includes(product.creator.handle)) {
+            alert(currentLang === "es" ?
+                `Acceso Denegado: Pre-venta exclusiva para suscriptores de ${product.creator.name}. Los suscriptores tienen prioridad de compra antes del mercado global.` :
+                `Access Denied: Priority pre-sale is only available to subscribers of ${product.creator.name}. Subscribers have buying priority before the item enters the global market.`);
+            return;
+        }
+    }
+
+    const localData = product[currentLang] || product["en"] || {};
+    const titleVal = localData.title || product.title || "Item";
+    const existingItem = cart.find(item => item.id === productId);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+    updateCartUI();
+    showToast(`"${localData.title}" ${translations[currentLang].added_cart}`);
+};
+
+// Remove item from shopping cart
+window.removeFromCart = function(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    updateCartUI();
+};
+
+// Toggle like state on feed card
+window.toggleLike = function(btnElement, productId) {
+    const icon = btnElement.querySelector('i');
+    let favorites = JSON.parse(localStorage.getItem("undr_favorites")) || [];
+
+    if (icon.classList.contains('fa-regular')) {
+        icon.classList.remove('fa-regular');
+        icon.classList.add('fa-solid');
+        btnElement.style.color = '#ff4d6d';
+        btnElement.style.borderColor = '#ffa6b5';
+        
+        if (!favorites.includes(productId)) {
+            favorites.push(productId);
+            localStorage.setItem("undr_favorites", JSON.stringify(favorites));
+        }
+        showToast(translations[currentLang].added_favorites);
+    } else {
+        icon.classList.remove('fa-solid');
+        icon.classList.add('fa-regular');
+        btnElement.style.color = 'var(--text-muted)';
+        btnElement.style.borderColor = 'var(--border-color)';
+        
+        favorites = favorites.filter(id => id !== productId);
+        localStorage.setItem("undr_favorites", JSON.stringify(favorites));
+        showToast(currentLang === 'es' ? "Eliminado de favoritos." : "Removed from favorites.");
+    }
+    
+    // Refresh the settings favorites tab if it's drawn
+    renderFavoritesGrid();
+};
+
+// Update cart calculations and list rendering
+function updateCartUI() {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartBadge.textContent = totalItems;
+    
+    const countWord = totalItems === 1 ? translations[currentLang].item_word : translations[currentLang].items_word;
+    cartCountPreview.textContent = `${totalItems} ${countWord}`;
+
+    cartItemsPreview.innerHTML = "";
+    if (cart.length === 0) {
+        cartItemsPreview.innerHTML = `<div class="empty-cart-message">${translations[currentLang].cart_empty}</div>`;
+        cartSubtotal.textContent = "$0.00";
+        cartShippingCost.textContent = "$0.00";
+        cartGrandTotal.textContent = "$0.00";
+        checkoutBtn.disabled = true;
+    } else {
+        cart.forEach(item => {
+            const localData = item[currentLang];
+            const cartItemDiv = document.createElement("div");
+            cartItemDiv.className = "cart-item";
+            cartItemDiv.innerHTML = `
+                <img src="${item.image}" alt="${localData.title}" class="cart-item-img">
+                <div class="cart-item-details">
+                    <span class="cart-item-title">${localData.title}</span>
+                    <span class="cart-item-price">${item.quantity}x ${formatPrice(item.price)}</span>
+                </div>
+                <button class="btn-remove-cart" onclick="removeFromCart(${item.id})">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `;
+            cartItemsPreview.appendChild(cartItemDiv);
+        });
+
+        // Totals Calculations
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 150.00 ? 0.00 : DISCREET_SHIPPING_FLAT_RATE;
+        const grandTotal = subtotal + cartAddonsCost + shipping;
+
+        cartSubtotal.textContent = formatPrice(subtotal);
+        cartShippingCost.textContent = shipping === 0.00 ? (currentLang === "es" ? "Gratis" : "Free") : formatPrice(shipping);
+        cartGrandTotal.textContent = formatPrice(grandTotal);
+        checkoutBtn.disabled = false;
+    }
+}
+
+// Search, Sort and Advanced filters execution
+function filterAndSortProducts() {
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const selectedCategoryChip = document.querySelector(".category-chip.active");
+    const activeCategory = selectedCategoryChip ? selectedCategoryChip.dataset.category : "all";
+    const searchQuery = searchInput.value.toLowerCase().trim();
+    const sortOption = sortSelect.value;
+
+    const sizeCriterion = filterSize.value;
+    const styleCriterion = filterStyle.value;
+    const availCriterion = filterAvailability.value;
+
+    let filtered = products.filter(product => {
+        const localData = product[currentLang] || product["en"] || {};
+        const titleText = localData.title || product.title || "";
+        const descText = localData.description || product.description || "";
+        
+        let matchesCategory = true;
+        if (activeCategory === "destacadas") {
+            matchesCategory = product.isFeatured;
+        } else if (activeCategory === "nuevas") {
+            matchesCategory = product.isNew;
+        } else if (activeCategory === "hoy") {
+            matchesCategory = product.isAvailableToday;
+        } else if (activeCategory === "subastas") {
+            matchesCategory = product.isAuction;
+        }
+
+        const matchesSearch = titleText.toLowerCase().includes(searchQuery) || 
+                              descText.toLowerCase().includes(searchQuery) ||
+                              product.creator.name.toLowerCase().includes(searchQuery);
+
+        const matchesSize = sizeCriterion === "all" || product.size === sizeCriterion;
+        const matchesStyle = styleCriterion === "all" || product.style === styleCriterion;
+        
+        let matchesAvail = true;
+        if (availCriterion === "now") {
+            matchesAvail = product.isAvailableToday;
+        } else if (availCriterion === "custom") {
+            matchesAvail = !product.isAvailableToday;
+        }
+
+        return matchesCategory && matchesSearch && matchesSize && matchesStyle && matchesAvail;
+    });
+
+    // Sorting
+    if (sortOption === "price-low") {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (sortOption === "price-high") {
+        filtered.sort((a, b) => b.price - a.price);
+    } else {
+        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    renderProducts(filtered);
+}
+
+// ==========================================
+// PORTAL DE LA CREADORA & KYC
+// ==========================================
+function loadCreatorPortalPanel() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || (user.role !== "creator" && user.role !== "buyer")) return;
+
+    // Check status in active session
+    if (user.kycStatus === "approved") {
+        kycOnboardingPanel.style.display = "none";
+        kycPendingPanel.style.display = "none";
+        creatorVerifiedPanel.style.display = "block";
+        renderCreatorPendingOrders();
+        loadCreatorInventory();
+
+        // Populate public bio settings
+        const ageEl = document.getElementById("creator-bio-age");
+        if (ageEl) {
+            ageEl.value = user.age || 22;
+            document.getElementById("creator-bio-nationality").value = user.nationality || "";
+            document.getElementById("creator-bio-text").value = user.bio || "";
+        }
+    } else if (user.kycStatus === "pending") {
+        kycOnboardingPanel.style.display = "none";
+        kycPendingPanel.style.display = "block";
+        creatorVerifiedPanel.style.display = "none";
+    } else {
+        kycOnboardingPanel.style.display = "block";
+        kycPendingPanel.style.display = "none";
+        creatorVerifiedPanel.style.display = "none";
+    }
+}
+
+// Start KYC Onboarding wizard
+startKycMockBtn.addEventListener("click", () => {
+    const first = document.getElementById("kyc-first-name").value.trim();
+    const last = document.getElementById("kyc-last-name").value.trim();
+    const ssn = document.getElementById("kyc-ssn").value.trim();
+    const idVal = document.getElementById("kyc-id-file").value;
+    const selfieVal = document.getElementById("kyc-selfie-file").value;
+
+    if (!first || !last || ssn.length < 4 || !idVal || !selfieVal) {
+        alert(currentLang === "es" ? "Por favor completa todos los campos del KYC incluyendo las fotos." : "Please fill out all KYC fields and upload documents.");
+        return;
+    }
+
+    // Submit to Admin Queue
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    const appQueue = JSON.parse(localStorage.getItem("undr_kyc_applications")) || [];
+    
+    const newApp = {
+        id: Date.now(),
+        username: user.username,
+        handle: user.handle,
+        legalFirstName: first,
+        legalLastName: last,
+        ssn: ssn,
+        idCard: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150&h=150", // mock url
+        selfie: user.avatar,
+        status: "pending"
+    };
+
+    appQueue.push(newApp);
+    localStorage.setItem("undr_kyc_applications", JSON.stringify(appQueue));
+
+    // Update active user status
+    user.kycStatus = "pending";
+    localStorage.setItem("undr_current_user", JSON.stringify(user));
+    
+    // Update users database
+    const users = JSON.parse(localStorage.getItem("undr_users"));
+    const uIdx = users.findIndex(u => u.handle === user.handle);
+    if (uIdx !== -1) {
+        users[uIdx].kycStatus = "pending";
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    loadCreatorPortalPanel();
+    loadAdminDashboard();
+    showToast(currentLang === "es" ? "Solicitud enviada a revisión humana." : "Identity records submitted to admin manual review queue.");
+});
+
+// Render creator inventory sales orders
+function renderCreatorPendingOrders() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    const orders = JSON.parse(localStorage.getItem("creator_orders")) || [];
+    creatorPendingOrdersList.innerHTML = "";
+
+    // Filter orders matching logged in creator
+    const creatorOrders = orders.filter(o => o.creatorHandle === user.handle);
+
+    if (creatorOrders.length === 0) {
+        creatorPendingOrdersList.innerHTML = `<div class="empty-cart-message">${currentLang === "es" ? "No tienes ventas pendientes." : "No pending sales yet."}</div>`;
+        return;
+    }
+
+    creatorOrders.forEach((order) => {
+        const isShipped = order.status === "shipped";
+        const isDelivered = order.status === "delivered";
+        let statusLabel = "Paid - Preparing pack";
+        let actionBtn = `<button class="btn-shipping-label" onclick="generateMockShippingLabel('${order.id}')"><i class="fa-solid fa-print"></i> Generate USPS Label</button>`;
+
+        if (isShipped) {
+            statusLabel = "Shipped (Package in transit)";
+            actionBtn = `<button class="btn-shipping-label" style="background:#0bb08b;" onclick="simulatePackageDelivery('${order.id}')"><i class="fa-solid fa-truck-ramp-box"></i> Simulate Delivery</button>`;
+        } else if (isDelivered) {
+            statusLabel = "Delivered (Funds Cleared Escrow)";
+            actionBtn = `<span style="font-size:0.75rem; color:#0bb08b; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Funds Released</span>`;
+        }
+
+        const div = document.createElement("div");
+        div.className = "order-creator-item";
+        div.innerHTML = `
+            <div class="order-creator-item-header">
+                <span>ID: #${order.id.slice(0,8)}</span>
+                <span>$${order.price.toFixed(2)} USD</span>
+            </div>
+            <div class="order-creator-item-body">
+                <img src="${order.image}" alt="" class="order-creator-item-img">
+                <div class="order-creator-item-info">
+                    <span class="order-creator-item-title">${order.title}</span>
+                    <span class="order-creator-item-status">${statusLabel}</span>
+                </div>
+            </div>
+            <div class="order-creator-item-action">
+                ${actionBtn}
+            </div>
+        `;
+        creatorPendingOrdersList.appendChild(div);
+    });
+}
+
+// Generate anonymous shipping label
+window.generateMockShippingLabel = function(orderId) {
+    const orders = JSON.parse(localStorage.getItem("creator_orders"));
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    order.status = "shipped";
+    localStorage.setItem("creator_orders", JSON.stringify(orders));
+
+    renderCreatorPendingOrders();
+    showToast(translations[currentLang].label_generated_toast);
+
+    const win = window.open("", "_blank", "width=400,height=600");
+    win.document.write(`
+        <div style="font-family: monospace; border: 4px solid #000; padding: 20px; width: 300px; margin: 20px auto;">
+            <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+                <h2>USPS PRIORITY MAIL</h2>
+                <strong>POSTAGE PAID</strong>
+            </div>
+            <div>
+                <strong>SENDER REMITENT:</strong><br>
+                UNDR SECURED FULFILLMENT CENTER #204<br>
+                PO BOX 4820<br>
+                CHICAGO, IL 60611<br><br>
+                <strong>SHIP TO:</strong><br>
+                SECURED CLIENT ROUTE ID: ${order.id.slice(0,8).toUpperCase()}<br>
+                405 LEXINGTON AVE<br>
+                NEW YORK, NY 10174<br>
+            </div>
+            <div style="text-align: center; margin-top: 40px; border-top: 2px dashed #000; padding-top: 10px;">
+                <img src="https://barcode.tec-it.com/barcode.ashx?data=9400100000000000000000&code=Code128" style="max-width: 100%;">
+                <br><strong>TRACKING: 9400 1000 0000 0000 0000 00</strong>
+            </div>
+        </div>
+    `);
+};
+
+// Simulate delivery releases funds
+window.simulatePackageDelivery = function(orderId) {
+    const orders = JSON.parse(localStorage.getItem("creator_orders"));
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    order.status = "delivered";
+    localStorage.setItem("creator_orders", JSON.stringify(orders));
+
+    // Release funds (80% net to creator, 20% commission to admin)
+    const netCredit = order.price * 0.80;
+    
+    // Credit creator user profile
+    const users = JSON.parse(localStorage.getItem("undr_users"));
+    const creatorUser = users.find(u => u.handle === order.creatorHandle);
+    if (creatorUser) {
+        creatorUser.balance = parseFloat(creatorUser.balance) + netCredit;
+        localStorage.setItem("undr_users", JSON.stringify(users));
+        
+        // If logged in as this creator, update session balance
+        const sessionUser = JSON.parse(localStorage.getItem("undr_current_user"));
+        if (sessionUser.handle === order.creatorHandle) {
+            sessionUser.balance = parseFloat(sessionUser.balance) + netCredit;
+            localStorage.setItem("undr_current_user", JSON.stringify(sessionUser));
+        }
+    }
+
+    syncUserSessionUI();
+    showToast(currentLang === "es" ? "Garantía liberada al saldo de la creadora." : "Escrow escrow cleared. Funds released to creator.");
+};
+
+// Publish listing form submit
+newGarmentForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = document.getElementById("new-item-title").value.trim();
+    const size = document.getElementById("new-item-size").value;
+    const style = document.getElementById("new-item-style").value;
+    const wear = document.getElementById("new-item-wear").value;
+    const price = parseFloat(document.getElementById("new-item-price").value);
+    const desc = document.getElementById("new-item-desc").value.trim();
+    const isAuction = document.getElementById("new-item-type-select").value === "auction";
+    
+    const audience = document.getElementById("new-item-audience").value;
+    const isPresale = !isAuction && document.getElementById("new-item-presale").checked;
+
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+
+    const newItem = {
+        id: newId,
+        price: price,
+        size: size,
+        style: style,
+        isFeatured: false,
+        isNew: true,
+        isAvailableToday: !isAuction,
+        isAuction: isAuction,
+        audience: audience,
+        isPresale: isPresale,
+        wearTime: wear,
+        includesSignedPhoto: true,
+        image: uploadedListingImageBase64 || "https://images.unsplash.com/photo-1616166330003-8e550d40d023?auto=format&fit=crop&q=80&w=600&h=600",
+        creator: {
+            name: user.username,
+            handle: user.handle,
+            avatar: user.avatar,
+            verified: true
+        },
+        likes: 0,
+        date: new Date().toISOString(),
+        topBidder: "@none",
+        endTime: isAuction ? (Date.now() + (parseInt(document.getElementById("new-item-auction-duration") ? document.getElementById("new-item-auction-duration").value : 24) || 24) * 3600 * 1000) : null,
+        en: {
+            title: title,
+            description: desc || "Exclusive item from creator's personal store.",
+            extraTag: isAuction ? (audience === "subscribers" ? "Subscribers Auction" : "Auction active") : (isPresale ? "Subscribers Presale" : "Scent preserved")
+        },
+        es: {
+            title: title,
+            description: desc || "Artículo exclusivo del armario de la creadora.",
+            extraTag: isAuction ? (audience === "subscribers" ? "Subasta Exclusiva" : "Subasta activa") : (isPresale ? "Pre-venta Suscriptores" : "Fragancia preservada")
+        }
+    };
+
+    products.unshift(newItem);
+    localStorage.setItem("undr_products", JSON.stringify(products));
+
+    newGarmentForm.reset();
+    
+    // Reset dropzone preview
+    document.getElementById("dropzone-preview").style.display = "none";
+    document.getElementById("dropzone-prompt").style.display = "block";
+    uploadedListingImageBase64 = "";
+
+    filterAndSortProducts();
+    loadCreatorInventory();
+    showToast(currentLang === "es" ? "¡Prenda publicada exitosamente!" : "Garment published in underwear marketplace.");
+});
+
+// ==========================================
+// ADMIN DASHBOARD & KYC QUEUE
+// ==========================================
+window.switchAdminTab = function(tabName, chipElement) {
+    // Hide all admin tabs
+    const tabs = document.querySelectorAll(".admin-tab-content");
+    tabs.forEach(t => t.classList.remove("active"));
+
+    const tabChips = document.querySelectorAll(".admin-tabs .category-chip");
+    tabChips.forEach(c => c.classList.remove("active"));
+
+    // Activate selected
+    document.getElementById(`admin-tab-${tabName}`).classList.add("active");
+    chipElement.classList.add("active");
+};
+
+function loadAdminDashboard() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user.role !== "admin") return;
+    const adminGmv = parseFloat(localStorage.getItem("admin_gmv")) || 0.00;
+    const revenue = adminGmv * 0.20;
+
+    adminStatGmv.textContent = `$${adminGmv.toFixed(2)} USD`;
+    adminStatRevenue.textContent = `$${revenue.toFixed(2)} USD`;
+
+    // Active Escrow listings count
+    const orders = JSON.parse(localStorage.getItem("creator_orders")) || [];
+    const activeEscrows = orders.filter(o => o.status !== "delivered").length;
+    adminStatEscrow.textContent = `${activeEscrows} Active`;
+
+    // Render KYC verification requests queue
+    const appQueue = JSON.parse(localStorage.getItem("undr_kyc_applications")) || [];
+    adminKycQueueList.innerHTML = "";
+
+    const pendingKyc = appQueue.filter(a => a.status === "pending");
+
+    if (pendingKyc.length === 0) {
+        adminKycQueueList.innerHTML = `<div class="empty-cart-message">All verification applications reviewed. Queue is empty.</div>`;
+    } else {
+        pendingKyc.forEach(app => {
+            const div = document.createElement("div");
+            div.className = "admin-list-item";
+            div.style.flexDirection = "column";
+            div.style.alignItems = "stretch";
+            div.style.gap = "12px";
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong>${app.legalFirstName} ${app.legalLastName} (${app.handle})</strong><br>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">SSN Record: ****-****-**-${app.ssn}</span>
+                    </div>
+                    <div class="admin-list-actions">
+                        <button class="btn-admin-action btn-admin-approve" onclick="resolveKycRequest(${app.id}, true)">Approve Seller</button>
+                        <button class="btn-admin-action btn-admin-deny" onclick="resolveKycRequest(${app.id}, false)">Reject</button>
+                    </div>
+                </div>
+                <div style="display:flex; gap:16px; justify-content:center; background:var(--secondary-bg); padding:10px; border-radius:8px;">
+                    <div style="text-align:center;">
+                        <span style="font-size:0.7rem; display:block; margin-bottom:4px;">Submitted ID Document</span>
+                        <img src="${app.idCard}" style="width:100px; height:80px; object-fit:cover; border-radius:6px; border:1px solid var(--border-color);">
+                    </div>
+                    <div style="text-align:center;">
+                        <span style="font-size:0.7rem; display:block; margin-bottom:4px;">Live Selfie Comparison</span>
+                        <img src="${app.selfie}" style="width:80px; height:80px; object-fit:cover; border-radius:50%; border:1px solid var(--border-color);">
+                    </div>
+                </div>
+            `;
+            adminKycQueueList.appendChild(div);
+        });
+    }
+
+    // Moderation queue: display all published marketplace listings
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    adminModerationList.innerHTML = "";
+    if (products.length === 0) {
+        adminModerationList.innerHTML = `<div class="empty-cart-message">No active marketplace listings to review.</div>`;
+    } else {
+        products.forEach(p => {
+            const localData = p[currentLang] || p["en"] || {};
+            const titleVal = localData.title || p.title || "Untitled";
+            const div = document.createElement("div");
+            div.className = "admin-list-item";
+            div.innerHTML = `
+                <div class="admin-list-item-info">
+                    <span class="admin-list-item-title">${titleVal}</span>
+                    <span class="admin-list-item-desc">Listed by ${p.creator.name} (${p.creator.handle}) - $${p.price.toFixed(2)} USD</span>
+                </div>
+                <div class="admin-list-actions">
+                    <button class="btn-admin-action btn-admin-approve" onclick="showToast(currentLang === 'es' ? 'Publicación aprobada por administración.' : 'Listing Verified & Approved.')">Approve</button>
+                    <button class="btn-admin-action btn-admin-deny" onclick="deleteProductListing(${p.id})">Delete / Ban</button>
+                </div>
+            `;
+            adminModerationList.appendChild(div);
+        });
+    }
+
+    // Disputes
+    adminDisputesList.innerHTML = `
+        <div class="admin-list-item">
+            <div class="admin-list-item-info">
+                <span class="admin-list-item-title">Dispute #1404: Package Delayed</span>
+                <span class="admin-list-item-desc">Client @guest claims package lost. Escrow held on @ariafox</span>
+            </div>
+            <button class="btn-admin-action btn-admin-approve" onclick="alert('Refunding client...'); showToast('Buyer refunded successfully.')">Refund Buyer</button>
+        </div>
+    `;
+}
+
+window.deleteProductListing = function(id) {
+    let products = JSON.parse(localStorage.getItem("undr_products"));
+    const deletedProduct = products.find(p => p.id === id);
+    if (!deletedProduct) return;
+
+    products = products.filter(p => p.id !== id);
+    localStorage.setItem("undr_products", JSON.stringify(products));
+
+    // Send notification to the creator
+    const creatorName = deletedProduct.creator.name;
+    const notifications = JSON.parse(localStorage.getItem("undr_notifications")) || [];
+    notifications.unshift({
+        id: Date.now(),
+        text: `[Admin Policy Alert] Your listing "${deletedProduct.en.title}" was removed by Staff Admin due to listing guidelines violation.`,
+        time: "Just now",
+        unread: true,
+        recipientCreator: creatorName
+    });
+    localStorage.setItem("undr_notifications", JSON.stringify(notifications));
+    updateNotificationsCount();
+
+    filterAndSortProducts();
+    loadAdminDashboard();
+    showToast("Listing deleted & creator notified.");
+};
+
+// Manually resolve KYC request from wall
+window.resolveKycRequest = function(appId, isApproved) {
+    const appQueue = JSON.parse(localStorage.getItem("undr_kyc_applications"));
+    const app = appQueue.find(a => a.id === appId);
+    if (!app) return;
+
+    // Update applicant database profile
+    const users = JSON.parse(localStorage.getItem("undr_users"));
+    const targetUser = users.find(u => u.handle === app.handle);
+    
+    if (targetUser) {
+        targetUser.kycStatus = isApproved ? "approved" : "not_applied";
+        // Convert buyer to creator if approved
+        if (isApproved) targetUser.role = "creator";
+        localStorage.setItem("undr_users", JSON.stringify(users));
+
+        // Update active session if target is the logged-in user
+        const sessionUser = JSON.parse(localStorage.getItem("undr_current_user"));
+        if (sessionUser.handle === app.handle) {
+            sessionUser.kycStatus = targetUser.kycStatus;
+            sessionUser.role = targetUser.role;
+            localStorage.setItem("undr_current_user", JSON.stringify(sessionUser));
+        }
+    }
+
+    // Remove from queue
+    const updatedQueue = appQueue.filter(a => a.id !== appId);
+    localStorage.setItem("undr_kyc_applications", JSON.stringify(updatedQueue));
+
+    syncUserSessionUI();
+    showToast(isApproved ? "Seller account verified & approved!" : "Application rejected.");
+};
+
+// ==========================================
+// CHAT DM SYSTEM & CUSTOM PROPOSALS
+// ==========================================
+function renderChatSidebar() {
+    const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+    const chats = JSON.parse(localStorage.getItem("undr_chats")) || [];
+    chatUsersList.innerHTML = "";
+
+    if (!currentUser) {
+        chatUsersList.innerHTML = `
+            <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                <i class="fa-solid fa-comments-dollar" style="font-size: 2rem; color: var(--accent-color); margin-bottom: 8px;"></i>
+                <p>${currentLang === 'es' ? 'Inicia sesión para ver tus chats.' : 'Log in to view conversations.'}</p>
+            </div>
+        `;
+        const buyerAct = document.getElementById("chat-buyer-actions");
+        if (buyerAct) buyerAct.style.display = "none";
+        if (simulatePpvTriggerBtn) simulatePpvTriggerBtn.style.display = "none";
+        return;
+    }
+
+    // If logged in as Creator, render buyer contacts in sidebar
+    if (currentUser.role === "creator") {
+        // Simulates sidebar buyer user "Guest Buyer"
+        const activeClass = activeChatCreator === "Guest Buyer" ? "active" : "";
+        const item = document.createElement("div");
+        item.className = `chat-user-item ${activeClass}`;
+        item.innerHTML = `
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Guest" class="chat-user-avatar">
+            <div class="chat-user-details">
+                <span class="chat-user-name">Guest Buyer</span>
+                <span class="chat-user-lastmsg">Chatting...</span>
+            </div>
+        `;
+        item.addEventListener("click", () => {
+            activeChatCreator = "Guest Buyer";
+            renderChatSidebar();
+            renderChatMessages("Guest Buyer");
+        });
+        chatUsersList.appendChild(item);
+        
+        // Hide buyer actions
+        document.getElementById("chat-buyer-actions").style.display = "none";
+        simulatePpvTriggerBtn.style.display = "flex"; // Creators can send PPV lock images
+    } else {
+        // Logged in as Buyer, render creator contacts in sidebar
+        chats.forEach(chat => {
+            const activeClass = chat.creatorName === activeChatCreator ? "active" : "";
+            const lastMsg = chat.messages[chat.messages.length - 1];
+            const lastMsgText = lastMsg ? (lastMsg.isPpv ? `[Locked Media - $${lastMsg.ppvPrice}]` : lastMsg.text) : "";
+
+            const item = document.createElement("div");
+            item.className = `chat-user-item ${activeClass}`;
+            item.innerHTML = `
+                <img src="${chat.avatar}" alt="${chat.creatorName}" class="chat-user-avatar">
+                <div class="chat-user-details">
+                    <span class="chat-user-name">${chat.creatorName}</span>
+                    <span class="chat-user-lastmsg">${lastMsgText}</span>
+                </div>
+            `;
+            item.addEventListener("click", () => {
+                activeChatCreator = chat.creatorName;
+                renderChatSidebar();
+                renderChatMessages(chat.creatorName);
+            });
+            chatUsersList.appendChild(item);
+        });
+
+        document.getElementById("chat-buyer-actions").style.display = "flex";
+        simulatePpvTriggerBtn.style.display = "none";
+    }
+}
+
+function renderChatMessages(targetName) {
+    const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+    const chats = JSON.parse(localStorage.getItem("undr_chats")) || [];
+    
+    chatMessagesContainer.innerHTML = "";
+    
+    if (!currentUser) {
+        chatActiveName.textContent = currentLang === "es" ? "Sala de Mensajes" : "Messages Board";
+        chatActiveHandle.textContent = "@undr";
+        chatActiveAvatar.src = "./logofase.PNG";
+        chatActiveVerified.style.display = "none";
+
+        chatMessagesContainer.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:30px; color:var(--text-muted);">
+                <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--accent-color); margin-bottom:12px;"></i>
+                <h3 style="color:var(--text-color); margin-bottom:8px;">
+                    ${currentLang === "es" ? "Inicia a conversar al suscribirte a tu modelo favorita" : "Start chatting by subscribing to your favorite model"}
+                </h3>
+                <p style="font-size:0.85rem; max-width:280px; margin-bottom:16px;">
+                    ${currentLang === "es" ? "Debes iniciar sesión y suscribirte al feed premium de una modelo para desbloquear los mensajes directos privados." : "You must log in and subscribe to a model's premium feed to unlock private direct messaging."}
+                </p>
+                <button class="btn btn-primary" onclick="loginModal.style.display='flex'">
+                    ${currentLang === "es" ? "Iniciar Sesión" : "Log In"}
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    // Find active conversation
+    let chatKey = targetName;
+    if (currentUser.role === "creator") {
+        // If creator is logged in, the active chat details are retrieved from matching the logged-in creator record
+        chatKey = currentUser.username;
+    }
+    const chat = chats.find(c => c.creatorName === chatKey);
+    if (!chat) return;
+
+    if (currentUser.role === "creator") {
+        chatActiveAvatar.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
+        chatActiveName.textContent = "Guest Buyer";
+        chatActiveHandle.textContent = "@guest";
+        chatActiveVerified.style.display = "none";
+    } else {
+        chatActiveAvatar.src = chat.avatar;
+        chatActiveName.textContent = chat.creatorName;
+        chatActiveHandle.textContent = chat.handle;
+        chatActiveVerified.style.display = "inline-block";
+    }
+
+    chat.messages.forEach((msg, idx) => {
+        // 1. PPV Bubble
+        if (msg.isPpv) {
+            const isUnlocked = msg.isUnlocked;
+            const bubble = document.createElement("div");
+            bubble.className = "ppv-lock-card";
+            bubble.innerHTML = `
+                <div class="ppv-image-wrapper">
+                    <img src="${msg.mediaUrl}" alt="PPV Media" class="${isUnlocked ? '' : 'blurred'}">
+                    ${!isUnlocked ? `
+                        <div class="ppv-overlay-lock">
+                            <i class="fa-solid fa-lock ppv-lock-icon"></i>
+                            <span class="ppv-lock-price">$${msg.ppvPrice.toFixed(2)} USD</span>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="ppv-card-footer">
+                    <span class="ppv-card-title">${currentLang === "es" ? "Pack Exclusivo" : "Exclusive Photoset"}</span>
+                    <span class="ppv-card-desc">${msg.text}</span>
+                    ${!isUnlocked && currentUser.role === "buyer" ? `
+                        <button class="btn btn-register btn-block" style="padding: 8px 14px; font-size: 0.8rem;" onclick="unlockPpvMessage('${chat.creatorName}', ${idx})">
+                            <i class="fa-solid fa-unlock"></i> Unlock Content
+                        </button>
+                    ` : isUnlocked ? `
+                        <span style="font-size:0.75rem; color:#0bb08b; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Unlocked</span>
+                    ` : `
+                        <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked PPV sent to buyer</span>
+                    `}
+                </div>
+            `;
+            chatMessagesContainer.appendChild(bubble);
+        }
+        // 2. Custom Proposal Card Bubble
+        else if (msg.isProposal) {
+            const isSent = (currentUser.role === "buyer" && msg.sender === "user") || (currentUser.role === "creator" && msg.sender === "creator");
+            const bubble = document.createElement("div");
+            bubble.className = `chat-proposal-card ${isSent ? 'sent' : 'received'}`;
+            
+            let statusLabel = msg.status;
+            let actionBtn = "";
+
+            if (msg.status === "requested" && currentUser.role === "creator") {
+                // Creators can send invoice quote
+                actionBtn = `
+                    <div style="display:flex; gap:6px; margin-top:8px;">
+                        <input type="number" id="invoice-price-${idx}" placeholder="Quote Price ($)" style="width:70px; padding:4px; font-size:0.75rem;">
+                        <button class="btn btn-register" style="padding:4px 10px; font-size:0.75rem; border-radius:6px;" onclick="sendInvoiceQuote('${chat.creatorName}', ${idx})">Send Invoice</button>
+                    </div>
+                `;
+            } else if (msg.status === "offered" && currentUser.role === "buyer") {
+                statusLabel = `Invoiced - $${msg.price.toFixed(2)}`;
+                actionBtn = `<button class="btn btn-primary btn-block" style="padding:6px; font-size:0.78rem;" onclick="payInvoiceCheckout('${chat.creatorName}', ${idx})">Pay Invoice via CCBill</button>`;
+            } else if (msg.status === "paid") {
+                statusLabel = `Paid - Order placed ($${msg.price.toFixed(2)})`;
+                actionBtn = `<span style="font-size:0.75rem; color:#0bb08b; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Paid</span>`;
+            }
+
+            bubble.innerHTML = `
+                <span class="proposal-status-badge ${msg.status === 'paid' ? 'accepted' : 'pending'}">${statusLabel}</span>
+                <div style="font-size:0.78rem; line-height:1.4;">
+                    <strong>Style:</strong> ${msg.style}<br>
+                    <strong>Wear:</strong> ${msg.wear}<br>
+                    <strong>Notes:</strong> ${msg.notes}
+                </div>
+                ${actionBtn}
+            `;
+            chatMessagesContainer.appendChild(bubble);
+        }
+        // 3. Tip Bubble
+        else if (msg.isTip) {
+            const isSent = (currentUser.role === "buyer" && msg.sender === "user") || (currentUser.role === "creator" && msg.sender === "creator");
+            const bubble = document.createElement("div");
+            bubble.className = `message-bubble ${isSent ? 'sent' : 'received'}`;
+            bubble.style.background = isSent ? "linear-gradient(135deg, #ff4d6d, #ff758c)" : "var(--secondary-bg)";
+            bubble.style.color = isSent ? "#fff" : "var(--text-color)";
+            bubble.style.border = "1px solid #ff4d6d";
+            bubble.innerHTML = `
+                <div style="font-weight:700; font-size:0.85rem; margin-bottom:4px;">
+                    <i class="fa-solid fa-heart" style="color:${isSent ? '#fff' : '#ff4d6d'};"></i> ${currentLang === "es" ? "Propina Enviada" : "Tip Sent"}: $${msg.tipAmount.toFixed(2)} USD
+                </div>
+                <div style="font-size:0.8rem; font-style:italic;">"${msg.text}"</div>
+                <span class="message-time" style="color:${isSent ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)'};">${msg.time}</span>
+            `;
+            chatMessagesContainer.appendChild(bubble);
+        }
+        // 4. Standard Text message bubble
+        else {
+            const isSent = (currentUser.role === "buyer" && msg.sender === "user") || (currentUser.role === "creator" && msg.sender === "creator");
+            const bubble = document.createElement("div");
+            bubble.className = `message-bubble ${isSent ? 'sent' : 'received'}`;
+            bubble.innerHTML = `
+                ${msg.text}
+                <span class="message-time">${msg.time}</span>
+            `;
+            chatMessagesContainer.appendChild(bubble);
+        }
+    });
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+}
+
+// Creator sends invoice to buyer in chat
+window.sendInvoiceQuote = function(creatorName, index) {
+    const priceVal = parseFloat(document.getElementById(`invoice-price-${index}`).value);
+    if (!priceVal || priceVal <= 0) {
+        alert("Please enter a valid quote price.");
+        return;
+    }
+
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === creatorName);
+    if (!chat) return;
+
+    const msg = chat.messages[index];
+    msg.status = "offered";
+    msg.price = priceVal;
+    
+    // Add transaction notification
+    chat.messages.push({
+        sender: "creator",
+        text: `I offered you a quote for this custom underwear order for $${priceVal.toFixed(2)} USD. Click below to pay securely.`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
+    localStorage.setItem("undr_chats", JSON.stringify(chats));
+    renderChatMessages(creatorName);
+    showToast("Invoice sent to buyer.");
+};
+
+// Buyer pays invoice in chat via CCBill simulation
+window.payInvoiceCheckout = function(creatorName, index) {
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === creatorName);
+    if (!chat) return;
+
+    const msg = chat.messages[index];
+    const price = msg.price;
+
+    // Set callback for CCBill gateway modal
+    ccbillPaymentCallback = () => {
+        // Complete Payment
+        msg.status = "paid";
+        localStorage.setItem("undr_chats", JSON.stringify(chats));
+
+        // Credit to creator's orders
+        const orders = JSON.parse(localStorage.getItem("creator_orders")) || [];
+        orders.push({
+            id: crypto.randomUUID(),
+            creatorHandle: chat.handle,
+            title: `Custom Request (${msg.style})`,
+            price: price,
+            image: "https://images.unsplash.com/photo-1616166330003-8e550d40d023?auto=format&fit=crop&q=80&w=600&h=600",
+            status: "paid"
+        });
+        localStorage.setItem("creator_orders", JSON.stringify(orders));
+
+        // Re-render
+        renderChatMessages(creatorName);
+        showToast("Custom request paid successfully!");
+    };
+
+    // Open CCBill modal
+    gatewayTotalAmount.textContent = `$${price.toFixed(2)} USD`;
+    gatewayModal.style.display = "flex";
+};
+
+// ==========================================
+// MOCK CCBILL GATEWAY & ADD-ONS
+// ==========================================
+window.calculateCartAddons = function() {
+    let addonsSum = 0;
+    const polaroidEl = document.getElementById("addon-polaroid");
+    const polaroid = polaroidEl ? polaroidEl.checked : false;
+    const perfume = document.getElementById("addon-perfume").checked;
+    const video = document.getElementById("addon-video").checked;
+
+    if (polaroid) addonsSum += 15;
+    if (perfume) addonsSum += 10;
+    if (video) addonsSum += 25;
+
+    cartAddonsCost = addonsSum;
+    
+    // Show/hide additions in total panel
+    if (addonsSum > 0) {
+        cartAddonsRow.style.display = "flex";
+        cartAddonsTotal.textContent = `$${addonsSum.toFixed(2)} USD`;
+    } else {
+        cartAddonsRow.style.display = "none";
+    }
+
+    // Refresh Grand Total
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const shipping = subtotal >= 150.00 ? 0.00 : DISCREET_SHIPPING_FLAT_RATE;
+    const grandTotal = subtotal + addonsSum + shipping;
+
+    cartGrandTotal.textContent = `$${grandTotal.toFixed(2)} USD`;
+};
+
+// Checkout proceed button trigger
+checkoutBtn.addEventListener("click", () => {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const shipping = subtotal >= 150.00 ? 0.00 : DISCREET_SHIPPING_FLAT_RATE;
+    const grandTotal = subtotal + cartAddonsCost + shipping;
+
+    // Define standard callback for cart purchase completion
+    ccbillPaymentCallback = () => {
+        // Place orders in creator queue
+        const creatorOrders = JSON.parse(localStorage.getItem("creator_orders")) || [];
+        cart.forEach(item => {
+            let addonsLabel = [];
+            const polaroidEl = document.getElementById("addon-polaroid");
+            if (polaroidEl && polaroidEl.checked) addonsLabel.push("Polaroid");
+            if (document.getElementById("addon-perfume").checked) addonsLabel.push("Perfume");
+            if (document.getElementById("addon-video").checked) addonsLabel.push("Video");
+            
+            const fullTitle = addonsLabel.length > 0 ? `${item[currentLang].title} (${addonsLabel.join(' + ')})` : item[currentLang].title;
+            const fullPrice = item.price + cartAddonsCost;
+
+            creatorOrders.push({
+                id: crypto.randomUUID(),
+                creatorHandle: item.creator.handle,
+                title: fullTitle,
+                price: fullPrice,
+                image: item.image,
+                status: "paid"
+            });
+        });
+        localStorage.setItem("creator_orders", JSON.stringify(creatorOrders));
+
+        // Deduct from buyer balance
+        const user = JSON.parse(localStorage.getItem("undr_current_user"));
+        user.balance = parseFloat(user.balance) - grandTotal;
+        localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+        // Update database user
+        const users = JSON.parse(localStorage.getItem("undr_users"));
+        const uIdx = users.findIndex(u => u.handle === user.handle);
+        if (uIdx !== -1) {
+            users[uIdx].balance = user.balance;
+            localStorage.setItem("undr_users", JSON.stringify(users));
+        }
+
+        // Add to Platform GMV
+        let adminGmv = parseFloat(localStorage.getItem("admin_gmv"));
+        adminGmv += grandTotal;
+        localStorage.setItem("admin_gmv", adminGmv.toFixed(2));
+
+        // Clear cart
+        cart = [];
+        cartAddonsCost = 0;
+        const polaroidEl = document.getElementById("addon-polaroid");
+        if (polaroidEl) polaroidEl.checked = false;
+        document.getElementById("addon-perfume").checked = false;
+        document.getElementById("addon-video").checked = false;
+
+        syncUserSessionUI();
+        alert(translations[currentLang].checkout_simulation);
+    };
+
+    gatewayTotalAmount.textContent = `$${grandTotal.toFixed(2)} USD`;
+    gatewayModal.style.display = "flex";
+});
+
+// CCBill simulation submission form
+gatewayPaymentForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    gatewayModal.style.display = "none";
+    showToast(translations[currentLang].checkout_success);
+
+    setTimeout(() => {
+        if (ccbillPaymentCallback) {
+            ccbillPaymentCallback();
+            ccbillPaymentCallback = null;
+        }
+    }, 1200);
+});
+
+// ==========================================
+// REGISTER & PRODUCT DETAIL FLOW
+// ==========================================
+
+// Product Detail Modal Open
+window.openProductDetailModal = function(productId, fromProfile = false) {
+    const products = JSON.parse(localStorage.getItem("undr_products"));
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const localData = product[currentLang] || product["en"] || {};
+    const titleText = localData.title || product.title || "";
+    const descText = localData.description || product.description || "";
+    
+    document.getElementById("detail-modal-image").src = product.image;
+    document.getElementById("detail-modal-avatar").src = product.creator.avatar;
+    document.getElementById("detail-modal-creator-name").textContent = product.creator.handle;
+    document.getElementById("detail-modal-title").textContent = titleText;
+    document.getElementById("detail-modal-price").textContent = formatPrice(product.price);
+    document.getElementById("detail-modal-desc").textContent = descText;
+    
+    document.getElementById("detail-modal-tag-size").textContent = `Size ${product.size}`;
+    document.getElementById("detail-modal-tag-wear").textContent = product.wearTime;
+
+    // Handle Blur Overlay
+    const blurOverlay = document.getElementById("detail-modal-blur-overlay");
+    const revealBtn = document.getElementById("detail-modal-reveal-btn");
+    
+    if (blurOverlay) {
+        if (fromProfile) {
+            blurOverlay.style.display = "none";
+        } else {
+            blurOverlay.style.display = "flex";
+            if (revealBtn) {
+                revealBtn.onclick = () => {
+                    blurOverlay.style.display = "none";
+                };
+            }
+        }
+    }
+
+    // Bind action buttons
+    document.getElementById("detail-modal-buy-btn").onclick = () => {
+        addToCart(product.id);
+        productDetailsModal.style.display = "none";
+    };
+    document.getElementById("detail-modal-custom-btn").onclick = () => {
+        openCustomRequest(product.creator.name);
+        productDetailsModal.style.display = "none";
+    };
+
+    productDetailsModal.style.display = "flex";
+};
+
+// Submit register form
+document.getElementById("register-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("reg-name").value.trim();
+    const role = document.getElementById("reg-role").value;
+    const email = document.getElementById("reg-email").value.trim();
+    const passwordVal = document.getElementById("reg-password").value;
+    const handle = `@${name.toLowerCase().replace(/\s/g, '')}`;
+
+    const users = JSON.parse(localStorage.getItem("undr_users"));
+    
+    const newUser = {
+        username: name,
+        handle: handle,
+        email: email,
+        password: passwordVal,
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+        balance: role === "buyer" ? 300.00 : 0.00, // starting balance for testing
+        role: role,
+        kycStatus: "not_applied"
+    };
+
+    users.push(newUser);
+    localStorage.setItem("undr_users", JSON.stringify(users));
+    localStorage.setItem("undr_current_user", JSON.stringify(newUser));
+
+    registerModal.style.display = "none";
+    syncUserSessionUI();
+    showToast(translations[currentLang].register_success);
+    
+    if (role === "creator") {
+        showSection('creator');
+    } else {
+        showSection('explore');
+    }
+});
+
+// Secure Login Form Submission (Brute-Force Rate Limiting)
+document.getElementById("login-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const inputVal = document.getElementById("login-username").value.trim().toLowerCase();
+    const passwordVal = document.getElementById("login-password").value;
+
+    // Rate Limiting checks
+    const lockoutKey = `undr_lockout_${inputVal}`;
+    const attemptsKey = `undr_attempts_${inputVal}`;
+    
+    const lockoutUntil = parseInt(localStorage.getItem(lockoutKey) || "0");
+    if (Date.now() < lockoutUntil) {
+        const remainingSecs = Math.ceil((lockoutUntil - Date.now()) / 1000);
+        alert(currentLang === "es" ? 
+            `Esta cuenta está bloqueada temporalmente por seguridad. Inténtalo de nuevo en ${remainingSecs} segundos.` : 
+            `This account is temporarily locked for security. Try again in ${remainingSecs} seconds.`);
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    
+    // Find matching user by email or handle
+    const user = users.find(u => u.handle.toLowerCase() === inputVal || (u.email && u.email.toLowerCase() === inputVal) || (inputVal === "buyer" && u.role === "buyer") || (inputVal === "creator" && u.role === "creator") || (inputVal === "admin" && u.role === "admin"));
+
+    if (!user) {
+        alert(currentLang === "es" ? "Cuenta no encontrada." : "Account not found.");
+        return;
+    }
+
+    // Default password check (for prepopulated accounts like @lunadiamond)
+    const storedPassword = user.password || "undr123";
+
+    if (passwordVal === storedPassword) {
+        // Success
+        localStorage.removeItem(attemptsKey);
+        localStorage.removeItem(lockoutKey);
+        localStorage.setItem("undr_current_user", JSON.stringify(user));
+        
+        loginModal.style.display = "none";
+        document.getElementById("login-form").reset();
+        syncUserSessionUI();
+        showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
+        showSection('explore');
+    } else {
+        // Fail: increment attempts
+        let failedAttempts = parseInt(localStorage.getItem(attemptsKey) || "0");
+        failedAttempts += 1;
+        localStorage.setItem(attemptsKey, failedAttempts.toString());
+
+        if (failedAttempts >= 5) {
+            // Lockout account for 30 seconds
+            const lockTime = Date.now() + 30000;
+            localStorage.setItem(lockoutKey, lockTime.toString());
+            alert(currentLang === "es" ? 
+                "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada por 30 segundos por seguridad." : 
+                "Too many failed attempts. Your account has been locked for 30 seconds for security.");
+        } else {
+            alert(currentLang === "es" ? 
+                `Contraseña incorrecta. Intento ${failedAttempts} de 5 antes de bloqueo de seguridad.` : 
+                `Incorrect password. Attempt ${failedAttempts} of 5 before security lockout.`);
+        }
+    }
+});
+
+// ==========================================
+// CHAT PROPOSALS SUBMISSIONS
+// ==========================================
+chatProposalForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const style = document.getElementById("proposal-item-style").value;
+    const wear = document.getElementById("proposal-wear-time").value;
+    const notes = document.getElementById("proposal-notes").value.trim();
+
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === activeChatCreator);
+    if (!chat) return;
+
+    chat.messages.push({
+        sender: "user",
+        isProposal: true,
+        style: style,
+        wear: wear,
+        notes: notes,
+        status: "requested",
+        price: 0
+    });
+
+    localStorage.setItem("undr_chats", JSON.stringify(chats));
+    chatProposalModal.style.display = "none";
+    chatProposalForm.reset();
+
+    renderChatMessages(activeChatCreator);
+    renderChatSidebar();
+
+    // Trigger mock invoice response from creator after 2 seconds (if user is buyer)
+    setTimeout(() => {
+        chat.messages.push({
+            sender: "creator",
+            isProposal: true,
+            style: style,
+            wear: wear,
+            notes: notes,
+            status: "offered",
+            price: 125.00
+        });
+        localStorage.setItem("undr_chats", JSON.stringify(chats));
+        renderChatMessages(activeChatCreator);
+        renderChatSidebar();
+        showToast("Creator sent invoice for custom proposal!");
+    }, 2000);
+});
+
+// Bind proposal triggers
+document.getElementById("chat-request-custom-btn").addEventListener("click", () => {
+    chatProposalModal.style.display = "flex";
+});
+
+// Close buttons for modals
+closeDetails.addEventListener("click", () => productDetailsModal.style.display = "none");
+closeProposalModal.addEventListener("click", () => chatProposalModal.style.display = "none");
+
+// Custom product proposal request from explorer card form
+customRequestForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    customModal.style.display = "none";
+    showToast(translations[currentLang].custom_submitted);
+    
+    // Add custom proposal message to chat dynamically
+    const style = document.getElementById("custom-item-type").value;
+    const wear = document.getElementById("custom-item-duration").value;
+    const activity = document.getElementById("custom-item-activity").value;
+    const notesEl = document.getElementById("custom-item-instructions");
+    const notes = notesEl ? notesEl.value : "";
+    
+    const polaroidEl = document.getElementById("custom-extra-polaroid");
+    const isPolaroid = polaroidEl ? polaroidEl.checked : false;
+    const videoEl = document.getElementById("custom-extra-video");
+    const isVideo = videoEl ? videoEl.checked : false;
+    const price = calculateCustomProposalPrice();
+
+    let extras = [];
+    if (isPolaroid) extras.push(currentLang === "es" ? "Foto Polaroid firmada" : "Signed Polaroid photo");
+    if (isVideo) extras.push(currentLang === "es" ? "Vídeo del empaquetado" : "Packaging video proof");
+
+    const extrasText = extras.length > 0 ? extras.join(", ") : (currentLang === "es" ? "Ninguno" : "None");
+    const fullNotes = `Activity: ${activity} | Extras: ${extrasText} | Details: ${notes}`;
+
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === activeChatCreator);
+    if (chat) {
+        chat.messages.push({
+            sender: "user",
+            isProposal: true,
+            style: style,
+            wear: wear,
+            notes: fullNotes,
+            status: "requested",
+            price: price
+        });
+        localStorage.setItem("undr_chats", JSON.stringify(chats));
+    }
+    
+    customRequestForm.reset();
+    showSection('chat');
+
+    // Trigger mock invoice response from creator after 2 seconds
+    setTimeout(() => {
+        const freshChats = JSON.parse(localStorage.getItem("undr_chats"));
+        const freshChat = freshChats.find(c => c.creatorName === activeChatCreator);
+        if (freshChat) {
+            freshChat.messages.push({
+                sender: "creator",
+                isProposal: true,
+                style: style,
+                wear: wear,
+                notes: fullNotes,
+                status: "offered",
+                price: price
+            });
+            localStorage.setItem("undr_chats", JSON.stringify(freshChats));
+            renderChatMessages(activeChatCreator);
+            renderChatSidebar();
+            showToast("Creator sent invoice for custom proposal!");
+        }
+    }, 2000);
+});
+
+// Custom Premium Toast Notification
+function showToast(message) {
+    let toast = document.createElement("div");
+    toast.style.position = "fixed";
+    toast.style.bottom = "24px";
+    toast.style.right = "24px";
+    toast.style.backgroundColor = "var(--text-primary)";
+    toast.style.color = "var(--primary-bg)";
+    toast.style.padding = "12px 24px";
+    toast.style.borderRadius = "30px";
+    toast.style.boxShadow = "var(--shadow-md)";
+    toast.style.zIndex = "10000";
+    toast.style.fontWeight = "600";
+    toast.style.fontSize = "0.9rem";
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s, transform 0.3s";
+    toast.style.transform = "translateY(10px)";
+    toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--accent-color); margin-right: 8px;"></i> ${message}`;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = "1";
+        toast.style.transform = "translateY(0)";
+    }, 100);
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(10px)";
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ==========================================
+// CORE TRANSLATIONS & CONSTANTS
+// ==========================================
+const DISCREET_SHIPPING_FLAT_RATE = 15.00;
+
+const translations = {
+    en: {
+        added_cart: "added to cart.",
+        added_favorites: "Added to favorites.",
+        item_word: "item",
+        items_word: "items",
+        cart_empty: "Your cart is empty",
+        label_generated_toast: "USPS shipping label generated!",
+        checkout_simulation: "Checkout Simulation Complete. Your order details have been sent to the creator's panel for packaging.",
+        checkout_success: "Payment Authorized via CCBill!",
+        register_success: "Registration successful! Welcome to UNDR.",
+        custom_submitted: "Custom request submitted successfully to the creator's chat.",
+        age_title: "Age Verification Required",
+        age_desc: "You must be 18 years of age or older to enter this site. This website contains adult-themed content, including the marketplace of worn & exclusive lingerie.",
+        age_btn_accept: "I am 18 or older - Enter",
+        age_btn_reject: "Exit",
+        discreet_packaging_guarantee: "Discreet & 100% Anonymous Delivery Guaranteed",
+        nav_explore: "Explore Models",
+        nav_messages: "Direct Messages",
+        nav_creator_portal: "Creator Portal",
+        nav_admin: "Admin Panel",
+        nav_cart: "My Cart",
+        nav_login: "Log In",
+        nav_register: "Sign Up",
+        tag_featured: "100% Verified Authenticity",
+        hero_title: "Directly from your favorite creators. Authentic, exclusive, and delivered to your door.",
+        hero_btn_primary: "Explore Creators",
+        hero_btn_secondary: "How authenticity works?",
+        feed_all: "All",
+        feed_featured: "Featured",
+        feed_new: "New Creators",
+        feed_today: "Available Today",
+        feed_auctions: "Exclusive Auctions",
+        latest_arrivals: "Underwear Collection",
+        sort_recent: "Most Recent",
+        sort_low_high: "Price: Low to High",
+        sort_high_low: "Price: High to Low",
+        filter_size: "Size",
+        filter_style: "Style",
+        filter_avail: "Availability",
+        opt_all: "All",
+        style_satin: "Satin",
+        style_lace: "Lace",
+        style_silk: "Silk",
+        style_cotton: "Cotton",
+        avail_now: "Available Today",
+        avail_custom: "Custom Only",
+        apply_filters: "Apply Filters",
+        search_placeholder: "Search models, sizes, styles...",
+        suggested_creators: "Suggested Creators",
+        view_shop_btn: "View Shop",
+        your_order: "Your Order",
+        empty_cart_items: "0 items",
+        discreet_badge_title: "Discreet Shipping Guaranteed",
+        discreet_badge_desc: "Shipped in plain cardboard boxes with no mention of UNDR or contents.",
+        subtotal: "Subtotal:",
+        discreet_shipping_cost: "Discreet Shipping:",
+        grand_total: "Total:",
+        checkout_btn: "Proceed to Checkout",
+        secure_payments: "Secured High-Risk Adult Gateway",
+        legal_first_name_label: "Legal First Name",
+        legal_last_name_label: "Legal Last Name",
+        ssn_label: "Social Security Number (Last 4 digits)",
+        kyc_onboarding_title: "Verification of Identity Required (KYC)",
+        kyc_onboarding_desc: "To ensure federal 18+ compliance and tax processing (1099-K), you must verify your identity before publishing garments.",
+        kyc_step_id: "Official 18+ ID",
+        kyc_step_selfie: "Live Selfie",
+        kyc_step_tax: "IRS 1099 Info",
+        creator_portal_title: "Creator Dashboard",
+        new_listing_title: "List New Underwear Garment",
+        item_title_label: "Garment Title",
+        wear_duration_label: "Wear Time",
+        price_usd_label: "Price (USD)",
+        image_url_label: "Item Image URL",
+        custom_label_desc: "Description",
+        publish_item_btn: "Publish to Marketplace",
+        sales_summary: "Sales & Pending Shipments",
+        withdrawable_balance: "Withdrawable Balance",
+        withdraw_funds_btn: "Withdraw ACH",
+        admin_panel_title: "Admin Operations Dashboard",
+        admin_gmv: "Gross Merchandise Value (GMV)",
+        admin_revenue: "Platform Revenue (20% share)",
+        active_disputes: "Active Escrows & Disputes",
+        kyc_verification_wall: "KYC Human Verification Wall",
+        listing_moderation: "Listing Moderation Queue",
+        dispute_resolution: "Active Disputes",
+        auth_modal_title: "How Our Authenticity Guarantee Works",
+        auth_step1_title: "Verified Creator Profiles",
+        auth_step1_desc: "Every creator goes through a strict identity verification process and is verified with a legal 18+ ID check before getting approved to post.",
+        auth_step2_title: "Wear Time Tracking & Proof",
+        auth_step2_desc: "Underwear item pages contain exact specifications of wear time (e.g. 24h, 48h).",
+        auth_step3_title: "Double Sealed Hygiene Guard",
+        auth_step3_desc: "Items are securely preserved in airtight vacuum-sealed bags to preserve scent and trace attributes immediately upon receipt from the creator.",
+        custom_modal_title: "Request Custom Item",
+        custom_modal_desc: "Submit a personalized request directly to this creator.",
+        custom_label_creator: "Creator",
+        custom_label_item: "Type of Underwear",
+        custom_label_wear: "Wear Duration",
+        custom_btn_submit: "Submit Custom Proposal",
+        type_satin_panty: "Satin Lingerie",
+        type_lace_panty: "Lace Panty",
+        type_stockings: "Stockings",
+        type_bikini: "Bikini Bottom"
+    },
+    es: {
+        added_cart: "añadido al carrito.",
+        added_favorites: "Añadido a favoritos.",
+        item_word: "artículo",
+        items_word: "artículos",
+        cart_empty: "Tu carrito está vacío",
+        label_generated_toast: "¡Etiqueta de envío USPS generada!",
+        checkout_simulation: "Simulación de compra completada. Tu pedido ha sido enviado al panel de la creadora.",
+        checkout_success: "¡Pago Autorizado mediante CCBill!",
+        register_success: "¡Registro exitoso! Bienvenido a UNDR.",
+        custom_submitted: "Pedido a medida enviado con éxito al chat de la creadora.",
+        age_title: "Verificación de Edad Requerida",
+        age_desc: "Debes tener 18 años o más para acceder. Este sitio contiene material para adultos, incluyendo venta de lencería usada exclusiva.",
+        age_btn_accept: "Soy mayor de 18 años - Entrar",
+        age_btn_reject: "Salir",
+        discreet_packaging_guarantee: "Envío 100% discreto y anónimo garantizado",
+        nav_explore: "Explorar Modelos",
+        nav_messages: "Mensajes Directos",
+        nav_creator_portal: "Panel de Creadora",
+        nav_admin: "Panel de Admin",
+        nav_cart: "Mi Carrito",
+        nav_login: "Iniciar Sesión",
+        nav_register: "Registrarse",
+        tag_featured: "Autenticidad 100% Verificada",
+        hero_title: "Directamente de tus creadoras favoritas. Auténtico, exclusivo y enviado a tu puerta.",
+        hero_btn_primary: "Explorar Creadoras",
+        hero_btn_secondary: "¿Cómo funciona la autenticidad?",
+        feed_all: "Todos",
+        feed_featured: "Destacados",
+        feed_new: "Nuevas Creadoras",
+        feed_today: "Disponible Hoy",
+        feed_auctions: "Subastas Exclusivas",
+        latest_arrivals: "Colección de Ropa Interior",
+        sort_recent: "Más Recientes",
+        sort_low_high: "Precio: Menor a Mayor",
+        sort_high_low: "Precio: Mayor a Menor",
+        filter_size: "Talla",
+        filter_style: "Estilo",
+        filter_avail: "Disponibilidad",
+        opt_all: "Todos",
+        style_satin: "Satén",
+        style_lace: "Encaje",
+        style_silk: "Seda",
+        style_cotton: "Algodón",
+        avail_now: "Disponible Hoy",
+        avail_custom: "Solo Personalizados",
+        apply_filters: "Aplicar Filtros",
+        search_placeholder: "Buscar creadoras, tallas, estilos...",
+        suggested_creators: "Creadoras Sugeridas",
+        view_shop_btn: "Ver Perfil",
+        your_order: "Tu Pedido",
+        empty_cart_items: "0 artículos",
+        discreet_badge_title: "Envío Discreto Garantizado",
+        discreet_badge_desc: "Enviado en cajas de cartón lisas sin mención alguna de UNDR ni del contenido.",
+        subtotal: "Subtotal:",
+        discreet_shipping_cost: "Envío Discreto:",
+        grand_total: "Total:",
+        checkout_btn: "Proceder al Pago",
+        secure_payments: "Pasarela de Pago de Alto Riesgo Segura",
+        legal_first_name_label: "Nombre Legal",
+        legal_last_name_label: "Apellido Legal",
+        ssn_label: "Número de Seguro Social (Últimos 4 dígitos)",
+        kyc_onboarding_title: "Verificación de Identidad Obligatoria (KYC)",
+        kyc_onboarding_desc: "Para cumplir con las normativas federales de +18 y procesar impuestos (1099-K), debes verificar tu identidad antes de publicar prendas.",
+        kyc_step_id: "ID Oficial +18",
+        kyc_step_selfie: "Selfie en Vivo",
+        kyc_step_tax: "Información IRS 1099",
+        creator_portal_title: "Panel de Control de Creadora",
+        new_listing_title: "Publicar Nueva Prenda Usada",
+        item_title_label: "Título de la Prenda",
+        wear_duration_label: "Tiempo de Uso",
+        price_usd_label: "Precio (USD)",
+        image_url_label: "URL de la Imagen",
+        custom_label_desc: "Descripción",
+        publish_item_btn: "Publicar en la Tienda",
+        sales_summary: "Ventas y Envíos Pendientes",
+        withdrawable_balance: "Saldo Retirable",
+        withdraw_funds_btn: "Retirar por ACH",
+        admin_panel_title: "Panel de Operaciones de Administración",
+        admin_gmv: "Valor de Mercancía Bruto (GMV)",
+        admin_revenue: "Ingresos de Plataforma (20% comisión)",
+        active_disputes: "Fideicomisos y Disputas Activas",
+        kyc_verification_wall: "Muro de Verificación Humana KYC",
+        listing_moderation: "Cola de Moderación de Tienda",
+        dispute_resolution: "Disputas Activas",
+        auth_modal_title: "Cómo Funciona la Garantía de Autenticidad",
+        auth_step1_title: "Perfiles de Creadoras Verificados",
+        auth_step1_desc: "Cada creadora pasa por un estricto proceso de validación humana con foto de ID antes de recibir autorización para publicar.",
+        auth_step2_title: "Seguimiento y Registro de Uso",
+        auth_step2_desc: "Las páginas de prendas contienen las horas exactas de uso de la prenda (ej. 24h, 48h).",
+        auth_step3_title: "Doble Bolsa de Sellado Térmico",
+        auth_step3_desc: "Las prendas se empaquetan en bolsas especiales con sellado al vacío para preservar la fragancia y esencia íntima de origen.",
+        custom_modal_title: "Solicitar Prenda Personalizada",
+        custom_modal_desc: "Envía una solicitud a medida directamente a esta creadora.",
+        custom_label_creator: "Creadora",
+        custom_label_item: "Tipo de Prenda",
+        custom_label_wear: "Duración de Uso",
+        custom_btn_submit: "Enviar Propuesta al Chat",
+        type_satin_panty: "Lencería de Satén",
+        type_lace_panty: "Braguita de Encaje",
+        type_stockings: "Medias Usadas",
+        type_bikini: "Bikini"
+    }
+};
+
+// ==========================================
+// UTILITIES AND CORE FUNCTIONS
+// ==========================================
+
+function checkAgeVerification() {
+    let verified = false;
+    try {
+        verified = sessionStorage.getItem("undr_age_verified") === "true";
+    } catch (e) {
+        verified = window.undr_age_verified === true;
+    }
+
+    if (verified) {
+        ageModal.style.display = "none";
+    } else {
+        ageModal.style.display = "flex";
+    }
+}
+
+function applyLanguage(lang) {
+    currentLang = lang;
+    const toggleBtn = document.getElementById("lang-toggle-btn");
+    if (toggleBtn) {
+        toggleBtn.innerHTML = `<i class="fa-solid fa-globe"></i> ${lang.toUpperCase()}`;
+    }
+
+    // Standard DOM text updates
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[lang] && translations[lang][key]) {
+            const icon = el.querySelector("i");
+            if (icon) {
+                const iconHtml = icon.outerHTML;
+                el.innerHTML = `${iconHtml} ${translations[lang][key]}`;
+            } else {
+                el.textContent = translations[lang][key];
+            }
+        }
+    });
+
+    // Placeholders updates
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (translations[lang] && translations[lang][key]) {
+            el.setAttribute("placeholder", translations[lang][key]);
+        }
+    });
+
+    // Update active UI elements texts & session dynamic values
+    syncUserSessionUI();
+
+    // Re-render active section panel if open
+    const activeSection = document.querySelector(".content-section-panel.active");
+    if (activeSection) {
+        if (activeSection.id === "section-creator-profile" && profileActiveCreatorName) {
+            openCreatorProfile(profileActiveCreatorName, false);
+        } else if (activeSection.id === "section-auctions") {
+            renderLiveAuctionsGrid();
+        } else if (activeSection.id === "section-buyer-settings") {
+            renderSettingsAddresses();
+            renderSettingsSubscriptions();
+            renderSettingsOrders();
+            renderFavoritesGrid();
+        }
+    }
+}
+
+window.calculateCustomProposalPrice = function() {
+    const type = document.getElementById("custom-item-type").value;
+    const duration = document.getElementById("custom-item-duration").value;
+    const activity = document.getElementById("custom-item-activity").value;
+    const polaroidEl = document.getElementById("custom-extra-polaroid");
+    const isPolaroid = polaroidEl ? polaroidEl.checked : false;
+    const videoEl = document.getElementById("custom-extra-video");
+    const isVideo = videoEl ? videoEl.checked : false;
+    
+    let base = 35.00;
+    if (type === "Lace Panty") base = 40.00;
+    else if (type === "Stockings") base = 30.00;
+    else if (type === "Bikini") base = 45.00;
+    
+    let durationAdd = 0;
+    if (duration === "6h") durationAdd = 5.00;
+    else if (duration === "12h") durationAdd = 10.00;
+    else if (duration === "24h") durationAdd = 15.00;
+    else if (duration === "48h") durationAdd = 30.00;
+    else if (duration === "72h") durationAdd = 50.00;
+    
+    let activityAdd = 0;
+    if (activity === "Gym Workout") activityAdd = 20.00;
+    else if (activity === "Sleeping Wear") activityAdd = 15.00;
+    else if (activity === "Shower drying") activityAdd = 25.00;
+    
+    let extrasAdd = 0;
+    if (isPolaroid) extrasAdd += 15.00;
+    if (isVideo) extrasAdd += 25.00;
+    
+    const total = base + durationAdd + activityAdd + extrasAdd;
+    const priceDisplay = document.getElementById("custom-calculated-price");
+    if (priceDisplay) {
+        priceDisplay.textContent = `$${total.toFixed(2)} USD`;
+    }
+    return total;
+};
+
+window.openCustomRequest = function(creatorName) {
+    customCreatorInput.value = `@${creatorName.toLowerCase().replace(/\s/g, "")}`;
+    activeChatCreator = creatorName;
+    customModal.style.display = "flex";
+    calculateCustomProposalPrice();
+};
+
+// ==========================================
+// EVEN LISTENERS CONFIGURATION
+// ==========================================
+function setupEventListeners() {
+    // Age verification buttons
+    const ageAccept = document.getElementById("age-accept-btn");
+    const ageReject = document.getElementById("age-reject-btn");
+    const ageMdl = document.getElementById("age-modal");
+
+    if (ageAccept && ageMdl) {
+        ageAccept.addEventListener("click", () => {
+            try {
+                sessionStorage.setItem("undr_age_verified", "true");
+            } catch (e) {
+                window.undr_age_verified = true;
+            }
+            ageMdl.style.display = "none";
+            showToast(currentLang === "es" ? "Bienvenido a UNDR" : "Welcome to UNDR");
+        });
+    }
+
+    if (ageReject) {
+        ageReject.addEventListener("click", () => {
+            window.location.href = "https://www.google.com";
+        });
+    }
+
+    // Language switcher
+    const langToggle = document.getElementById("lang-toggle-btn");
+    if (langToggle) {
+        langToggle.addEventListener("click", () => {
+            const nextLang = currentLang === "en" ? "es" : "en";
+            applyLanguage(nextLang);
+        });
+    }
+
+    // Currency switcher
+    const currencySelect = document.getElementById("currency-toggle-select");
+    if (currencySelect) {
+        currencySelect.value = currentCurrency;
+        currencySelect.addEventListener("change", (e) => {
+            currentCurrency = e.target.value;
+            localStorage.setItem("undr_currency", currentCurrency);
+            filterAndSortProducts();
+            updateCartUI();
+            syncUserSessionUI();
+            showToast(currentLang === "es" ? `Moneda cambiada a ${currentCurrency}` : `Currency updated to ${currentCurrency}`);
+        });
+    }
+
+    // Open Cart Sidebar Trigger
+    const openCartBtn = document.getElementById("open-cart-btn");
+    if (openCartBtn) {
+        openCartBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const cartWidget = document.getElementById("cart-widget-right");
+            if (cartWidget) {
+                cartWidget.scrollIntoView({ behavior: "smooth" });
+                cartWidget.style.boxShadow = "0 0 20px var(--accent-hover)";
+                setTimeout(() => {
+                    cartWidget.style.boxShadow = "none";
+                }, 1500);
+            }
+        });
+    }
+
+    // Mobile Navigation Drawer Toggle
+    const mobileLogoTrigger = document.querySelector(".mobile-logo-trigger");
+    const sidebarLeft = document.querySelector(".sidebar-left");
+    if (mobileLogoTrigger && sidebarLeft) {
+        mobileLogoTrigger.addEventListener("click", () => {
+            if (sidebarLeft.style.display === "flex") {
+                sidebarLeft.style.display = "";
+            } else {
+                sidebarLeft.style.display = "flex";
+                sidebarLeft.style.position = "fixed";
+                sidebarLeft.style.zIndex = "999";
+                sidebarLeft.style.background = "var(--primary-bg)";
+                sidebarLeft.style.top = "0";
+                sidebarLeft.style.left = "0";
+                sidebarLeft.style.height = "100vh";
+                sidebarLeft.style.width = "260px";
+                sidebarLeft.style.boxShadow = "0 0 30px rgba(0,0,0,0.8)";
+            }
+        });
+    }
+
+    // Search input
+    searchInput.addEventListener("input", filterAndSortProducts);
+    sortSelect.addEventListener("change", filterAndSortProducts);
+
+    // Advanced search filter dropdown trigger
+    searchFilterTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isVisible = advancedFiltersPanel.style.display === "flex";
+        advancedFiltersPanel.style.display = isVisible ? "none" : "flex";
+        searchFilterTrigger.classList.toggle("active", !isVisible);
+    });
+
+    // Close advanced filter panel when clicking outside
+    document.addEventListener("click", (e) => {
+        if (!advancedFiltersPanel.contains(e.target) && e.target !== searchFilterTrigger) {
+            advancedFiltersPanel.style.display = "none";
+            searchFilterTrigger.classList.remove("active");
+        }
+    });
+
+    applyAdvFiltersBtn.addEventListener("click", () => {
+        filterAndSortProducts();
+        advancedFiltersPanel.style.display = "none";
+        searchFilterTrigger.classList.remove("active");
+    });
+
+    // Drag & Drop Image listing upload
+    const dropzone = document.getElementById("new-item-image-dropzone");
+    const fileInput = document.getElementById("new-item-file-input");
+    const dropPrompt = document.getElementById("dropzone-prompt");
+    const dropPreview = document.getElementById("dropzone-preview");
+
+    if (dropzone) {
+        dropzone.addEventListener("click", () => fileInput.click());
+
+        dropzone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropzone.style.background = "var(--accent-light)";
+        });
+
+        dropzone.addEventListener("dragleave", () => {
+            dropzone.style.background = "var(--primary-bg)";
+        });
+
+        dropzone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropzone.style.background = "var(--primary-bg)";
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processUploadedFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener("change", (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                processUploadedFile(files[0]);
+            }
+        });
+    }
+
+    function processUploadedFile(file) {
+        if (!file.type.startsWith("image/")) {
+            alert("Please select an image file.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            uploadedListingImageBase64 = e.target.result;
+            dropPrompt.style.display = "none";
+            dropPreview.src = uploadedListingImageBase64;
+            dropPreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+    }
+    // Publish new listing form handler
+    const newItemForm = document.getElementById("new-item-form");
+    if (newItemForm) {
+        newItemForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem("undr_current_user"));
+            if (!user || user.role !== "creator") {
+                alert(currentLang === "es" ? "Acceso denegado: Solo cuentas de creadora verificadas pueden publicar." : "Access denied: Only verified creator accounts can publish listings.");
+                return;
+            }
+
+            const title = document.getElementById("new-item-title").value.trim();
+            const size = document.getElementById("new-item-size").value;
+            const wearTime = document.getElementById("new-item-wear-time").value;
+            const price = parseFloat(document.getElementById("new-item-price").value);
+            const desc = document.getElementById("new-item-desc").value.trim();
+            const listingType = document.getElementById("new-item-type-select").value;
+            const audience = document.getElementById("new-item-audience").value;
+            const isPresale = document.getElementById("new-item-presale").checked;
+            const auctionDurationVal = document.getElementById("new-item-auction-duration").value;
+
+            if (!uploadedListingImageBase64) {
+                alert(currentLang === "es" ? "Debes subir una foto de la prenda." : "Please upload a garment image.");
+                return;
+            }
+
+            const isAuction = listingType === "auction";
+            let durationSeconds = 86400; // 24h default
+            if (auctionDurationVal === "5m") durationSeconds = 300;
+            else if (auctionDurationVal === "15m") durationSeconds = 900;
+            else if (auctionDurationVal === "1h") durationSeconds = 3600;
+            else if (auctionDurationVal === "6h") durationSeconds = 21600;
+            else if (auctionDurationVal === "24h") durationSeconds = 86400;
+
+            const now = Date.now();
+            const endTime = now + (durationSeconds * 1000);
+
+            const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+            const newProduct = {
+                id: Date.now(),
+                price: price,
+                startingBid: price,
+                size: size,
+                style: "Custom",
+                isFeatured: false,
+                isNew: true,
+                isAvailableToday: true,
+                isAuction: isAuction,
+                audience: audience,
+                isPresale: isPresale,
+                wearTime: wearTime,
+                durationStr: auctionDurationVal,
+                startTime: now,
+                endTime: isAuction ? endTime : null,
+                topBidder: "@none",
+                image: uploadedListingImageBase64,
+                creator: {
+                    name: user.username,
+                    handle: user.handle,
+                    avatar: user.avatar,
+                    verified: true,
+                    age: user.age || 22,
+                    nationality: user.nationality || "United States"
+                },
+                likes: 0,
+                date: new Date().toISOString(),
+                en: {
+                    title: title,
+                    description: desc
+                },
+                es: {
+                    title: title,
+                    description: desc
+                }
+            };
+
+            products.unshift(newProduct);
+            localStorage.setItem("undr_products", JSON.stringify(products));
+
+            // Reset form
+            newItemForm.reset();
+            uploadedListingImageBase64 = "";
+            document.getElementById("dropzone-prompt").style.display = "block";
+            document.getElementById("dropzone-preview").style.display = "none";
+            document.getElementById("dropzone-preview").src = "";
+
+            filterAndSortProducts();
+            loadCreatorInventory();
+            showToast(currentLang === "es" ? "¡Prenda publicada exitosamente en el mercado!" : "Item published successfully to the marketplace!");
+        });
+    }
+    // Category chips click handler
+    categoryChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            categoryChips.forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            filterAndSortProducts();
+        });
+    });
+
+    // Edit Profile Modal bindings
+    const editModal = document.getElementById("edit-profile-modal");
+    const closeEditProfile = document.getElementById("close-edit-profile");
+    const editForm = document.getElementById("edit-profile-form");
+    const quickProfile = document.querySelector(".user-quick-profile");
+    
+    let uploadedEditAvatarBase64 = "";
+
+    if (quickProfile) {
+        quickProfile.addEventListener("click", () => {
+            const user = JSON.parse(localStorage.getItem("undr_current_user"));
+            if (!user) {
+                loginModal.style.display = "flex";
+                return;
+            }
+            document.getElementById("edit-profile-name").value = user.username;
+            document.getElementById("edit-profile-handle").value = user.handle.replace("@", "");
+            document.getElementById("edit-avatar-preview").src = user.avatar;
+            uploadedEditAvatarBase64 = user.avatar;
+            document.getElementById("edit-profile-handle-error").textContent = "";
+
+            editModal.style.display = "flex";
+        });
+    }
+
+    if (closeEditProfile) {
+        closeEditProfile.addEventListener("click", () => editModal.style.display = "none");
+    }
+
+    // Avatar dropzone in edit profile
+    const editDropzone = document.getElementById("edit-avatar-dropzone");
+    const editFileInput = document.getElementById("edit-avatar-file-input");
+    const editPreview = document.getElementById("edit-avatar-preview");
+
+    if (editDropzone) {
+        editDropzone.addEventListener("click", () => editFileInput.click());
+
+        editDropzone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            editDropzone.style.borderColor = "var(--accent-hover)";
+        });
+
+        editDropzone.addEventListener("dragleave", () => {
+            editDropzone.style.borderColor = "var(--accent-color)";
+        });
+
+        editDropzone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            editDropzone.style.borderColor = "var(--accent-color)";
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processEditAvatar(files[0]);
+            }
+        });
+
+        editFileInput.addEventListener("change", (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                processEditAvatar(files[0]);
+            }
+        });
+    }
+
+    function processEditAvatar(file) {
+        if (!file.type.startsWith("image/")) {
+            alert("Please select an image file.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            uploadedEditAvatarBase64 = e.target.result;
+            editPreview.src = uploadedEditAvatarBase64;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    if (editForm) {
+        editForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById("edit-profile-name").value.trim();
+            const handleInput = document.getElementById("edit-profile-handle").value.trim().toLowerCase();
+            const errorSpan = document.getElementById("edit-profile-handle-error");
+
+            errorSpan.textContent = "";
+
+            // 1. Validation for characters: only letters, numbers, dot and underscore
+            const handleRegex = /^[a-z0-9._]+$/;
+            if (!handleRegex.test(handleInput)) {
+                errorSpan.textContent = currentLang === "es" ? 
+                    "El usuario solo puede contener letras, números, puntos (.) y guiones bajos (_)." : 
+                    "Handle can only contain letters, numbers, dots (.), and underscores (_).";
+                return;
+            }
+
+            // 2. Length check
+            if (handleInput.length < 3 || handleInput.length > 15) {
+                errorSpan.textContent = currentLang === "es" ?
+                    "Debe tener entre 3 y 15 caracteres." :
+                    "Must be between 3 and 15 characters.";
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+            const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+
+            // 3. Uniqueness check
+            const handleWithPrefix = `@${handleInput}`;
+            const duplicate = users.find(u => u.handle.toLowerCase() === handleWithPrefix && u.handle.toLowerCase() !== currentUser.handle.toLowerCase());
+
+            if (duplicate) {
+                errorSpan.textContent = currentLang === "es" ?
+                    "El @usuario ya está registrado por otra cuenta." :
+                    "This @handle is already taken by another account.";
+                return;
+            }
+
+            // 4. 14-Day Cooldown Security Rule
+            const isHandleChanged = currentUser.handle.toLowerCase() !== handleWithPrefix.toLowerCase();
+            if (isHandleChanged) {
+                const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+                const lastChange = currentUser.lastHandleChange || 0;
+                const elapsed = Date.now() - lastChange;
+
+                if (elapsed < FOURTEEN_DAYS_MS) {
+                    const remainingMs = FOURTEEN_DAYS_MS - elapsed;
+                    const remainingDays = Math.ceil(remainingMs / (1000 * 60 * 60 * 24));
+                    errorSpan.textContent = currentLang === "es" ?
+                        `⚠️ Solo se permite cambiar el @usuario 1 vez cada 14 días. Faltan ${remainingDays} días para tu próximo cambio.` :
+                        `⚠️ You can only change your @handle once every 14 days. ${remainingDays} days remaining until next change.`;
+                    return;
+                }
+            }
+
+            // Save changes
+            currentUser.username = nameInput;
+            if (isHandleChanged) {
+                currentUser.handle = handleWithPrefix;
+                currentUser.lastHandleChange = Date.now();
+            }
+            currentUser.avatar = uploadedEditAvatarBase64;
+
+            localStorage.setItem("undr_current_user", JSON.stringify(currentUser));
+
+            const uIdx = users.findIndex(u => u.handle.toLowerCase() === currentUser.handle.toLowerCase() || u.email === currentUser.email);
+            if (uIdx !== -1) {
+                users[uIdx].username = nameInput;
+                if (isHandleChanged) {
+                    users[uIdx].handle = handleWithPrefix;
+                    users[uIdx].lastHandleChange = currentUser.lastHandleChange;
+                }
+                users[uIdx].avatar = uploadedEditAvatarBase64;
+                localStorage.setItem("undr_users", JSON.stringify(users));
+            }
+
+            editModal.style.display = "none";
+            syncUserSessionUI();
+            showToast(currentLang === 'es' ? "Perfil actualizado correctamente." : "Profile updated successfully.");
+        });
+    }
+
+    // Creator Profile settings form submit
+    const creatorBioForm = document.getElementById("creator-profile-settings-form");
+    if (creatorBioForm) {
+        creatorBioForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const ageVal = parseInt(document.getElementById("creator-bio-age").value);
+            const nationalityVal = document.getElementById("creator-bio-nationality").value.trim();
+            const bioVal = document.getElementById("creator-bio-text").value.trim();
+
+            if (ageVal < 18) {
+                alert(currentLang === "es" ? "Debes ser mayor de 18 años para vender en esta plataforma." : "You must be 18+ to sell on this platform.");
+                return;
+            }
+
+            const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+            currentUser.age = ageVal;
+            currentUser.nationality = nationalityVal;
+            currentUser.bio = bioVal;
+
+            localStorage.setItem("undr_current_user", JSON.stringify(currentUser));
+
+            const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+            const uIdx = users.findIndex(u => u.handle.toLowerCase() === currentUser.handle.toLowerCase());
+            if (uIdx !== -1) {
+                users[uIdx].age = ageVal;
+                users[uIdx].nationality = nationalityVal;
+                users[uIdx].bio = bioVal;
+                localStorage.setItem("undr_users", JSON.stringify(users));
+            }
+
+            // Also update any products listed under this creator
+            const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+            products.forEach(p => {
+                if (p.creator.name === currentUser.username) {
+                    p.creator.age = ageVal;
+                    p.creator.nationality = nationalityVal;
+                }
+            });
+            localStorage.setItem("undr_products", JSON.stringify(products));
+
+            showToast(currentLang === "es" ? "Configuración de perfil público guardada correctamente." : "Public bio settings updated.");
+            
+            // Re-sync and open profile to test
+            syncUserSessionUI();
+            openCreatorProfile(currentUser.username);
+        });
+    }
+
+    // Header Trigger modals
+    if (loginTrigger) loginTrigger.addEventListener("click", () => loginModal.style.display = "flex");
+    if (registerTrigger) registerTrigger.addEventListener("click", () => registerModal.style.display = "flex");
+    if (closeLogin) closeLogin.addEventListener("click", () => loginModal.style.display = "none");
+    if (closeRegister) closeRegister.addEventListener("click", () => registerModal.style.display = "none");
+
+    // Close modal click outside
+    window.addEventListener("click", (e) => {
+        if (e.target === loginModal) loginModal.style.display = "none";
+        if (e.target === registerModal) registerModal.style.display = "none";
+        if (e.target === productDetailsModal) productDetailsModal.style.display = "none";
+        if (e.target === customModal) customModal.style.display = "none";
+        if (e.target === chatProposalModal) chatProposalModal.style.display = "none";
+        if (e.target === authModal) authModal.style.display = "none";
+        if (e.target === editModal) editModal.style.display = "none";
+    });
+
+    // Authenticity info triggers
+    authInfoBtn.addEventListener("click", () => authModal.style.display = "flex");
+    closeAuth.addEventListener("click", () => authModal.style.display = "none");
+    closeCustom.addEventListener("click", () => customModal.style.display = "none");
+
+    // Chat text input send actions
+    chatSendMsgBtn.addEventListener("click", sendTextMessageFromBar);
+    chatTextInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendTextMessageFromBar();
+    });
+
+    // Creator withdraw actions
+    creatorWithdrawBtn.addEventListener("click", () => {
+        const user = JSON.parse(localStorage.getItem("undr_current_user"));
+        if (parseFloat(user.balance) <= 0) {
+            alert(currentLang === "es" ? "No tienes fondos suficientes para retirar." : "No balance available for withdrawal.");
+            return;
+        }
+        alert(currentLang === "es" ? `Transferencia ACH de $${user.balance} USD iniciada a tu cuenta bancaria.` : `ACH withdrawal of $${user.balance} USD initiated to your bank account.`);
+        user.balance = 0.00;
+        localStorage.setItem("undr_current_user", JSON.stringify(user));
+        syncUserSessionUI();
+    });
+
+    // Interactive PPV Modal Triggers & Form Handling
+    const ppvModal = document.getElementById("ppv-send-modal");
+    const closePpvModal = document.getElementById("close-ppv-modal");
+    const ppvForm = document.getElementById("ppv-send-form");
+    const ppvDropzone = document.getElementById("ppv-image-dropzone");
+    const ppvFileInput = document.getElementById("ppv-file-input");
+    const ppvPreview = document.getElementById("ppv-dropzone-preview");
+    const ppvPrompt = document.getElementById("ppv-dropzone-prompt");
+
+    let uploadedPpvImageBase64 = "";
+
+    if (simulatePpvTriggerBtn) {
+        simulatePpvTriggerBtn.addEventListener("click", () => {
+            uploadedPpvImageBase64 = "";
+            ppvPreview.style.display = "none";
+            ppvPrompt.style.display = "block";
+            ppvForm.reset();
+            ppvModal.style.display = "flex";
+        });
+    }
+
+    if (closePpvModal) {
+        closePpvModal.addEventListener("click", () => ppvModal.style.display = "none");
+    }
+
+    if (ppvDropzone) {
+        ppvDropzone.addEventListener("click", () => ppvFileInput.click());
+        ppvDropzone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            ppvDropzone.style.borderColor = "var(--accent-hover)";
+        });
+        ppvDropzone.addEventListener("dragleave", () => {
+            ppvDropzone.style.borderColor = "var(--accent-color)";
+        });
+        ppvDropzone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            ppvDropzone.style.borderColor = "var(--accent-color)";
+            if (e.dataTransfer.files.length > 0) {
+                processPpvFile(e.dataTransfer.files[0]);
+            }
+        });
+    }
+
+    if (ppvFileInput) {
+        ppvFileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                processPpvFile(e.target.files[0]);
+            }
+        });
+    }
+
+    function processPpvFile(file) {
+        if (!file.type.startsWith("image/")) {
+            alert(currentLang === "es" ? "Por favor selecciona un archivo de imagen." : "Please select an image file.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            uploadedPpvImageBase64 = e.target.result;
+            ppvPrompt.style.display = "none";
+            ppvPreview.src = uploadedPpvImageBase64;
+            ppvPreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+    }
+
+    if (ppvForm) {
+        ppvForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (!uploadedPpvImageBase64) {
+                alert(currentLang === "es" ? "Debes seleccionar o arrastrar una foto." : "Please select or upload a photo.");
+                return;
+            }
+            const priceVal = parseFloat(document.getElementById("ppv-price-input").value);
+            const descVal = document.getElementById("ppv-desc-input").value.trim();
+
+            if (!priceVal || priceVal <= 0) {
+                alert(currentLang === "es" ? "Ingresa un precio válido." : "Enter a valid unlock price.");
+                return;
+            }
+
+            const chats = JSON.parse(localStorage.getItem("undr_chats"));
+            const user = JSON.parse(localStorage.getItem("undr_current_user"));
+            
+            const chat = chats.find(c => c.creatorName === user.username);
+            if (!chat) return;
+
+            chat.messages.push({
+                sender: "creator",
+                isPpv: true,
+                isUnlocked: false,
+                ppvPrice: priceVal,
+                mediaUrl: uploadedPpvImageBase64,
+                text: descVal,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+
+            localStorage.setItem("undr_chats", JSON.stringify(chats));
+            ppvModal.style.display = "none";
+            renderChatMessages(activeChatCreator);
+            renderChatSidebar();
+            showToast(currentLang === "es" ? `Foto PPV de $${priceVal.toFixed(2)} USD enviada al chat.` : `Locked PPV photo ($${priceVal.toFixed(2)} USD) sent to chat.`);
+        });
+    }
+
+    // Tip Modal Handlers
+    const tipModal = document.getElementById("tip-modal");
+    const closeTipModal = document.getElementById("close-tip-modal");
+    const sendTipBtn = document.getElementById("chat-send-tip-btn");
+    const tipForm = document.getElementById("tip-send-form");
+
+    if (sendTipBtn && tipModal) {
+        sendTipBtn.addEventListener("click", () => {
+            const user = JSON.parse(localStorage.getItem("undr_current_user"));
+            if (!user || user.role !== "buyer") {
+                alert(currentLang === "es" ? "Acceso denegado: Inicia sesión o regístrate como comprador para enviar propinas." : "Access denied: Log in or register a buyer account to send tips.");
+                loginModal.style.display = "flex";
+                return;
+            }
+            tipModal.style.display = "flex";
+        });
+    }
+
+    if (closeTipModal && tipModal) {
+        closeTipModal.addEventListener("click", () => tipModal.style.display = "none");
+    }
+
+    if (tipForm) {
+        tipForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const amountVal = parseFloat(document.getElementById("tip-amount-input").value);
+            const msgVal = document.getElementById("tip-message-input").value.trim();
+
+            if (!amountVal || amountVal <= 0) {
+                alert(currentLang === "es" ? "Ingresa un monto válido." : "Enter a valid tip amount.");
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem("undr_current_user"));
+            if (user.balance < amountVal) {
+                // Open CCBill payment gateway for tip
+                ccbillPaymentCallback = () => {
+                    processTipTransfer(activeChatCreator, amountVal, msgVal);
+                    tipModal.style.display = "none";
+                };
+                gatewayTotalAmount.textContent = `$${amountVal.toFixed(2)} USD`;
+                gatewayModal.style.display = "flex";
+                return;
+            }
+
+            // Deduct balance
+            user.balance = parseFloat(user.balance) - amountVal;
+            localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+            const users = JSON.parse(localStorage.getItem("undr_users"));
+            const uIdx = users.findIndex(u => u.handle === user.handle);
+            if (uIdx !== -1) {
+                users[uIdx].balance = user.balance;
+                localStorage.setItem("undr_users", JSON.stringify(users));
+            }
+
+            processTipTransfer(activeChatCreator, amountVal, msgVal);
+            tipModal.style.display = "none";
+        });
+    }
+}
+
+window.selectTipPreset = function(amount) {
+    const input = document.getElementById("tip-amount-input");
+    if (input) input.value = amount.toFixed(2);
+};
+
+function processTipTransfer(creatorName, amount, messageText) {
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === creatorName);
+    if (chat) {
+        chat.messages.push({
+            sender: "user",
+            isTip: true,
+            tipAmount: amount,
+            text: messageText,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem("undr_chats", JSON.stringify(chats));
+    }
+
+    // Credit 80% to creator
+    const users = JSON.parse(localStorage.getItem("undr_users"));
+    const creatorUser = users.find(u => u.username === creatorName);
+    if (creatorUser) {
+        creatorUser.balance = parseFloat(creatorUser.balance) + (amount * 0.8);
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    syncUserSessionUI();
+    renderChatMessages(creatorName);
+    showToast(currentLang === "es" ? `¡Propina de $${amount.toFixed(2)} USD enviada a ${creatorName}!` : `Tip of $${amount.toFixed(2)} USD sent to ${creatorName}!`);
+}
+
+function sendTextMessageFromBar() {
+    const textVal = chatTextInput.value.trim();
+    if (!textVal) return;
+
+    const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    
+    let chatKey = activeChatCreator;
+    if (currentUser.role === "creator") {
+        chatKey = currentUser.username;
+    }
+    const chat = chats.find(c => c.creatorName === chatKey);
+    if (!chat) return;
+
+    chat.messages.push({
+        sender: currentUser.role === "buyer" ? "user" : "creator",
+        text: textVal,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
+    localStorage.setItem("undr_chats", JSON.stringify(chats));
+    chatTextInput.value = "";
+    renderChatMessages(activeChatCreator);
+    renderChatSidebar();
+}
+
+window.unlockPpvMessage = function(creatorName, index) {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === creatorName);
+    if (!chat) return;
+
+    const msg = chat.messages[index];
+    const price = msg.ppvPrice;
+
+    if (user.balance < price) {
+        // Trigger CCBill payment modal if buyer balance is insufficient
+        ccbillPaymentCallback = () => {
+            msg.isUnlocked = true;
+            localStorage.setItem("undr_chats", JSON.stringify(chats));
+
+            // Credit to creator
+            const users = JSON.parse(localStorage.getItem("undr_users"));
+            const creatorUser = users.find(u => u.username === creatorName);
+            if (creatorUser) {
+                creatorUser.balance = parseFloat(creatorUser.balance) + (price * 0.8);
+                localStorage.setItem("undr_users", JSON.stringify(users));
+            }
+
+            renderChatMessages(creatorName);
+            showToast(currentLang === "es" ? "¡Foto PPV autorizada y desbloqueada!" : "PPV Media Unlocked successfully via CCBill!");
+        };
+
+        gatewayTotalAmount.textContent = `$${price.toFixed(2)} USD`;
+        gatewayModal.style.display = "flex";
+        return;
+    }
+
+    // Deduct and unlock
+    user.balance = parseFloat(user.balance) - price;
+    localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+    const users = JSON.parse(localStorage.getItem("undr_users"));
+    const uIdx = users.findIndex(u => u.handle === user.handle);
+    if (uIdx !== -1) {
+        users[uIdx].balance = user.balance;
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    msg.isUnlocked = true;
+    localStorage.setItem("undr_chats", JSON.stringify(chats));
+
+    // Credit to creator
+    const creatorUser = users.find(u => u.username === creatorName);
+    if (creatorUser) {
+        creatorUser.balance = parseFloat(creatorUser.balance) + (price * 0.8);
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    syncUserSessionUI();
+    showToast("PPV Media Unlocked successfully!");
+};
+
+// ==========================================
+// CREATOR PROFILE VIEW ENGINE
+// ==========================================
+let profileActiveCreatorName = "Luna Diamond";
+
+window.openCreatorProfile = function(creatorNameOrHandle) {
+    const cleanTerm = creatorNameOrHandle.replace("@", "").toLowerCase().trim();
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const creator = users.find(u => u.username.toLowerCase() === creatorNameOrHandle.toLowerCase().trim() || u.handle.toLowerCase().replace("@", "") === cleanTerm);
+    if (!creator) return;
+
+    profileActiveCreatorName = creator.username;
+
+    // Push URL hash for shareable URL
+    const targetHash = `#@${creator.handle.replace('@', '')}`;
+    if (window.location.hash !== targetHash) {
+        history.pushState(null, "", targetHash);
+    }
+
+    // Show Profile Panel
+    showSection("creator-profile", null, false);
+
+    // Populate profile DOM
+    document.getElementById("profile-avatar").src = creator.avatar;
+    document.getElementById("profile-display-name").textContent = creator.username;
+    document.getElementById("profile-display-handle").textContent = creator.handle;
+    
+    // Bio configurations
+    const fallbackBio = creator.username === "Luna Diamond" ? "Satin lover. Designing custom premium lingerie sets. Daily new photosets!" : "Active gym model. Offering worn thongs, socks and personal perfumed wraps.";
+    document.getElementById("profile-display-bio").textContent = creator.bio || fallbackBio;
+
+    // Meta details (Age & Nationality)
+    const age = creator.age || 22;
+    const nationality = creator.nationality || "United States";
+    document.getElementById("profile-display-meta-details").textContent = currentLang === "es" ? 
+        `Edad: ${age} años • Nacionalidad: ${nationality}` : 
+        `Age: ${age} • Nationality: ${nationality}`;
+
+    // Subscription status check
+    const subs = JSON.parse(localStorage.getItem("undr_subscriptions")) || [];
+    const isSubscribed = subs.includes(creator.handle);
+    const subBtn = document.getElementById("profile-subscribe-btn");
+
+    if (isSubscribed) {
+        subBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Subscribed (Feed Unlocked)`;
+        subBtn.style.backgroundColor = "#e2fbf5";
+        subBtn.style.color = "#0bb08b";
+        subBtn.style.borderColor = "#0bb08b";
+        subBtn.disabled = true;
+    } else {
+        subBtn.innerHTML = `<i class="fa-solid fa-star"></i> Subscribe to Feed ($9.99/mo)`;
+        subBtn.style.backgroundColor = "var(--accent-color)";
+        subBtn.style.color = "var(--primary-bg)";
+        subBtn.style.borderColor = "var(--accent-color)";
+        subBtn.disabled = false;
+    }
+
+    const chatBtn = document.getElementById("profile-chat-btn");
+    if (chatBtn) {
+        if (isSubscribed) {
+            chatBtn.innerHTML = `<i class="fa-solid fa-envelope"></i> ${currentLang === 'es' ? 'Mensaje' : 'Message'}`;
+            chatBtn.style.opacity = "1";
+        } else {
+            chatBtn.innerHTML = `<i class="fa-solid fa-lock"></i> ${currentLang === 'es' ? 'Mensaje (Suscripción)' : 'Message (Subscribers Only)'}`;
+            chatBtn.style.opacity = "0.7";
+        }
+    }
+
+    // Load Tab contents
+    renderProfileShopGarments(creator.username);
+    renderProfileFeedPosts(isSubscribed);
+    renderProfileAuctions(creator.username);
+};
+
+window.switchProfileTab = function(tabName, chip) {
+    const tabs = document.querySelectorAll(".profile-tab-content");
+    tabs.forEach(t => t.classList.remove("active"));
+
+    const chips = document.querySelectorAll(".profile-tabs-scroll .category-chip");
+    chips.forEach(c => c.classList.remove("active"));
+
+    document.getElementById(`profile-tab-${tabName}`).classList.add("active");
+    chip.classList.add("active");
+};
+
+function renderProfileShopGarments(creatorName) {
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const creatorProducts = products.filter(p => p.creator.name === creatorName && p.isAuction !== true);
+    const profileShopGrid = document.getElementById("profile-shop-products-grid");
+
+    profileShopGrid.innerHTML = "";
+    if (creatorProducts.length === 0) {
+        profileShopGrid.innerHTML = `<div class="empty-cart-message" style="grid-column: 1/-1;">No listings published yet.</div>`;
+        return;
+    }
+
+    creatorProducts.forEach(product => {
+        const localData = product[currentLang] || product["en"] || {};
+        const titleVal = localData.title || product.title || "Item";
+        const card = document.createElement("article");
+        card.className = "product-card";
+        card.innerHTML = `
+            <div class="product-image-wrapper" onclick="openProductDetailModal(${product.id}, true)" style="cursor:pointer; padding-top:100%;">
+                <img src="${product.image}" alt="" class="product-image">
+                <span class="price-tag">${formatPrice(product.price)}</span>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">${titleVal}</h3>
+                <div class="card-footer">
+                    <button class="btn-buy-item" onclick="addToCart(${product.id})">Add to Cart</button>
+                </div>
+            </div>
+        `;
+        profileShopGrid.appendChild(card);
+    });
+}
+
+function renderProfileFeedPosts(isSubscribed) {
+    const container = document.getElementById("profile-feed-posts-container");
+    container.innerHTML = "";
+
+    if (!isSubscribed) {
+        container.innerHTML = `
+            <div class="post-card-locked">
+                <i class="fa-solid fa-lock post-card-locked-icon"></i>
+                <h3>Feed Locked</h3>
+                <p>Subscribe monthly to unlock exclusive photos, wear-videos, and personal backstages.</p>
+                <button class="btn btn-register" onclick="subscribeToCreatorCurrent()"><i class="fa-solid fa-star"></i> Unlock Feed ($9.99/mo)</button>
+            </div>
+        `;
+    } else {
+        // Show mock feeds
+        container.innerHTML = `
+            <div class="product-card" style="padding:16px;">
+                <h4 style="font-weight:700; margin-bottom:10px;">Behind the scenes wear duration photoshoot 💖</h4>
+                <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&q=80&w=600&h=300" style="width:100%; border-radius:8px; object-fit:cover; height:240px; margin-bottom:10px;">
+                <p style="font-size:0.82rem; color:var(--text-muted);">Selfie of today's 24 hours satin thong photoshoot. Garment now listed in store!</p>
+            </div>
+        `;
+    }
+}
+
+function renderProfileAuctions(creatorName) {
+    const container = document.getElementById("profile-tab-auctions");
+    container.innerHTML = "";
+
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const creatorAuctions = products.filter(p => p.creator.name === creatorName && p.isAuction === true);
+
+    const defaultEndTime = window.simulatedAuctionEndTime || (Date.now() + (4 * 3600 + 15 * 60 + 10) * 1000);
+    window.simulatedAuctionEndTime = defaultEndTime;
+
+    let html = `<div class="products-grid">`;
+    
+    // Add default simulated one
+    html += `
+        <article class="product-card">
+            <div class="product-image-wrapper" style="padding-top:100%;">
+                <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&q=80&w=600&h=600" class="product-image">
+                <span class="price-tag" style="background-color:#ff4d6d;" data-auction-endtime="${defaultEndTime}">${formatTimeRemaining(defaultEndTime - Date.now())}</span>
+            </div>
+            <div class="card-body">
+                <span class="card-category" style="color:#ff4d6d;">Active Auction (Public)</span>
+                <h3 class="card-title">Gym-worn Silk Panty (Pre-packaging proof)</h3>
+                
+                <div style="background:var(--secondary-bg); padding:10px; border-radius:8px; margin:8px 0; font-size:0.8rem;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Current Bid:</span>
+                        <strong id="auction-bid-amount" style="color:var(--accent-hover);">$145.00 USD</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
+                        <span>Top Bidder:</span>
+                        <span>@anonymous_buyer</span>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button class="btn btn-primary" style="flex:1; padding:8px; font-size:0.8rem; background-color:#ff4d6d; border-color:#ff4d6d;" onclick="placeSimulatedBid(null, 'public')">Place Bid (+$10.00)</button>
+                </div>
+            </div>
+        </article>
+    `;
+
+    // Add creator's dynamic auctions
+    creatorAuctions.forEach(auc => {
+        const localData = auc[currentLang] || auc["en"] || {};
+        const titleVal = localData.title || auc.title || "";
+        const displayAudience = auc.audience === "subscribers" ? (currentLang === "es" ? "Exclusivo Suscriptores" : "Subscribers Only") : (currentLang === "es" ? "Público" : "Public");
+        const endTimeAttr = auc.endTime ? `data-auction-endtime="${auc.endTime}"` : "";
+        const initialTimerText = auc.endTime ? formatTimeRemaining(auc.endTime - Date.now()) : "23h 59m";
+        const topBidderVal = auc.topBidder || "@none";
+        
+        html += `
+            <article class="product-card">
+                <div class="product-image-wrapper" style="padding-top:100%;">
+                    <img src="${auc.image}" class="product-image">
+                    <span class="price-tag" style="background-color:#ff4d6d;" ${endTimeAttr}>${initialTimerText}</span>
+                </div>
+                <div class="card-body">
+                    <span class="card-category" style="color:#ff4d6d;">Live Auction (${displayAudience})</span>
+                    <h3 class="card-title">${titleVal}</h3>
+                    
+                    <div style="background:var(--secondary-bg); padding:10px; border-radius:8px; margin:8px 0; font-size:0.8rem;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span>Current Bid:</span>
+                            <strong id="auction-bid-${auc.id}" style="color:var(--accent-hover);">${formatPrice(auc.price)}</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
+                            <span>Top Bidder:</span>
+                            <span id="auction-topbidder-${auc.id}">${topBidderVal}</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:8px;">
+                        <button class="btn btn-primary btn-bid-action" style="flex:1; padding:8px; font-size:0.8rem; background-color:#ff4d6d; border-color:#ff4d6d;" onclick="placeSimulatedBid(${auc.id}, '${auc.audience}', '${creatorName}')">Place Bid (+$10.00)</button>
+                    </div>
+                </div>
+            </article>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+function formatTimeRemaining(ms) {
+    if (ms <= 0) return currentLang === "es" ? "¡SUBASTA FINALIZADA!" : "AUCTION CLOSED";
+    const totalSecs = Math.floor(ms / 1000);
+    const h = Math.floor(totalSecs / 3600);
+    const m = Math.floor((totalSecs % 3600) / 60);
+    const s = totalSecs % 60;
+    return `${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+}
+
+// Global live interval ticker for active auctions
+setInterval(() => {
+    const auctionElements = document.querySelectorAll("[data-auction-endtime]");
+    const now = Date.now();
+    auctionElements.forEach(el => {
+        const endTime = parseInt(el.getAttribute("data-auction-endtime"));
+        if (endTime) {
+            const diff = endTime - now;
+            el.textContent = formatTimeRemaining(diff);
+            if (diff <= 0) {
+                el.style.backgroundColor = "#555";
+                const card = el.closest(".product-card");
+                if (card) {
+                    const btn = card.querySelector(".btn-bid-action");
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.textContent = currentLang === "es" ? "Subasta Cerrada" : "Auction Ended";
+                        btn.style.backgroundColor = "#666";
+                        btn.style.borderColor = "#666";
+                    }
+                }
+            }
+        }
+    });
+}, 1000);
+
+window.placeSimulatedBid = function(productId, audience, creatorName) {
+    let user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user === "null") {
+        const users = JSON.parse(localStorage.getItem("undr_users")) || DEFAULT_USERS;
+        user = users.find(u => u.role === "buyer") || DEFAULT_USERS[0];
+        localStorage.setItem("undr_current_user", JSON.stringify(user));
+        syncUserSessionUI();
+    }
+
+    let addresses = JSON.parse(localStorage.getItem("undr_addresses")) || [];
+    if (addresses.length === 0) {
+        addresses.push({
+            id: Date.now(),
+            name: "Anonymous Delivery",
+            street: "405 Lexington Ave",
+            city: "New York",
+            zip: "10174"
+        });
+        localStorage.setItem("undr_addresses", JSON.stringify(addresses));
+    }
+
+    let products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    let currentBid = 0;
+
+    if (productId) {
+        const idx = products.findIndex(p => p.id === productId);
+        if (idx !== -1) {
+            const product = products[idx];
+            if (product.endTime && Date.now() >= product.endTime) {
+                showToast(currentLang === "es" ? "Esta subasta ya ha finalizado." : "This auction has ended.");
+                return;
+            }
+
+            currentBid = (parseFloat(product.price) || 50.00) + 10.00;
+            products[idx].price = currentBid;
+            products[idx].topBidder = user.handle;
+            products[idx].bidsCount = (products[idx].bidsCount || 0) + 1;
+            localStorage.setItem("undr_products", JSON.stringify(products));
+
+            // Immediate DOM update
+            const bidEl = document.getElementById(`auction-bid-${productId}`);
+            const bidderEl = document.getElementById(`auction-topbidder-${productId}`);
+            const bidsCountEl = document.getElementById(`auction-bids-count-${productId}`);
+
+            if (bidEl) {
+                bidEl.textContent = formatPrice(currentBid);
+                bidEl.style.color = "#0bb08b";
+                setTimeout(() => bidEl.style.color = "var(--accent-hover)", 1000);
+            }
+            if (bidderEl) bidderEl.textContent = user.handle;
+            if (bidsCountEl) bidsCountEl.textContent = `${products[idx].bidsCount} bids`;
+        }
+    } else {
+        const bidEl = document.getElementById("auction-bid-amount");
+        if (bidEl) {
+            currentBid = (parseFloat(bidEl.textContent.replace(/[^\d.]/g, "")) || 145.00) + 10.00;
+            bidEl.textContent = formatPrice(currentBid);
+        } else {
+            currentBid = 155.00;
+        }
+    }
+
+    showToast(currentLang === "es" ? `¡Puja de +$10.00 enviada con éxito! Tu puja actual es de ${formatPrice(currentBid)}` : `Bid of +$10.00 placed successfully! Top bid is now ${formatPrice(currentBid)}`);
+
+    // Add notification
+    const notifications = JSON.parse(localStorage.getItem("undr_notifications")) || [];
+    notifications.unshift({
+        id: Date.now(),
+        text: `You are the highest bidder on live auction for ${formatPrice(currentBid)}!`,
+        time: "Just now",
+        unread: true
+    });
+    localStorage.setItem("undr_notifications", JSON.stringify(notifications));
+    updateNotificationsCount();
+
+    renderLiveAuctionsGrid();
+};
+
+window.subscribeToCreatorCurrent = function() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user) {
+        alert(currentLang === "es" ? 
+            "Acceso Denegado: Debes iniciar sesión o registrarte para suscribirte a creadoras." : 
+            "Access Denied: Please log in or register a buyer account to subscribe to creator feeds.");
+        loginModal.style.display = "flex";
+        return;
+    }
+    if (user.role !== "buyer") {
+        alert("Only Buyer accounts can subscribe to creator feeds.");
+        return;
+    }
+
+    const price = 9.99;
+    if (user.balance < price) {
+        alert("Insufficient balance to subscribe.");
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const creator = users.find(u => u.username === profileActiveCreatorName);
+    if (!creator) return;
+
+    // Deduct
+    user.balance = parseFloat(user.balance) - price;
+    localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+    const uIdx = users.findIndex(u => u.handle === user.handle);
+    if (uIdx !== -1) {
+        users[uIdx].balance = user.balance;
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    // Add subscription
+    const subs = JSON.parse(localStorage.getItem("undr_subscriptions")) || [];
+    if (!subs.includes(creator.handle)) {
+        subs.push(creator.handle);
+        localStorage.setItem("undr_subscriptions", JSON.stringify(subs));
+    }
+
+    syncUserSessionUI();
+    openCreatorProfile(profileActiveCreatorName);
+    showToast(`Subscribed successfully to ${creator.username}!`);
+};
+
+window.startDirectChatFromProfile = function() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user) {
+        alert(currentLang === "es" ? 
+            "Acceso Denegado: Debes iniciar sesión o registrarte para chatear con creadoras." : 
+            "Access Denied: Please log in or register a buyer account to chat with creators.");
+        loginModal.style.display = "flex";
+        return;
+    }
+    
+    const subs = JSON.parse(localStorage.getItem("undr_subscriptions")) || [];
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const creator = users.find(u => u.username === profileActiveCreatorName);
+    
+    if (creator && !subs.includes(creator.handle)) {
+        alert(currentLang === "es" ?
+            `Acceso Denegado: Debes suscribirte primero al feed de ${creator.username} para poder chatear con ella.` :
+            `Access Denied: You must subscribe to ${creator.username}'s feed to unlock direct messaging.`);
+        return;
+    }
+
+    activeChatCreator = profileActiveCreatorName;
+    showSection("chat");
+};
+
+// ==========================================
+// NOTIFICATIONS SYSTEM
+// ==========================================
+function updateNotificationsCount() {
+    const notifications = JSON.parse(localStorage.getItem("undr_notifications")) || [];
+    const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+    const userNotifications = notifications.filter(n => {
+        if (!n.recipientCreator) return true;
+        return currentUser && currentUser.username === n.recipientCreator;
+    });
+    const unreadCount = userNotifications.filter(n => n.unread).length;
+    
+    const countBadge = document.getElementById("notifications-count-badge");
+    if (countBadge) {
+        countBadge.textContent = unreadCount;
+        countBadge.style.display = unreadCount > 0 ? "flex" : "none";
+    }
+}
+
+// Toggle notification bell trigger
+document.getElementById("notification-bell-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const panel = document.getElementById("notifications-dropdown-panel");
+    const isVisible = panel.style.display === "flex";
+    panel.style.display = isVisible ? "none" : "flex";
+    
+    if (!isVisible) {
+        renderNotificationsList();
+    }
+});
+
+document.addEventListener("click", (e) => {
+    const panel = document.getElementById("notifications-dropdown-panel");
+    const bellBtn = document.getElementById("notification-bell-btn");
+    if (panel && !panel.contains(e.target) && e.target !== bellBtn && !bellBtn.contains(e.target)) {
+        panel.style.display = "none";
+    }
+});
+
+function renderNotificationsList() {
+    const notifications = JSON.parse(localStorage.getItem("undr_notifications")) || [];
+    const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+    const container = document.getElementById("notifications-list-container");
+    container.innerHTML = "";
+
+    const userNotifications = notifications.filter(n => {
+        if (!n.recipientCreator) return true;
+        return currentUser && currentUser.username === n.recipientCreator;
+    });
+
+    if (userNotifications.length === 0) {
+        container.innerHTML = `<div class="empty-cart-message">No notifications.</div>`;
+        return;
+    }
+
+    userNotifications.forEach(n => {
+        const item = document.createElement("div");
+        item.className = `notification-item ${n.unread ? 'unread' : ''}`;
+        item.innerHTML = `
+            <div class="notification-icon-wrapper"><i class="fa-solid fa-bell"></i></div>
+            <div class="notification-body-text">
+                <span>${n.text}</span>
+                <span class="notification-time">${n.time}</span>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+window.clearNotifications = function() {
+    const notifications = JSON.parse(localStorage.getItem("undr_notifications")) || [];
+    notifications.forEach(n => n.unread = false);
+    localStorage.setItem("undr_notifications", JSON.stringify(notifications));
+    updateNotificationsCount();
+    renderNotificationsList();
+    showToast("Notifications marked as read.");
+};
+
+// ==========================================
+// BUYER ACCOUNT SETTINGS UI RENDERING
+// ==========================================
+function renderSettingsAddresses() {
+    const addresses = JSON.parse(localStorage.getItem("undr_addresses")) || [];
+    const container = document.getElementById("settings-address-list");
+    container.innerHTML = "";
+
+    if (addresses.length === 0) {
+        container.innerHTML = `<div class="empty-cart-message">No shipping addresses saved.</div>`;
+        return;
+    }
+
+    addresses.forEach(addr => {
+        const div = document.createElement("div");
+        div.className = "address-item";
+        div.innerHTML = `
+            <div class="address-item-details">
+                <strong>${addr.name}</strong><br>
+                <span>${addr.street}, ${addr.city} (${addr.zip})</span>
+            </div>
+            <button class="btn-remove-address" onclick="deleteSettingsAddress(${addr.id})">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.deleteSettingsAddress = function(addrId) {
+    let addresses = JSON.parse(localStorage.getItem("undr_addresses")) || [];
+    addresses = addresses.filter(a => a.id !== addrId);
+    localStorage.setItem("undr_addresses", JSON.stringify(addresses));
+    renderSettingsAddresses();
+    showToast("Shipping address removed.");
+};
+
+// Form add address settings
+document.getElementById("settings-add-address-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const alias = document.getElementById("address-alias-name").value.trim();
+    const street = document.getElementById("address-street").value.trim();
+    const city = document.getElementById("address-city").value.trim();
+    const zip = document.getElementById("address-zip").value.trim();
+
+    const addresses = JSON.parse(localStorage.getItem("undr_addresses")) || [];
+    addresses.push({
+        id: Date.now(),
+        name: alias,
+        street: street,
+        city: city,
+        zip: zip
+    });
+
+    localStorage.setItem("undr_addresses", JSON.stringify(addresses));
+    document.getElementById("settings-add-address-form").reset();
+    renderSettingsAddresses();
+    showToast("Address saved anonymously.");
+});
+
+function renderSettingsSubscriptions() {
+    const subs = JSON.parse(localStorage.getItem("undr_subscriptions")) || [];
+    const container = document.getElementById("settings-subs-list");
+    container.innerHTML = "";
+
+    if (subs.length === 0) {
+        container.innerHTML = `<div class="empty-cart-message">No active subscriptions.</div>`;
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+
+    subs.forEach(handle => {
+        const creator = users.find(u => u.handle === handle);
+        if (!creator) return;
+
+        const card = document.createElement("div");
+        card.className = "sub-item-card";
+        card.innerHTML = `
+            <img src="${creator.avatar}" class="sub-item-avatar">
+            <div class="sub-item-info">
+                <span class="sub-item-name">${creator.username}</span>
+                <span class="sub-item-price">$9.99/mo (Auto-renewing)</span>
+            </div>
+            <button class="btn btn-follow" style="padding:4px 8px; font-size:0.7rem;" onclick="cancelSubscriptionSettings('${handle}')">Cancel Sub</button>
+        `;
+        container.appendChild(card);
+    });
+}
+
+window.cancelSubscriptionSettings = function(handle) {
+    let subs = JSON.parse(localStorage.getItem("undr_subscriptions")) || [];
+    subs = subs.filter(s => s !== handle);
+    localStorage.setItem("undr_subscriptions", JSON.stringify(subs));
+    renderSettingsSubscriptions();
+    showToast("Subscription cancelled.");
+};
+
+function renderSettingsOrders() {
+    const orders = JSON.parse(localStorage.getItem("creator_orders")) || [];
+    const container = document.getElementById("settings-orders-list");
+    container.innerHTML = "";
+
+    if (orders.length === 0) {
+        container.innerHTML = `<div class="empty-cart-message">No purchased items history yet.</div>`;
+        return;
+    }
+
+    orders.forEach(order => {
+        let statusLabel = "Paid - Package in preparation";
+        let statusColor = "#f7a072";
+
+        if (order.status === "shipped") {
+            statusLabel = "In Transit (USPS anonymous label generated)";
+            statusColor = "var(--accent-hover)";
+        } else if (order.status === "delivered") {
+            statusLabel = "Delivered (Discreet packing completed)";
+            statusColor = "#0bb08b";
+        }
+
+        let step1Active = true;
+        let step2Active = order.status === "shipped" || order.status === "delivered";
+        let step3Active = order.status === "delivered";
+
+        const div = document.createElement("div");
+        div.className = "order-history-card";
+        div.innerHTML = `
+            <div class="order-history-header">
+                <span>ORDER ID: #${order.id.slice(0,8).toUpperCase()}</span>
+                <span style="font-weight:800; color:var(--accent-hover);">$${order.price.toFixed(2)} USD</span>
+            </div>
+            <div class="order-history-body">
+                <img src="${order.image}" class="order-history-img">
+                <div style="flex:1;">
+                    <span class="order-history-title" style="display:block; font-weight:700; margin-bottom:4px;">${order.title}</span>
+                    <span class="order-history-status" style="color:${statusColor}; font-weight:700; font-size:0.75rem; display:block; margin-bottom:10px;">${statusLabel}</span>
+                    
+                    <!-- Visual Tracking Stepper -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--primary-bg); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); font-size:0.68rem;">
+                        <span style="color:${step1Active ? 'var(--accent-hover)' : 'var(--text-muted)'}; font-weight:${step1Active ? '700' : '400'};"><i class="fa-solid fa-circle-check"></i> ${currentLang === 'es' ? 'Pago Recibido' : 'Paid'}</span>
+                        <span style="color:var(--text-muted);">&rarr;</span>
+                        <span style="color:${step2Active ? 'var(--accent-hover)' : 'var(--text-muted)'}; font-weight:${step2Active ? '700' : '400'};"><i class="fa-solid fa-box-tissue"></i> ${currentLang === 'es' ? 'Sellado al Vacío' : 'Vacuum Sealed'}</span>
+                        <span style="color:var(--text-muted);">&rarr;</span>
+                        <span style="color:${step3Active ? '#0bb08b' : 'var(--text-muted)'}; font-weight:${step3Active ? '700' : '400'};"><i class="fa-solid fa-truck-fast"></i> ${currentLang === 'es' ? 'Entregado' : 'Delivered'}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function renderFavoritesGrid() {
+    const favorites = JSON.parse(localStorage.getItem("undr_favorites")) || [];
+    const container = document.getElementById("settings-favorites-grid");
+    if (!container) return;
+    
+    container.innerHTML = "";
+    
+    if (favorites.length === 0) {
+        container.innerHTML = `
+            <div class="empty-cart-message" style="grid-column: 1/-1; text-align: center; padding: 20px;">
+                <i class="fa-solid fa-heart" style="font-size: 2rem; color: var(--border-color); margin-bottom: 8px; display: block;"></i>
+                ${currentLang === "es" ? "No tienes favoritos guardados." : "You have no favorited items yet."}
+            </div>
+        `;
+        return;
+    }
+    
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const favProducts = products.filter(p => favorites.includes(p.id));
+    
+    if (favProducts.length === 0) {
+        container.innerHTML = `
+            <div class="empty-cart-message" style="grid-column: 1/-1; text-align: center; padding: 20px;">
+                ${currentLang === "es" ? "Los artículos favoritos ya no están disponibles." : "Favorited items are no longer available."}
+            </div>
+        `;
+        return;
+    }
+    
+    favProducts.forEach(product => {
+        const localData = product[currentLang] || product["en"] || {};
+        const titleText = localData.title || product.title || "";
+        const verifiedBadge = product.creator.verified ? `<i class="fa-solid fa-circle-check verified-icon" style="color:var(--accent-color);"></i>` : "";
+        const timeText = currentLang === "es" ? "Hace 3 horas" : "3h ago";
+        const card = document.createElement("article");
+        card.className = "product-card";
+        
+        card.innerHTML = `
+            <div class="card-creator-header" onclick="openCreatorProfile('${product.creator.name}')" style="cursor: pointer;">
+                <img src="${product.creator.avatar}" alt="${product.creator.name}" class="creator-avatar-card">
+                <div class="creator-info-card">
+                    <span class="card-creator-name">${product.creator.name} ${verifiedBadge}</span>
+                    <span class="card-post-time">${timeText}</span>
+                </div>
+            </div>
+            
+            <div class="product-image-wrapper" onclick="openCreatorProfile('${product.creator.name}')" style="cursor:pointer; overflow:hidden;">
+                <img src="${product.image}" alt="${titleText}" class="product-image" loading="lazy">
+                <span class="price-tag">$${product.price.toFixed(2)} USD</span>
+            </div>
+            
+            <div class="card-body">
+                <span class="card-category">${product.style}</span>
+                <h3 class="card-title">${titleText}</h3>
+                <p class="card-description">${localData.description || ""}</p>
+                
+                <div class="card-spec-tags">
+                    <span class="spec-tag">Size ${product.size}</span>
+                    <span class="spec-tag">${product.wearTime}</span>
+                </div>
+
+                <div class="card-footer">
+                    <div class="card-actions-row">
+                        <button class="btn-buy-item" onclick="addToCart(${product.id})">
+                            <i class="fa-solid fa-bag-shopping"></i> ${currentLang === "es" ? "Comprar" : "Buy Item"}
+                        </button>
+                        <button class="btn-like-post" onclick="toggleLike(this, ${product.id})" style="color:#ff4d6d; border-color:#ffa6b5;">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function renderLiveAuctionsGrid() {
+    const feed = document.getElementById("live-auctions-feed");
+    if (!feed) return;
+
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const activeAuctions = products.filter(p => p.isAuction === true);
+
+    if (activeAuctions.length === 0) {
+        feed.innerHTML = `<div class="empty-cart-message" style="grid-column: 1/-1;">${currentLang === "es" ? "No hay subastas en vivo en este momento." : "No active live auctions at the moment."}</div>`;
+        return;
+    }
+
+    let html = "";
+    activeAuctions.forEach(auc => {
+        const localData = auc[currentLang] || auc["en"] || {};
+        const titleVal = localData.title || auc.title || "Live Auction Garment";
+        const displayAudience = auc.audience === "subscribers" ? (currentLang === "es" ? "Exclusivo Suscriptores" : "Subscribers Only") : (currentLang === "es" ? "Público" : "Public");
+        
+        // Ensure valid endTime
+        if (!auc.endTime) {
+            auc.endTime = Date.now() + (4 * 3600 + 15 * 60 + 10) * 1000;
+        }
+
+        const isEnded = Date.now() >= auc.endTime;
+        const endTimeAttr = `data-auction-endtime="${auc.endTime}"`;
+        const timerText = isEnded ? (currentLang === "es" ? "¡SUBASTA FINALIZADA!" : "AUCTION CLOSED") : formatTimeRemaining(auc.endTime - Date.now());
+        const topBidderVal = auc.topBidder || "@none";
+        const bidsCountVal = auc.bidsCount || 1;
+
+        html += `
+            <article class="product-card">
+                <div class="product-image-wrapper" style="padding-top:100%; position:relative;">
+                    <img src="${auc.image}" class="product-image">
+                    <span class="price-tag" style="background-color:${isEnded ? '#444' : '#ff4d6d'};" ${endTimeAttr}>${timerText}</span>
+                </div>
+                <div class="card-body">
+                    <span class="card-category" style="color:#ff4d6d;">${auc.creator.name} - Live Auction (${displayAudience})</span>
+                    <h3 class="card-title">${titleVal}</h3>
+                    
+                    <div style="background:var(--secondary-bg); padding:10px; border-radius:8px; margin:8px 0; font-size:0.8rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Current Highest Bid:</span>
+                            <strong id="auction-bid-${auc.id}" style="color:var(--accent-hover); font-size:1.1rem;">${formatPrice(auc.price)}</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                            <span>Top Bidder: <strong id="auction-topbidder-${auc.id}" style="color:var(--text-primary);">${topBidderVal}</strong></span>
+                            <span id="auction-bids-count-${auc.id}">${bidsCountVal} bids</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:8px;">
+                        <button class="btn btn-primary btn-bid-action" id="auction-btn-${auc.id}" ${isEnded ? 'disabled style="flex:1; padding:8px; font-size:0.8rem; background-color:#555; border-color:#555;"' : 'style="flex:1; padding:8px; font-size:0.8rem; background-color:#ff4d6d; border-color:#ff4d6d;"'} onclick="placeSimulatedBid(${auc.id}, '${auc.audience}', '${auc.creator.name}')">
+                            ${isEnded ? (currentLang === "es" ? `🏆 Ganada por ${topBidderVal}` : `🏆 Won by ${topBidderVal}`) : (currentLang === "es" ? "Pujar (+$10.00)" : "Place Bid (+$10.00)")}
+                        </button>
+                    </div>
+                </div>
+            </article>
+        `;
+    });
+
+    feed.innerHTML = html;
+}
+
+window.placeSimulatedFeedBid = function(elementId) {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user.role !== "buyer") {
+        alert(currentLang === "es" ? 
+            "Acceso Denegado: Los invitados anónimos no pueden pujar. Por favor inicia sesión o regístrate como comprador." : 
+            "Access Denied: Anonymous guests cannot bid. Please log in or register a buyer account.");
+        loginModal.style.display = "flex";
+        return;
+    }
+    const addresses = JSON.parse(localStorage.getItem("undr_addresses")) || [];
+    if (addresses.length === 0) {
+        alert(currentLang === "es" ? 
+            "Verificación de Seguridad Requerida: Registra una dirección de envío en tus Ajustes de Cuenta antes de pujar para validar tu cuenta." : 
+            "Security Verification Required: Please register a shipping address in your Account Settings to bid on live auctions. This prevents fraudulent fake bids.");
+        showSection("buyer-settings");
+        return;
+    }
+
+    const bidEl = document.getElementById(elementId);
+    let currentBid = parseFloat(bidEl.textContent.replace(/[^\d.]/g, ""));
+    currentBid += 10.00;
+    bidEl.textContent = `$${currentBid.toFixed(2)} USD`;
+    showToast("Bid placed successfully!");
+
+    // Add alert notification
+    const notifications = JSON.parse(localStorage.getItem("undr_notifications")) || [];
+    notifications.unshift({
+        id: Date.now(),
+        text: `You placed a bid on active auction item for $${currentBid.toFixed(2)} USD!`,
+        time: "Just now",
+        unread: true
+    });
+    localStorage.setItem("undr_notifications", JSON.stringify(notifications));
+    updateNotificationsCount();
+};
+
+// Creator active listings management
+window.loadCreatorInventory = function() {
+    const container = document.getElementById("creator-active-listings-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user.role !== "creator") return;
+
+    const products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    const creatorProducts = products.filter(p => p.creator.name === user.username);
+
+    if (creatorProducts.length === 0) {
+        container.innerHTML = `<div class="empty-cart-message">${currentLang === 'es' ? 'No tienes prendas publicadas.' : 'You have no listings published.'}</div>`;
+        return;
+    }
+
+    creatorProducts.forEach(p => {
+        const localData = p[currentLang] || p["en"] || {};
+        const titleVal = localData.title || p.title || "Untitled Garment";
+        const item = document.createElement("div");
+        item.className = "address-item";
+        item.style.padding = "10px";
+        item.innerHTML = `
+            <div style="font-size:0.8rem;">
+                <strong>${titleVal}</strong><br>
+                <span style="color:var(--text-muted); font-size:0.75rem;">${formatPrice(p.price)} - Type: ${p.isAuction ? 'Live Auction' : 'Direct Sale'}</span>
+            </div>
+            <button class="btn btn-login" style="padding:4px 8px; font-size:0.7rem; background:#ffeef2; color:#ff4d6d; border-color:#ffa6b5;" onclick="deleteCreatorListing(${p.id})">
+                Delete
+            </button>
+        `;
+        container.appendChild(item);
+    });
+};
+
+window.deleteCreatorListing = function(productId) {
+    let products = JSON.parse(localStorage.getItem("undr_products")) || [];
+    products = products.filter(p => p.id !== productId);
+    localStorage.setItem("undr_products", JSON.stringify(products));
+
+    loadCreatorInventory();
+    filterAndSortProducts();
+    
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (user) {
+        openCreatorProfile(user.username);
+    }
+    
+    showToast(currentLang === 'es' ? "Prenda eliminada de tu tienda." : "Listing deleted from your shop.");
+};
+
+window.toggleListingExtraFields = function() {
+    const isAuction = document.getElementById("new-item-type-select").value === "auction";
+    const presaleGroup = document.getElementById("presale-checkbox-group");
+    const durationGroup = document.getElementById("auction-duration-group");
+    if (presaleGroup) {
+        presaleGroup.style.display = isAuction ? "none" : "flex";
+    }
+    if (durationGroup) {
+        durationGroup.style.display = isAuction ? "block" : "none";
+    }
+};
+
+// Initial count updates on load
+updateNotificationsCount();
+
+// ==========================================
+// DYNAMIC HASH ROUTER ENGINE (URLs per creator @handle & section)
+// ==========================================
+function handleHashRouting() {
+    const rawHash = decodeURIComponent(window.location.hash).trim();
+    if (!rawHash || rawHash === "#" || rawHash === "#/" || rawHash === "#/explore") {
+        showSection("explore", null, false);
+        return;
+    }
+
+    if (rawHash.startsWith("#@")) {
+        const handle = rawHash.substring(2);
+        openCreatorProfile(handle);
+    } else if (rawHash.startsWith("#/creator/")) {
+        const handle = rawHash.substring(10);
+        openCreatorProfile(handle);
+    } else if (rawHash === "#/chat") {
+        showSection("chat", null, false);
+    } else if (rawHash === "#/auctions") {
+        showSection("auctions", null, false);
+    } else if (rawHash === "#/creator-portal") {
+        showSection("creator", null, false);
+    } else if (rawHash === "#/buyer-settings") {
+        showSection("buyer-settings", null, false);
+    } else if (rawHash === "#/admin") {
+        showSection("admin", null, false);
+    } else {
+        showSection("explore", null, false);
+    }
+}
+
+window.addEventListener("hashchange", handleHashRouting);
+window.addEventListener("popstate", handleHashRouting);
+
+// Run Hash routing on initial load
+setTimeout(() => {
+    handleHashRouting();
+}, 100);

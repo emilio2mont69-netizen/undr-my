@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNDR - Exclusive Worn Underwear Marketplace</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 18+ Age Verification Modal (Always visible first time) -->
+    <div class="age-modal" id="age-modal">
+        <div class="age-modal-content">
+            <img src="./logofase.PNG" alt="UNDR Logo" class="age-logo">
+            <h2 data-i18n="age_title">Age Verification Required</h2>
+            <p data-i18n="age_desc">You must be 18 years of age or older to enter this site. This website contains adult-themed content, including the marketplace of worn & exclusive lingerie.</p>
+            <div class="age-actions">
+                <button class="btn btn-register btn-block" id="age-accept-btn" data-i18n="age_btn_accept">I am 18 or older - Enter</button>
+                <button class="btn btn-login btn-block" id="age-reject-btn" data-i18n="age_btn_reject">Exit</button>
+            </div>
+            <span class="discreet-disclaimer" data-i18n="discreet_packaging_guarantee"><i class="fa-solid fa-user-secret"></i> Discreet & 100% Anonymous Delivery Guaranteed</span>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Left Sidebar Navigation (OnlyFans Style) -->
+        <aside class="sidebar-left">
+            <div class="logo-container" onclick="showSection('explore')">
+                <img src="./logofase.PNG" alt="UNDR Logo" class="brand-logo" style="cursor: pointer;">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="javascript:void(0)" class="nav-item active" id="nav-explore-item" onclick="showSection('explore', this)">
+                    <i class="fa-solid fa-house"></i>
+                    <span data-i18n="nav_explore">Explore Models</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-messages-item" onclick="showSection('chat', this)">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span data-i18n="nav_messages">Direct Messages</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-auctions-item" onclick="showSection('auctions', this)">
+                    <i class="fa-solid fa-gavel"></i>
+                    <span data-i18n="nav_auctions">Live Auctions</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-creator-item" onclick="showSection('creator', this)" style="display:none;">
+                    <i class="fa-solid fa-gem"></i>
+                    <span data-i18n="nav_creator_portal">Creator Portal</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-buyer-settings-item" onclick="showSection('buyer-settings', this)">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span data-i18n="nav_buyer_settings">Account Settings</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-admin-item" onclick="showSection('admin', this)" style="display:none;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span data-i18n="nav_admin">Admin Panel</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="open-cart-btn">
+                    <i class="fa-solid fa-shopping-cart"></i>
+                    <span data-i18n="nav_cart">My Cart</span>
+                    <span class="badge" id="cart-badge">0</span>
+                </a>
+            </nav>
+            
+            <!-- Sidebar Footer with Current Session Profile -->
+            <div class="sidebar-footer">
+                <div class="user-quick-profile">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Avatar" class="user-avatar" id="sidebar-avatar">
+                    <div class="user-info">
+                        <span class="user-name" id="user-name-display">Guest</span>
+                        <span class="user-handle" id="user-role-display">Buyer Account</span>
+                        <span class="user-balance" id="user-balance-display">$0.00 USD</span>
+                    </div>
+                </div>
+                
+                <!-- Apply to Sell Button (Only for buyers) -->
+                <button class="btn btn-login btn-block" id="apply-to-sell-btn" onclick="showSection('creator')" style="padding: 8px 12px; font-size: 0.8rem; border-color: var(--accent-color); color: var(--accent-hover);"><i class="fa-solid fa-gem"></i> Apply to Sell</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navbar for Mobile/Search -->
+            <header class="top-header">
+                <div class="mobile-logo-trigger">
+                    <img src="./logofase.PNG" alt="UNDR Logo" class="brand-logo-mobile">
+                </div>
+                
+                <!-- Advanced Search Bar -->
+                <div class="search-bar-container">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" placeholder="Search models, sizes, styles..." id="search-input" data-i18n-placeholder="search_placeholder">
+                    <button class="search-filter-btn" id="search-filter-trigger" title="Advanced filters">
+                        <i class="fa-solid fa-sliders"></i>
+                    </button>
+                    
+                    <!-- Advanced Filters Dropdown -->
+                    <div class="advanced-filters-dropdown" id="advanced-filters-panel">
+                        <div class="filter-group">
+                            <label data-i18n="filter_size">Size</label>
+                            <select id="filter-size">
+                                <option value="all" data-i18n="opt_all">All Sizes</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label data-i18n="filter_style">Style</label>
+                            <select id="filter-style">
+                                <option value="all" data-i18n="opt_all">All Styles</option>
+                                <option value="Satin" data-i18n="style_satin">Satin</option>
+                                <option value="Lace" data-i18n="style_lace">Lace</option>
+                                <option value="Silk" data-i18n="style_silk">Silk</option>
+                                <option value="Cotton" data-i18n="style_cotton">Cotton</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label data-i18n="filter_avail">Availability</label>
+                            <select id="filter-availability">
+                                <option value="all" data-i18n="opt_all">All Status</option>
+                                <option value="now" data-i18n="avail_now">Available Today</option>
+                                <option value="custom" data-i18n="avail_custom">Custom Only</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-register btn-block" id="apply-adv-filters-btn" data-i18n="apply_filters">Apply Filters</button>
+                    </div>
+                </div>
+
+                <div class="top-actions" id="auth-actions-group">
+                    <!-- Notification Bell Button -->
+                    <button class="btn btn-lang" id="notification-bell-btn" style="position:relative;" title="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notifications-count-badge">2</span>
+                    </button>
+                    
+                    <!-- Language switcher button -->
+                    <button class="btn btn-lang" id="lang-toggle-btn"><i class="fa-solid fa-globe"></i> EN</button>
+                    <!-- Currency Switcher Select -->
+                    <select id="currency-toggle-select" class="btn btn-lang" style="padding: 6px 8px; cursor: pointer; font-weight: 700; background: var(--secondary-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size:0.78rem;">
+                        <option value="USD" selected>USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="MXN">MXN ($)</option>
+                        <option value="CAD">CAD ($)</option>
+                    </select>
+                    <span id="session-buttons-container">
+                        <button class="btn btn-login" id="login-trigger-btn" data-i18n="nav_login">Log In</button>
+                        <button class="btn btn-register" id="register-trigger-btn" data-i18n="nav_register">Sign Up</button>
+                    </span>
+
+                    <!-- Notifications Dropdown Panel -->
+                    <div class="notifications-dropdown" id="notifications-dropdown-panel">
+                        <div class="notifications-header">
+                            <h3>Notifications</h3>
+                            <button onclick="clearNotifications()" style="background:none; border:none; color:var(--accent-hover); cursor:pointer; font-size:0.75rem; font-weight:700;">Mark all read</button>
+                        </div>
+                        <div class="notifications-list" id="notifications-list-container">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SECTION 1: Explore Models (Main Feed) -->
+            <div id="section-explore" class="content-section-panel active">
+                <!-- Featured Banner (Hero Section) -->
+                <section class="hero-banner">
+                    <div class="hero-content">
+                        <span class="tag-featured" data-i18n="tag_featured">100% Verified Authenticity</span>
+                        <h1 data-i18n="hero_title">Directly from your favorite creators. Authentic, exclusive, and delivered to your door.</h1>
+                        <div class="hero-buttons">
+                            <button class="btn btn-primary" onclick="document.getElementById('products-feed').scrollIntoView({behavior: 'smooth'})" data-i18n="hero_btn_primary">Explore Creators</button>
+                            <button class="btn btn-login" id="auth-info-btn" data-i18n="hero_btn_secondary" style="border-color: var(--accent-hover); background: rgba(255,255,255,0.7);">How authenticity works?</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Categories Filter -->
+                <section class="categories-section">
+                    <div class="categories-scroll">
+                        <button class="category-chip active" data-category="all" data-i18n="feed_all">All</button>
+                        <button class="category-chip" data-category="destacadas" data-i18n="feed_featured">Featured</button>
+                        <button class="category-chip" data-category="nuevas" data-i18n="feed_new">New Creators</button>
+                        <button class="category-chip" data-category="hoy" data-i18n="feed_today">Available Today</button>
+                        <button class="category-chip" data-category="subastas" data-i18n="feed_auctions">Exclusive Auctions</button>
+                    </div>
+                </section>
+
+                <!-- Products Feed Grid -->
+                <section class="feed-section">
+                    <div class="section-header">
+                        <h2 data-i18n="latest_arrivals">Underwear Collection</h2>
+                        <div class="feed-filters">
+                            <select id="sort-select">
+                                <option value="recent" data-i18n="sort_recent">Most Recent</option>
+                                <option value="price-low" data-i18n="sort_low_high">Price: Low to High</option>
+                                <option value="price-high" data-i18n="sort_high_low">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="products-grid" id="products-feed">
+                        <!-- Products injected dynamically -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- SECTION 2: Chat & DMs Portal -->
+            <div id="section-chat" class="content-section-panel">
+                <div class="chat-container">
+                    <!-- Chat Users list sidebar -->
+                    <div class="chat-sidebar">
+                        <h3 data-i18n="direct_messages">Direct Messages</h3>
+                        <div class="chat-list" id="chat-users-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Main Chat Panel -->
+                    <div class="chat-main" id="chat-window">
+                        <div class="chat-header">
+                            <img src="" alt="" class="chat-header-avatar" id="chat-active-avatar">
+                            <div class="chat-header-info">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="chat-header-name" id="chat-active-name">Select a Creator</span>
+                                    <i class="fa-solid fa-circle-check verified-icon" id="chat-active-verified" style="display:none; color:var(--accent-color); font-size:0.85rem;"></i>
+                                </div>
+                                <span class="chat-header-status" id="chat-active-handle">@handle</span>
+                            </div>
+                            <div class="chat-header-actions" id="chat-buyer-actions" style="display:flex; gap:8px;">
+                                <button class="btn btn-login" id="chat-send-tip-btn" style="padding: 6px 12px; font-size: 0.78rem; border-color: #ff4d6d; color: #ff4d6d;"><i class="fa-solid fa-heart"></i> Send Tip</button>
+                                <button class="btn btn-follow btn-custom-chat-trigger" id="chat-request-custom-btn" data-i18n="req_custom_btn">Request Custom</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Conversation bubble area -->
+                        <div class="chat-messages-area" id="chat-messages-container">
+                            <!-- Message bubbles go here -->
+                        </div>
+                        
+                        <!-- Chat Input bar -->
+                        <div class="chat-input-bar">
+                            <button class="chat-media-btn" id="simulate-ppv-trigger-btn" style="display:none;" title="Send Pay-to-Unlock Media (PPV)"><i class="fa-solid fa-lock"></i></button>
+                            <input type="text" placeholder="Type a message privately..." id="chat-text-input">
+                            <button class="chat-send-btn" id="chat-send-msg-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Creator Portal & Onboarding -->
+            <div id="section-creator" class="content-section-panel">
+                <!-- Creator KYC Onboarding Card -->
+                <div class="onboarding-card" id="kyc-onboarding-panel">
+                    <i class="fa-solid fa-id-card-clip kyc-icon"></i>
+                    <h2 data-i18n="kyc_onboarding_title">Verification of Identity Required (KYC)</h2>
+                    <p data-i18n="kyc_onboarding_desc">To ensure federal 18+ compliance and tax processing (1099-K), you must verify your identity before publishing garments.</p>
+                    
+                    <div class="kyc-step-visual">
+                        <div class="kyc-step done" id="step-kyc-id">
+                            <span class="kyc-step-num">1</span>
+                            <span class="kyc-step-label" data-i18n="kyc_step_id">Official 18+ ID</span>
+                        </div>
+                        <div class="kyc-step" id="step-kyc-selfie">
+                            <span class="kyc-step-num">2</span>
+                            <span class="kyc-step-label" data-i18n="kyc_step_selfie">Live Selfie</span>
+                        </div>
+                        <div class="kyc-step" id="step-kyc-tax">
+                            <span class="kyc-step-num">3</span>
+                            <span class="kyc-step-label" data-i18n="kyc_step_tax">IRS 1099 Info</span>
+                        </div>
+                    </div>
+
+                    <div class="kyc-form-mock" id="kyc-form-fields">
+                        <div class="form-group">
+                            <label data-i18n="legal_first_name_label">Legal First Name</label>
+                            <input type="text" id="kyc-first-name" required placeholder="Jane">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="legal_last_name_label">Legal Last Name</label>
+                            <input type="text" id="kyc-last-name" required placeholder="Doe">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="ssn_label">Social Security Number (Last 4 digits)</label>
+                            <input type="text" id="kyc-ssn" required placeholder="1234" maxlength="4">
+                        </div>
+                        <div class="form-group">
+                            <label>ID Card Document Image (18+)</label>
+                            <input type="file" id="kyc-id-file" accept="image/*" style="padding: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Live Selfie Photo Verification</label>
+                            <input type="file" id="kyc-selfie-file" accept="image/*" style="padding: 6px;">
+                        </div>
+                        <button class="btn btn-register btn-block" id="start-kyc-mock-btn"><i class="fa-solid fa-paper-plane"></i> Submit Legal Documents to Admin Review</button>
+                    </div>
+                </div>
+
+                <!-- Awaiting Admin Approval Banner -->
+                <div class="onboarding-card" id="kyc-pending-panel" style="display:none;">
+                    <i class="fa-solid fa-clock kyc-icon" style="color: #f7a072;"></i>
+                    <h2>⌛ Verification Pending Admin Approval</h2>
+                    <p>Your legal documentation (Official Photo ID & Selfie) has been submitted to the Administration. Staff Admin must manually review your records before your seller account is activated.</p>
+                    <div style="background:var(--accent-light); padding:16px; border-radius:12px; font-weight:600; color:var(--text-primary); font-size:0.85rem; border:1px solid rgba(210, 185, 235, 0.4);">
+                        <i class="fa-solid fa-shield-halved" style="color:#ff4d6d;"></i> <strong>Security Status:</strong> Pending Manual Admin Staff Verification Review.<br>
+                        <span style="font-size:0.78rem; color:var(--text-muted); display:block; margin-top:4px;">Para auditar como Administrador, cambia a la pestaña <strong>🛡️ Admin Staff</strong> en la barra superior.</span>
+                    </div>
+                </div>
+
+                <!-- Creator Dashboard (Only visible when verified) -->
+                <div class="creator-dashboard" id="creator-verified-panel" style="display:none;">
+                    <div class="creator-dashboard-header">
+                        <h2 data-i18n="creator_portal_title">Creator Dashboard</h2>
+                        <span class="verified-tag-kyc"><i class="fa-solid fa-circle-check"></i> Verified Creator 18+</span>
+                    </div>
+                    
+                    <div class="creator-grid-panels">
+                        <!-- Panel 1: Create a Listing -->
+                        <div class="widget creator-upload-widget">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <h3 data-i18n="new_listing_title" style="margin-bottom:0;">List New Underwear Garment</h3>
+                                <button type="button" class="btn btn-login" onclick="quickFillNewItemForm()" style="padding:4px 10px; font-size:0.75rem; border-color:var(--accent-hover); color:var(--accent-hover);"><i class="fa-solid fa-wand-magic-sparkles"></i> ⚡ Auto-llenar Muestra</button>
+                            </div>
+                            <form id="new-item-form" class="modal-form">
+                                <div class="form-group">
+                                    <label data-i18n="item_title_label">Garment Title</label>
+                                    <input type="text" id="new-item-title" required placeholder="e.g. Worn Lace Thong">
+                                </div>
+                                <div class="form-row" style="display:flex; gap:10px;">
+                                    <div class="form-group" style="flex:1;">
+                                        <label data-i18n="filter_size">Size</label>
+                                        <select id="new-item-size">
+                                            <option value="XS">XS</option>
+                                            <option value="S">S</option>
+                                            <option value="M" selected>M</option>
+                                            <option value="L">L</option>
+                                            <option value="XL">XL</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <label data-i18n="filter_style">Style</label>
+                                        <select id="new-item-style">
+                                            <option value="Satin">Satin</option>
+                                            <option value="Lace" selected>Lace</option>
+                                            <option value="Silk">Silk</option>
+                                            <option value="Cotton">Cotton</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="display:flex; gap:10px;">
+                                    <div class="form-group" style="flex:1;">
+                                        <label data-i18n="wear_duration_label">Wear Time</label>
+                                        <select id="new-item-wear">
+                                            <option value="4h">4 Hours</option>
+                                            <option value="6h">6 Hours</option>
+                                            <option value="12h">12 Hours</option>
+                                            <option value="24h" selected>24 Hours</option>
+                                            <option value="48h">48 Hours</option>
+                                            <option value="72h">72 Hours</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <label data-i18n="price_usd_label">Price (USD)</label>
+                                        <input type="number" id="new-item-price" required value="75.00" min="10">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Garment Photo (Drag & Drop or Click)</label>
+                                    <div id="new-item-image-dropzone" style="border: 2px dashed var(--accent-color); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--primary-bg); transition: background 0.3s; position: relative;">
+                                        <input type="file" id="new-item-file-input" accept="image/*" style="display: none;">
+                                        <div id="dropzone-prompt">
+                                            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--accent-hover); margin-bottom: 8px;"></i>
+                                            <p style="font-size: 0.8rem; color: var(--text-muted);">Drag & Drop photo here or Click to select</p>
+                                        </div>
+                                        <img id="dropzone-preview" src="" style="display: none; max-width: 100%; max-height: 120px; border-radius: 8px; margin: 0 auto; object-fit: cover;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="custom_label_desc">Description</label>
+                                    <textarea id="new-item-desc" rows="2" placeholder="Describe the item details..."></textarea>
+                                </div>
+                                <div class="form-row" style="display:flex; gap:10px;">
+                                    <div class="form-group" style="flex:1;">
+                                        <label>Listing Type</label>
+                                        <select id="new-item-type-select" onchange="toggleListingExtraFields()">
+                                            <option value="sale" selected>Direct Sale (Venta Directa)</option>
+                                            <option value="auction">Live Auction (Subasta en Vivo)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <label>Audience Access</label>
+                                        <select id="new-item-audience">
+                                            <option value="public" selected>Public (Todos)</option>
+                                            <option value="subscribers">Subscribers Only (Exclusivo)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="auction-duration-group" style="display:none;">
+                                    <label><i class="fa-solid fa-clock"></i> Auction Duration (Duración de Subasta)</label>
+                                    <select id="new-item-auction-duration">
+                                        <option value="1m">1 Minute (⚡ Quick Demo Test / Prueba 1 min)</option>
+                                        <option value="5m">5 Minutes (Express Live)</option>
+                                        <option value="15m">15 Minutes</option>
+                                        <option value="1h">1 Hour</option>
+                                        <option value="6h">6 Hours</option>
+                                        <option value="24h" selected>24 Hours</option>
+                                        <option value="48h">48 Hours</option>
+                                        <option value="72h">72 Hours</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="presale-checkbox-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px; margin-bottom: 12px;">
+                                    <input type="checkbox" id="new-item-presale" style="width: auto;">
+                                    <label for="new-item-presale" style="margin-bottom: 0; font-size: 0.8rem;">Enable Early Access Pre-sale (Prioridad para suscriptores)</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block" data-i18n="publish_item_btn">Publish to Marketplace</button>
+                            </form>
+                            
+                            <h3 style="margin-top: 24px;"><i class="fa-solid fa-list-check" style="color:var(--accent-hover);"></i> Your Active Listings</h3>
+                            <div class="creator-inventory-list" id="creator-active-listings-container" style="display:flex; flex-direction:column; gap:10px; margin-top:12px;">
+                                <!-- Injected dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Panel 1.5: Edit Public Bio Details -->
+                        <div class="widget">
+                            <h3><i class="fa-solid fa-address-card" style="color:var(--accent-hover);"></i> Public Bio & Info Settings</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">These details are shown on your public storefront page.</p>
+                            <form id="creator-profile-settings-form" class="modal-form" style="background:var(--primary-bg); padding:16px; border-radius:10px; border:1px solid var(--border-color);">
+                                <div class="form-row" style="display:flex; gap:10px;">
+                                    <div class="form-group" style="flex:1;">
+                                        <label>Age (Edad - Must be 18+)</label>
+                                        <input type="number" id="creator-bio-age" required min="18" value="23">
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <label>Nationality (Nacionalidad)</label>
+                                        <input type="text" id="creator-bio-nationality" required placeholder="Colombian">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Public Bio / Description</label>
+                                    <textarea id="creator-bio-text" rows="2" required placeholder="Tell your buyers about yourself..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-register btn-block" style="padding:10px;">Save Profile Info</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Panel 2: Orders received & Balances -->
+                        <div class="widget creator-orders-widget">
+                            <h3 data-i18n="sales_summary">Sales & Analytics Summary</h3>
+                            <div class="creator-balance-row" style="display:flex; justify-content:space-between; align-items:center; background:var(--accent-light); padding:14px; border-radius:12px; margin-bottom:16px;">
+                                <div>
+                                    <h4 style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted);" data-i18n="withdrawable_balance">Withdrawable Balance</h4>
+                                    <span id="creator-balance-val" style="font-size:1.4rem; font-weight:800; color:var(--text-primary);">$0.00 USD</span>
+                                </div>
+                                <button class="btn btn-follow" id="creator-withdraw-btn" data-i18n="withdraw_funds_btn">Withdraw ACH</button>
+                            </div>
+
+                            <!-- Analytics Mini Cards Grid -->
+                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:16px;">
+                                <div style="background:var(--secondary-bg); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border-color);">
+                                    <span style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; display:block;">Active Subs</span>
+                                    <strong style="font-size:1.1rem; color:var(--accent-hover);">128</strong>
+                                </div>
+                                <div style="background:var(--secondary-bg); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border-color);">
+                                    <span style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; display:block;">Completed Packs</span>
+                                    <strong style="font-size:1.1rem; color:var(--text-primary);">42</strong>
+                                </div>
+                                <div style="background:var(--secondary-bg); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border-color);">
+                                    <span style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; display:block;">Store Rating</span>
+                                    <strong style="font-size:1.1rem; color:#0bb08b;"><i class="fa-solid fa-star" style="font-size:0.8rem;"></i> 4.98</strong>
+                                </div>
+                            </div>
+                            
+                            <h4 style="font-size:0.8rem; font-weight:700; margin-bottom:8px;">Pending Customer Orders</h4>
+                            <div class="sales-list" id="creator-pending-orders-list">
+                                <div class="empty-cart-message">No pending orders yet.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Admin Panel -->
+            <div id="section-admin" class="content-section-panel">
+                <div class="admin-panel-layout">
+                    <h2 data-i18n="admin_panel_title" style="margin-bottom: 20px;">Admin Operations Dashboard</h2>
+                    
+                    <!-- Stats Grid -->
+                    <div class="admin-stats-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; margin-bottom:24px;">
+                        <div class="widget" style="padding:16px; background:#fff;">
+                            <h4 style="font-size:0.8rem; color:var(--text-muted);" data-i18n="admin_gmv">Gross Merchandise Value (GMV)</h4>
+                            <span id="admin-stat-gmv" style="font-size:1.6rem; font-weight:800; color:var(--text-primary);">$0.00 USD</span>
+                        </div>
+                        <div class="widget" style="padding:16px; background:#fff;">
+                            <h4 style="font-size:0.8rem; color:var(--text-muted);" data-i18n="admin_revenue">Platform Revenue (20% share)</h4>
+                            <span id="admin-stat-revenue" style="font-size:1.6rem; font-weight:800; color:var(--accent-hover);">$0.00 USD</span>
+                        </div>
+                        <div class="widget" style="padding:16px; background:#fff;">
+                            <h4 style="font-size:0.8rem; color:var(--text-muted);" data-i18n="active_disputes">Active Escrows & Disputes</h4>
+                            <span id="admin-stat-escrow" style="font-size:1.6rem; font-weight:800; color:var(--text-primary);">0 Active</span>
+                        </div>
+                    </div>
+
+                    <!-- Admin Quick Action Toolbar -->
+                    <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; background:var(--accent-light); padding:12px; border-radius:12px; align-items:center;">
+                        <span style="font-size:0.8rem; font-weight:700; color:var(--text-primary);"><i class="fa-solid fa-bolt" style="color:var(--accent-hover);"></i> Acciones Rápidas Admin:</span>
+                        <button class="btn btn-register" onclick="instantApproveAllKyc()" style="padding:6px 12px; font-size:0.75rem; font-weight:700;"><i class="fa-solid fa-user-check"></i> ⚡ Aprobar Solicitudes KYC</button>
+                        <button class="btn btn-primary" onclick="instantApproveAllListings()" style="padding:6px 12px; font-size:0.75rem; font-weight:700; background:#7928ca; border-color:#7928ca;"><i class="fa-solid fa-shield-check"></i> ⚡ Aprobar Productos</button>
+                    </div>
+
+                    <!-- Operations Navigation Tabs -->
+                    <div class="admin-tabs" style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:20px;">
+                        <button class="category-chip active" onclick="switchAdminTab('kyc', this)">KYC verification Wall</button>
+                        <button class="category-chip" onclick="switchAdminTab('moderation', this)">Moderation Queue</button>
+                        <button class="category-chip" onclick="switchAdminTab('disputes', this)">Disputes & Escrow</button>
+                    </div>
+                    
+                    <!-- Tab Panel 1: KYC Human verification Wall -->
+                    <div class="admin-tab-content active" id="admin-tab-kyc">
+                        <div class="widget">
+                            <h3 data-i18n="kyc_verification_wall">KYC Human Verification Wall</h3>
+                            <div class="admin-list" id="admin-kyc-queue-list">
+                                <!-- KYC Applications will load here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel 2: Moderation -->
+                    <div class="admin-tab-content" id="admin-tab-moderation">
+                        <div class="widget">
+                            <h3 data-i18n="listing_moderation">Listing Moderation Queue</h3>
+                            <div class="admin-list" id="admin-moderation-list">
+                                <!-- Listings items dynamically loaded -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel 3: Disputes -->
+                    <div class="admin-tab-content" id="admin-tab-disputes">
+                        <div class="widget">
+                            <h3 data-i18n="dispute_resolution">Active Disputes</h3>
+                            <div class="admin-list" id="admin-disputes-list">
+                                <!-- Dispute logs dynamically loaded -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5: Creator Public Profile Page -->
+            <div id="section-creator-profile" class="content-section-panel">
+                <div class="creator-profile-container">
+                    <!-- Banner -->
+                    <div class="profile-banner-wrapper">
+                        <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200&h=350" alt="Banner" class="profile-banner-img" id="profile-banner">
+                    </div>
+                    <!-- Profile Info -->
+                    <div class="profile-header-info-bar">
+                        <img src="" alt="Avatar" class="profile-header-avatar" id="profile-avatar">
+                        <div class="profile-header-meta">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <h2 id="profile-display-name">Creator Name</h2>
+                                <i class="fa-solid fa-circle-check verified-icon" style="font-size:1.1rem; color:var(--accent-color);"></i>
+                            </div>
+                            <span class="profile-display-handle" id="profile-display-handle">@handle</span>
+                            <p class="profile-bio" id="profile-display-bio">Lingerie designer & exclusive creator.</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-weight: 600;" id="profile-display-meta-details">Age: -- • Nationality: --</p>
+                            
+                            <!-- Stats badges -->
+                            <div class="profile-stats-row">
+                                <span><strong id="profile-stat-subscribers">1.2k</strong> Subscribers</span>
+                                <span><strong id="profile-stat-items">5</strong> Items Sold</span>
+                                <span><strong id="profile-stat-rating">4.9 ★</strong> Reviews</span>
+                            </div>
+                        </div>
+                        <div class="profile-header-actions">
+                            <button class="btn btn-register" id="profile-subscribe-btn" onclick="subscribeToCreatorCurrent()"><i class="fa-solid fa-star"></i> Subscribe to Feed ($9.99/mo)</button>
+                            <button class="btn btn-login" id="profile-chat-btn" onclick="startDirectChatFromProfile()"><i class="fa-solid fa-envelope"></i> Message</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Tabs -->
+                    <div class="profile-tabs-scroll" style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-top:20px; margin-bottom:20px;">
+                        <button class="category-chip active" onclick="switchProfileTab('shop', this)">Garments Shop</button>
+                        <button class="category-chip" onclick="switchProfileTab('feed', this)">Posts Feed (Subscription Locked)</button>
+                        <button class="category-chip" onclick="switchProfileTab('auctions', this)">Live Auctions</button>
+                    </div>
+
+                    <!-- Profile Tab Contents -->
+                    <!-- 1. Shop -->
+                    <div class="profile-tab-content active" id="profile-tab-shop">
+                        <div class="products-grid" id="profile-shop-products-grid">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                    <!-- 2. Feed -->
+                    <div class="profile-tab-content" id="profile-tab-feed">
+                        <div class="profile-feed-posts-list" id="profile-feed-posts-container">
+                            <!-- Locked layout simulation -->
+                        </div>
+                    </div>
+                    <!-- 3. Auctions -->
+                    <div class="profile-tab-content" id="profile-tab-auctions">
+                        <div class="products-grid" id="profile-auctions-grid">
+                            <!-- Auction cards -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 7: Live Auctions Grid -->
+            <div id="section-auctions" class="content-section-panel">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-gavel" style="color:var(--accent-hover);"></i> Live Lingerie Auctions</h2>
+                </div>
+                <div class="products-grid" id="live-auctions-feed">
+                    <!-- Auction cards dynamically loaded -->
+                </div>
+            </div>
+
+            <!-- SECTION 6: Buyer Account Settings -->
+            <div id="section-buyer-settings" class="content-section-panel">
+                <div class="buyer-settings-layout">
+                    <h2 style="margin-bottom: 24px;"><i class="fa-solid fa-user-gear" style="color:var(--accent-color);"></i> Buyer Account & Privacy settings</h2>
+                    
+                    <div class="creator-grid-panels">
+                        <!-- Addresses Panel -->
+                        <div class="widget">
+                            <h3>Discreet Shipping Addresses</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">Define secure physical addresses for deliveries. We mask your real name and identity on shipping labels.</p>
+                            <div class="address-list" id="settings-address-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+                                <!-- Addresses loaded here -->
+                            </div>
+                            <form id="settings-add-address-form" class="modal-form" style="background:var(--primary-bg); padding:16px; border-radius:10px; border:1px solid var(--border-color);">
+                                <div class="form-group">
+                                    <label>Full Delivery Name (Alias allowed)</label>
+                                    <input type="text" id="address-alias-name" required placeholder="John D.">
+                                </div>
+                                <div class="form-group">
+                                    <label>Street Address</label>
+                                    <input type="text" id="address-street" required placeholder="405 Lexington Ave">
+                                </div>
+                                <div class="form-row" style="display:flex; gap:10px;">
+                                    <div class="form-group" style="flex:1;">
+                                        <label>City</label>
+                                        <input type="text" id="address-city" required placeholder="New York">
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <label>Zip Code</label>
+                                        <input type="text" id="address-zip" required placeholder="10174">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-register btn-block" style="padding:10px;">Save Secured Address</button>
+                            </form>
+                        </div>
+
+                        <!-- Subscriptions and Orders Panel -->
+                        <div class="widget">
+                            <h3>Subscribed Creators</h3>
+                            <div class="active-subs-list" id="settings-subs-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+                                <div class="empty-cart-message">No active subscriptions.</div>
+                            </div>
+
+                            <h3>Purchased Items & Transit Tracking</h3>
+                            <div class="buyer-orders-history" id="settings-orders-list" style="display:flex; flex-direction:column; gap:10px;">
+                                <div class="empty-cart-message">No past orders.</div>
+                            </div>
+                        </div>
+
+                        <!-- Favorites Panel -->
+                        <div class="widget" style="grid-column: 1 / -1;">
+                            <h3><i class="fa-solid fa-heart" style="color: #ff4d6d;"></i> Your Favorites / Tus Favoritos</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">Items you've added to favorites across the marketplace. You can buy them directly from here.</p>
+                            <div class="products-grid" id="settings-favorites-grid">
+                                <!-- Liked items dynamically loaded -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar (Checkout & Suggestions) -->
+        <aside class="sidebar-right">
+            <!-- Creator Suggestions -->
+            <div class="widget creators-widget">
+                <h3 data-i18n="suggested_creators">Suggested Creators</h3>
+                <div class="creator-list">
+                    <div class="creator-card-item">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100" alt="Luna Diamond" class="creator-avatar-small" style="cursor:pointer;" onclick="openCreatorProfile('Luna Diamond')">
+                        <div class="creator-info-small" style="cursor:pointer;" onclick="openCreatorProfile('Luna Diamond')">
+                            <span class="creator-name">Luna Diamond <i class="fa-solid fa-circle-check verified-icon"></i></span>
+                            <span class="creator-handle">@lunadiamond</span>
+                        </div>
+                        <button class="btn btn-follow" data-i18n="view_shop_btn" onclick="openCreatorProfile('Luna Diamond')">View Shop</button>
+                    </div>
+                    <div class="creator-card-item">
+                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=100&h=100" alt="Aria Fox" class="creator-avatar-small" style="cursor:pointer;" onclick="openCreatorProfile('Aria Fox')">
+                        <div class="creator-info-small" style="cursor:pointer;" onclick="openCreatorProfile('Aria Fox')">
+                            <span class="creator-name">Aria Fox <i class="fa-solid fa-circle-check verified-icon"></i></span>
+                            <span class="creator-handle">@ariafox</span>
+                        </div>
+                        <button class="btn btn-follow" data-i18n="view_shop_btn" onclick="openCreatorProfile('Aria Fox')">View Shop</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Preview Widget -->
+            <div class="widget cart-widget" id="cart-widget-right">
+                <div class="cart-widget-header">
+                    <h3 data-i18n="your_order">Your Order</h3>
+                    <span class="cart-count-preview" id="cart-count-preview" data-i18n="empty_cart_items">0 items</span>
+                </div>
+                
+                <div class="cart-items-list" id="cart-items-preview">
+                    <div class="empty-cart-message" data-i18n="cart_empty">Your cart is empty</div>
+                </div>
+
+                <!-- Add-ons Extras Checkboxes -->
+                <div class="cart-addons-section" id="cart-addons-group" style="display:none; border-top: 1px solid var(--border-color); padding: 12px 0; margin-bottom: 12px;">
+                    <h4 style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Add-on Extras</h4>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+
+                        <label class="addon-checkbox-label" style="font-size:0.78rem; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="addon-perfume" value="10" onchange="calculateCartAddons()">
+                            <span>Personal Perfume Spray (+$10.00)</span>
+                        </label>
+                        <label class="addon-checkbox-label" style="font-size:0.78rem; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="addon-video" value="25" onchange="calculateCartAddons()">
+                            <span>Pre-packaging Video Clip (+$25.00)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Discreet Shipping Badge -->
+                <div class="discreet-shipping-badge">
+                    <i class="fa-solid fa-user-secret"></i>
+                    <div class="badge-text">
+                        <h4 data-i18n="discreet_badge_title">Discreet Shipping Guaranteed</h4>
+                        <p data-i18n="discreet_badge_desc">Shipped in plain cardboard boxes with no mention of UNDR or contents.</p>
+                    </div>
+                </div>
+
+                <div class="cart-totals">
+                    <div class="total-row">
+                        <span data-i18n="subtotal">Subtotal:</span>
+                        <span id="cart-subtotal">$0.00</span>
+                    </div>
+                    <div class="total-row" id="cart-addons-row" style="display:none;">
+                        <span>Extras Add-ons:</span>
+                        <span id="cart-addons-total">$0.00</span>
+                    </div>
+                    <div class="total-row shipping-row">
+                        <span data-i18n="discreet_shipping_cost">Discreet Shipping:</span>
+                        <span id="cart-shipping-cost">$0.00</span>
+                    </div>
+                    <div class="total-row grand-total-row">
+                        <span data-i18n="grand_total">Total:</span>
+                        <span id="cart-grand-total">$0.00</span>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-checkout" id="checkout-btn" data-i18n="checkout_btn" disabled>Proceed to Checkout</button>
+                </div>
+                
+                <!-- High risk payment gateway support badge -->
+                <div class="payment-gateways-support">
+                    <span data-i18n="secure_payments">Secured High-Risk Adult Gateway</span>
+                    <div class="gateway-icons">
+                        <i class="fa-brands fa-cc-visa" title="Visa"></i>
+                        <i class="fa-brands fa-cc-mastercard" title="Mastercard"></i>
+                        <i class="fa-brands fa-bitcoin" title="Cryptocurrency accepted"></i>
+                        <i class="fa-solid fa-shield-halved" title="Secure checkout"></i>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Product Details Modal (Reviews & Specifications) -->
+    <div class="modal" id="product-details-modal">
+        <div class="modal-content" style="max-width: 650px;">
+            <span class="close-modal" id="close-details">&times;</span>
+            <div class="details-modal-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="details-modal-image-wrapper" style="border-radius:12px; overflow:hidden; border:1px solid var(--border-color); position: relative;">
+                    <img src="" alt="" id="detail-modal-image" style="width:100%; height:320px; object-fit:cover;">
+                    <div id="detail-modal-blur-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,10,12,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; align-items:center; justify-content:center;">
+                        <button class="btn btn-primary" id="detail-modal-reveal-btn" style="background:#ff4d6d; border-color:#ff4d6d; padding: 10px 20px; font-size:0.9rem; font-weight:700;"><i class="fa-solid fa-eye"></i> Ver / View</button>
+                    </div>
+                </div>
+                <div class="details-modal-info" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                            <img src="" alt="" id="detail-modal-avatar" style="width:28px; height:28px; border-radius:50%; border:1px solid var(--accent-color);">
+                            <span id="detail-modal-creator-name" style="font-weight:700; font-size:0.85rem; cursor:pointer;" onclick="productDetailsModal.style.display='none'; openCreatorProfile(this.textContent)">@username</span>
+                        </div>
+                        <h3 id="detail-modal-title" style="font-size:1.2rem; font-weight:800; line-height:1.3;">Garment Title</h3>
+                        <span id="detail-modal-price" style="font-size:1.1rem; font-weight:700; color:var(--accent-hover); display:block; margin:4px 0;">$0.00 USD</span>
+                        <p id="detail-modal-desc" style="font-size:0.82rem; color:var(--text-muted); line-height:1.45; max-height:80px; overflow-y:auto; margin-bottom:10px;">Description text.</p>
+                        
+                        <div class="card-spec-tags">
+                            <span class="spec-tag" id="detail-modal-tag-size">Size</span>
+                            <span class="spec-tag" id="detail-modal-tag-wear">Wear time</span>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top:1px solid var(--border-color); padding-top:10px;">
+                        <h4 style="font-size:0.75rem; text-transform:uppercase; color:var(--text-primary); margin-bottom:6px;">Buyer Reviews</h4>
+                        <div class="reviews-box" style="display:flex; flex-direction:column; gap:6px; max-height:80px; overflow-y:auto; padding-right:4px;">
+                            <div style="background:var(--secondary-bg); padding:6px 10px; border-radius:8px; font-size:0.7rem;">
+                                <strong style="color:var(--accent-hover);">Verified Buyer:</strong> Excellent fragrance match, arrived vacuum-sealed perfectly.
+                            </div>
+                            <div style="background:var(--secondary-bg); padding:6px 10px; border-radius:8px; font-size:0.7rem;">
+                                <strong style="color:var(--accent-hover);">Anonymous:</strong> Fragancia intacta, empaque hermético muy discreto y seguro. ¡Recomendada!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-primary" id="detail-modal-buy-btn" style="flex:1; padding:10px;"><i class="fa-solid fa-cart-plus"></i> Buy Item</button>
+                        <button class="btn btn-login" id="detail-modal-custom-btn" style="padding:10px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Custom</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CCBill Payment Gateway Simulator Modal -->
+    <div class="modal" id="gateway-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="gateway-simulation-header" style="background:#1d1d22; padding:20px; border-radius:12px 12px 0 0; text-align:center; color:#fff; margin:-30px -30px 20px -30px;">
+                <h3 style="font-weight:700; font-size:1.1rem; color:#fff;"><i class="fa-solid fa-lock" style="color:var(--accent-color);"></i> CCBILL SECURE PAYMENT GATEWAY</h3>
+                <span style="font-size:0.75rem; color:#aaa;">Transacción autorizada para UNDR Marketplace</span>
+            </div>
+            
+            <div class="gateway-details">
+                <div class="total-row" style="margin-bottom:16px;">
+                    <span style="font-weight:600;">Total a pagar:</span>
+                    <span id="gateway-total-amount" style="font-size:1.3rem; font-weight:800; color:var(--text-primary);">$0.00 USD</span>
+                </div>
+                
+                <form id="gateway-payment-form" class="modal-form">
+                    <div class="form-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" required placeholder="4000 1234 5678 9010" maxlength="19">
+                    </div>
+                    <div class="form-row" style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Expiry Date</label>
+                            <input type="text" required placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>CVV</label>
+                            <input type="password" required placeholder="•••" maxlength="4">
+                        </div>
+                    </div>
+                    
+                    <div style="background:var(--accent-light); padding:10px; border-radius:8px; font-size:0.72rem; color:var(--text-muted); line-height:1.4; margin:10px 0;">
+                        <i class="fa-solid fa-shield-halved"></i> <strong>Discreet billing:</strong> Este cargo aparecerá en su extracto bancario como <strong>"UNDR ONLINE BILLING"</strong>. Sin mención al contenido del paquete.
+                    </div>
+                    
+                    <button type="button" class="btn btn-login btn-block" onclick="autoFillTestCard()" style="margin-bottom:10px; font-size:0.8rem; border-color:var(--accent-hover); color:var(--accent-hover);"><i class="fa-solid fa-credit-card"></i> ⚡ Auto-llenar Tarjeta de Prueba (Fast Test Card)</button>
+
+                    <div class="age-actions">
+                        <button type="submit" class="btn btn-register btn-block" id="gateway-submit-btn">Authorize Payment via CCBill</button>
+                        <button type="button" class="btn btn-login btn-block" onclick="document.getElementById('gateway-modal').style.display='none'">Cancel Transaction</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Tip Modal (Buyer Only) -->
+    <div class="modal" id="tip-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-modal" id="close-tip-modal">&times;</span>
+            <div class="modal-header-branding">
+                <i class="fa-solid fa-heart modal-branding-icon" style="color:#ff4d6d;"></i>
+                <h3>Send Tip to Creator</h3>
+                <p>Show extra love & support to your favorite model.</p>
+            </div>
+            <form class="modal-form" id="tip-send-form">
+                <div class="form-group">
+                    <label>Select Amount (USD)</label>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:10px;">
+                        <button type="button" class="btn btn-login tip-preset-btn" onclick="selectTipPreset(5.00)">$5.00</button>
+                        <button type="button" class="btn btn-login tip-preset-btn" onclick="selectTipPreset(10.00)">$10.00</button>
+                        <button type="button" class="btn btn-login tip-preset-btn" onclick="selectTipPreset(25.00)">$25.00</button>
+                        <button type="button" class="btn btn-login tip-preset-btn" onclick="selectTipPreset(50.00)">$50.00</button>
+                        <button type="button" class="btn btn-login tip-preset-btn" onclick="selectTipPreset(100.00)">$100.00</button>
+                        <button type="button" class="btn btn-login tip-preset-btn" onclick="selectTipPreset(250.00)">$250.00</button>
+                    </div>
+                    <input type="number" id="tip-amount-input" min="1" step="1" value="10.00" required style="font-weight:700;">
+                </div>
+                <div class="form-group">
+                    <label>Tip Note / Message</label>
+                    <input type="text" id="tip-message-input" placeholder="e.g. Love your daily posts! 💖" value="Love your daily posts! 💖">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="background-color:#ff4d6d; border-color:#ff4d6d;"><i class="fa-solid fa-heart"></i> Send Tip Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Send PPV Media Modal (Creator Only) -->
+    <div class="modal" id="ppv-send-modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close-modal" id="close-ppv-modal">&times;</span>
+            <div class="modal-header-branding">
+                <i class="fa-solid fa-camera modal-branding-icon"></i>
+                <h3>Send Pay-Per-View Photo</h3>
+                <p>Upload your custom picture and set the unlock price for this buyer.</p>
+            </div>
+            <form class="modal-form" id="ppv-send-form">
+                <div class="form-group">
+                    <label>Upload Photo (Drag & Drop or Click)</label>
+                    <div id="ppv-image-dropzone" style="border: 2px dashed var(--accent-color); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--primary-bg); position: relative;">
+                        <input type="file" id="ppv-file-input" accept="image/*" style="display: none;" required>
+                        <div id="ppv-dropzone-prompt">
+                            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--accent-hover); margin-bottom: 8px;"></i>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Select photo from device</p>
+                        </div>
+                        <img id="ppv-dropzone-preview" src="" style="display: none; max-width: 100%; max-height: 140px; border-radius: 8px; margin: 0 auto; object-fit: cover;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Unlock Price (USD)</label>
+                    <input type="number" id="ppv-price-input" min="1" step="0.50" value="25.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Photo Description / Teaser</label>
+                    <input type="text" id="ppv-desc-input" placeholder="e.g. Exclusive thong wear set preview..." required value="Exclusive preview picture of today's wear duration.">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-lock"></i> Send Locked PPV to Chat</button>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Custom Chat Proposal Form Modal (Fills inside chat) -->
+    <div class="modal" id="chat-proposal-modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close-modal" id="close-proposal-modal">&times;</span>
+            <div class="modal-header-branding">
+                <i class="fa-solid fa-paper-plane modal-branding-icon"></i>
+                <h3>Send Custom Order Request</h3>
+                <p>Propose the exact specifications you want the creator to wear.</p>
+            </div>
+            <form class="modal-form" id="chat-proposal-form">
+                <div class="form-group">
+                    <label>Garment Style</label>
+                    <select id="proposal-item-style" required>
+                        <option value="Satin Lingerie">Satin Lingerie</option>
+                        <option value="Lace Panty" selected>Lace Panty</option>
+                        <option value="Silk Stockings">Silk Stockings</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Wear Time Duration</label>
+                    <select id="proposal-wear-time" required>
+                        <option value="4 Hours">4 Hours</option>
+                        <option value="6 Hours">6 Hours</option>
+                        <option value="12 Hours">12 Hours</option>
+                        <option value="24 Hours">24 Hours</option>
+                        <option value="48 Hours">48 Hours</option>
+                        <option value="72 Hours">72 Hours</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Special Instructions / Extras</label>
+                    <textarea id="proposal-notes" rows="3" required placeholder="e.g. spray vanilla perfume, specific wear activities..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Send Proposal to Chat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close-modal" id="close-edit-profile">&times;</span>
+            <div class="modal-header-branding">
+                <i class="fa-solid fa-user-pen modal-branding-icon"></i>
+                <h3>Edit Profile Details</h3>
+                <p>Customize your UNDR display identity</p>
+            </div>
+            <form class="modal-form" id="edit-profile-form">
+                <div class="form-group" style="text-align: center;">
+                    <label>Profile Avatar</label>
+                    <div id="edit-avatar-dropzone" style="border: 2px dashed var(--accent-color); border-radius: 50%; width: 100px; height: 100px; margin: 8px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: var(--secondary-bg); position: relative;">
+                        <input type="file" id="edit-avatar-file-input" accept="image/*" style="display: none;">
+                        <img id="edit-avatar-preview" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div id="edit-avatar-prompt" style="position: absolute; color: var(--primary-bg); background: rgba(0,0,0,0.5); width: 100%; bottom: 0; font-size: 0.62rem; padding: 2px 0;">Edit</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="edit-profile-name" required placeholder="e.g. Luna Diamond" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label>Unique Handle (without @)</label>
+                    <input type="text" id="edit-profile-handle" required placeholder="e.g. lunadiamond" maxlength="15" pattern="^[a-zA-Z0-9._]+$" title="Only letters, numbers, dots, and underscores allowed.">
+                    <small style="color: var(--text-muted); font-size: 0.7rem; display: block; margin-top: 2px;"><i class="fa-solid fa-shield-halved" style="color: var(--accent-hover);"></i> Restricción de seguridad: Solo se permite 1 cambio de @usuario cada 14 días.</small>
+                    <span id="edit-profile-handle-error" style="color: #ff4d6d; font-size: 0.72rem; display: block; margin-top: 4px; font-weight: 600;"></span>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-login">&times;</span>
+            <div class="modal-header-branding">
+                <img src="./logofase.PNG" alt="UNDR" class="modal-logo">
+                <h3 data-i18n="login_title">Log In</h3>
+                <p>Access your UNDR account (Demo Profiles)</p>
+            </div>
+            <div class="demo-login-quick-select" style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btn-secondary" onclick="demoLogin('buyer')"><i class="fa-solid fa-user"></i> Login as Buyer (Guest)</button>
+                <button class="btn btn-secondary" onclick="demoLogin('creator')"><i class="fa-solid fa-gem"></i> Login as Creator (@lunadiamond)</button>
+                <button class="btn btn-secondary" onclick="demoLogin('admin')"><i class="fa-solid fa-shield-halved"></i> Login as Admin Staff</button>
+            </div>
+            <form class="modal-form" id="login-form" style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <div class="form-group">
+                    <label>Email or Username</label>
+                    <input type="text" id="login-username" required placeholder="email@example.com or @handle">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required placeholder="Default password is: undr123">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Log In securely</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-register">&times;</span>
+            <div class="modal-header-branding">
+                <img src="./logofase.PNG" alt="UNDR" class="modal-logo">
+                <h3 data-i18n="register_title">Create Account</h3>
+                <p>Join the UNDR community</p>
+            </div>
+            <form class="modal-form" id="register-form">
+                <div class="form-group">
+                    <label for="reg-name" data-i18n="full_name_label">Full Name</label>
+                    <input type="text" id="reg-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="reg-role">I want to register as a:</label>
+                    <select id="reg-role">
+                        <option value="buyer">Buyer (Comprador de ropa interior)</option>
+                        <option value="creator">Creator/Seller (Vendedora de ropa interior)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email" data-i18n="email_label">Email Address</label>
+                    <input type="email" id="reg-email" required placeholder="email@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password" data-i18n="password_label">Password</label>
+                    <input type="password" id="reg-password" required placeholder="Create a secure password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Authenticity Explainer Modal -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-auth">&times;</span>
+            <div class="modal-header-branding">
+                <i class="fa-solid fa-certificate badge-cert-icon"></i>
+                <h3 data-i18n="auth_modal_title">How Our Authenticity Guarantee Works</h3>
+            </div>
+            <div class="auth-modal-body">
+                <div class="step-auth-item">
+                    <span class="step-number">1</span>
+                    <div class="step-desc">
+                        <h4 data-i18n="auth_step1_title">Verified Creator Profiles</h4>
+                        <p data-i18n="auth_step1_desc">Every creator goes through a strict identity verification process and is verified with a legal 18+ ID check before getting approved to post.</p>
+                    </div>
+                </div>
+                <div class="step-auth-item">
+                    <span class="step-number">2</span>
+                    <div class="step-desc">
+                        <h4 data-i18n="auth_step2_title">Wear Time Tracking & Proof</h4>
+                        <p data-i18n="auth_step2_desc">Underwear item pages contain exact specifications of wear time (e.g. 24h, 48h) and scent attributes preservation.</p>
+                    </div>
+                </div>
+                <div class="step-auth-item">
+                    <span class="step-number">3</span>
+                    <div class="step-desc">
+                        <h4 data-i18n="auth_step3_title">Double Sealed Hygiene Guard</h4>
+                        <p data-i18n="auth_step3_desc">Items are securely preserved in airtight vacuum-sealed bags to preserve scent and trace attributes immediately upon receipt from the creator.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Custom Modal -->
+    <div class="modal" id="custom-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-custom">&times;</span>
+            <div class="modal-header-branding">
+                <i class="fa-solid fa-wand-magic-sparkles modal-branding-icon"></i>
+                <h3 data-i18n="custom_modal_title">Request Custom Item</h3>
+                <p data-i18n="custom_modal_desc">Submit a personalized request directly to this creator.</p>
+            </div>
+            <form class="modal-form" id="custom-request-form">
+                <div class="form-group">
+                    <label data-i18n="custom_label_creator">Creator</label>
+                    <input type="text" id="custom-creator-input" readonly value="@LunaDiamond" style="background-color: var(--secondary-bg); font-weight: 600;">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="custom_label_item">Type of Underwear</label>
+                    <select id="custom-item-type" required onchange="calculateCustomProposalPrice()">
+                        <option value="Satin Panty" data-i18n="type_satin_panty">Satin Lingerie</option>
+                        <option value="Lace Panty" data-i18n="type_lace_panty">Lace Panty</option>
+                        <option value="Stockings" data-i18n="type_stockings">Stockings</option>
+                        <option value="Bikini" data-i18n="type_bikini">Bikini Bottom</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="custom_label_wear">Wear Duration</label>
+                    <select id="custom-item-duration" required onchange="calculateCustomProposalPrice()">
+                        <option value="4h">4 Hours (+$0.00)</option>
+                        <option value="6h">6 Hours (+$5.00)</option>
+                        <option value="12h">12 Hours (+$10.00)</option>
+                        <option value="24h">24 Hours (+$15.00)</option>
+                        <option value="48h">48 Hours (+$30.00)</option>
+                        <option value="72h">72 Hours (+ Extra scent) (+$50.00)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Activity / Actividad Realizada</label>
+                    <select id="custom-item-activity" required onchange="calculateCustomProposalPrice()">
+                        <option value="Normal">Normal Wear (+$0.00)</option>
+                        <option value="Gym Workout">Gym & Workout Session (+$20.00)</option>
+                        <option value="Sleeping Wear">Sleeping Wear (Overnight) (+$15.00)</option>
+                        <option value="Shower drying">Wet / Shower Drying (+$25.00)</option>
+                    </select>
+                </div>
+
+
+                
+                <div style="background:var(--accent-light); padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; font-weight:800; font-size:0.95rem; color:var(--accent-hover); margin-bottom:16px; border: 1px solid var(--border-color);">
+                    <span>Estimated Quote Price:</span>
+                    <span id="custom-calculated-price">$35.00 USD</span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block" data-i18n="custom_btn_submit">Submit Custom Proposal</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -575,6 +575,20 @@ window.autoFillTestCard = function() {
 
 window.toggleCardBlur = function(event, productId) {
     if (event) event.stopPropagation();
+
+    // Require active login session to reveal uncensored photo
+    const userStr = localStorage.getItem("undr_current_user");
+    const user = userStr && userStr !== "null" ? JSON.parse(userStr) : null;
+    
+    if (!user || user.role === "guest" || user.handle === "@guest") {
+        const loginMdl = document.getElementById("login-modal");
+        if (loginMdl) {
+            loginMdl.style.display = "flex";
+        }
+        showToast(currentLang === "es" ? "Debes iniciar sesión para ver las fotos sin censura." : "Please log in to view uncensored photos.");
+        return;
+    }
+
     const imgs = document.querySelectorAll(`.card-img-blur-${productId}`);
     imgs.forEach(img => {
         if (img.style.filter === "none") {
@@ -583,6 +597,23 @@ window.toggleCardBlur = function(event, productId) {
             img.style.filter = "none";
         }
     });
+};
+
+window.handleDetailModalRevealClick = function() {
+    const userStr = localStorage.getItem("undr_current_user");
+    const user = userStr && userStr !== "null" ? JSON.parse(userStr) : null;
+    
+    if (!user || user.role === "guest" || user.handle === "@guest") {
+        const productMdl = document.getElementById("product-details-modal");
+        if (productMdl) productMdl.style.display = "none";
+        const loginMdl = document.getElementById("login-modal");
+        if (loginMdl) loginMdl.style.display = "flex";
+        showToast(currentLang === "es" ? "Debes iniciar sesión para ver las fotos sin censura." : "Please log in to view uncensored photos.");
+        return;
+    }
+
+    const blurOverlay = document.getElementById("detail-modal-blur-overlay");
+    if (blurOverlay) blurOverlay.style.display = "none";
 };
 
 // Logging out session
@@ -2172,7 +2203,8 @@ const translations = {
         type_satin_panty: "Satin Lingerie",
         type_lace_panty: "Lace Panty",
         type_stockings: "Stockings",
-        type_bikini: "Bikini Bottom"
+        type_bikini: "Bikini Bottom",
+        btn_reveal_photo: "View"
     },
     es: {
         added_cart: "añadido al carrito.",
@@ -2275,7 +2307,8 @@ const translations = {
         type_satin_panty: "Lencería de Satén",
         type_lace_panty: "Braguita de Encaje",
         type_stockings: "Medias Usadas",
-        type_bikini: "Bikini"
+        type_bikini: "Bikini",
+        btn_reveal_photo: "Ver"
     }
 };
 
@@ -2286,17 +2319,35 @@ const translations = {
 function checkAgeVerification() {
     let verified = false;
     try {
-        verified = sessionStorage.getItem("undr_age_verified") === "true";
+        verified = sessionStorage.getItem("undr_age_verified") === "true" || localStorage.getItem("undr_age_verified") === "true";
     } catch (e) {
         verified = window.undr_age_verified === true;
     }
 
+    const ageMdl = document.getElementById("age-modal");
     if (verified) {
-        ageModal.style.display = "none";
+        if (ageMdl) ageMdl.style.display = "none";
     } else {
-        ageModal.style.display = "flex";
+        if (ageMdl) ageMdl.style.display = "flex";
     }
 }
+
+window.acceptAgeVerification = function() {
+    try {
+        sessionStorage.setItem("undr_age_verified", "true");
+        localStorage.setItem("undr_age_verified", "true");
+    } catch (e) {}
+    window.undr_age_verified = true;
+    const ageMdl = document.getElementById("age-modal");
+    if (ageMdl) {
+        ageMdl.style.cssText = "display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;";
+    }
+    showToast(currentLang === "es" ? "Bienvenido a UNDR" : "Welcome to UNDR");
+};
+
+window.rejectAgeVerification = function() {
+    window.location.href = "https://www.google.com";
+};
 
 function applyLanguage(lang) {
     currentLang = lang;
@@ -4123,4 +4174,49 @@ window.handleMobileProfileClick = function() {
     } else {
         showSection("buyer-settings");
     }
+};
+
+window.toggleCartModal = function() {
+    const modal = document.getElementById("cart-modal");
+    if (!modal) return;
+    if (modal.style.display === "flex" || modal.style.display === "block") {
+        modal.style.display = "none";
+    } else {
+        renderMobileCartModal();
+        modal.style.display = "flex";
+    }
+};
+
+window.renderMobileCartModal = function() {
+    const container = document.getElementById("mobile-cart-items-container");
+    const subtotalEl = document.getElementById("mobile-cart-subtotal");
+    if (!container) return;
+
+    if (!cart || cart.length === 0) {
+        container.innerHTML = `<div class="empty-cart-message">${currentLang === "es" ? "Tu carrito está vacío" : "Your cart is empty"}</div>`;
+        if (subtotalEl) subtotalEl.textContent = formatPrice(0);
+        return;
+    }
+
+    let html = "";
+    let subtotal = 0;
+    cart.forEach((item, index) => {
+        subtotal += item.price;
+        const title = item[currentLang] ? item[currentLang].title : item.en.title;
+        html += `
+            <div style="display:flex; align-items:center; justify-content:space-between; background:var(--secondary-bg); padding:10px 12px; border-radius:12px; border:1px solid var(--border-color);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${item.image}" alt="${title}" style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
+                    <div>
+                        <div style="font-weight:700; font-size:0.85rem;">${title}</div>
+                        <div style="font-size:0.78rem; color:var(--accent-hover); font-weight:700;">${formatPrice(item.price)}</div>
+                    </div>
+                </div>
+                <button onclick="removeFromCart(${index}); renderMobileCartModal();" style="background:none; border:none; color:#ff4d6d; cursor:pointer; font-size:1.1rem; padding:4px;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+    if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
 };

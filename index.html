@@ -18,6 +18,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            try {
+                if (localStorage.getItem("undr_age_verified") === "true" || sessionStorage.getItem("undr_age_verified") === "true") {
+                    document.write('<style>#age-modal { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }</style>');
+                }
+            } catch(e) {}
+        })();
+
+        function acceptAgeVerification() {
+            try {
+                sessionStorage.setItem("undr_age_verified", "true");
+                localStorage.setItem("undr_age_verified", "true");
+            } catch (e) {}
+            window.undr_age_verified = true;
+            var ageMdl = document.getElementById("age-modal");
+            if (ageMdl) {
+                ageMdl.style.setProperty("display", "none", "important");
+                ageMdl.style.setProperty("opacity", "0", "important");
+                ageMdl.style.setProperty("pointer-events", "none", "important");
+                ageMdl.style.setProperty("visibility", "hidden", "important");
+            }
+        }
+
+        function rejectAgeVerification() {
+            window.location.href = "https://www.google.com";
+        }
+    </script>
 </head>
 <body>
     <!-- 18+ Age Verification Modal (Always visible first time) -->
@@ -27,8 +55,8 @@
             <h2 data-i18n="age_title">Age Verification Required</h2>
             <p data-i18n="age_desc">You must be 18 years of age or older to enter this site. This website contains adult-themed content, including the marketplace of worn & exclusive lingerie.</p>
             <div class="age-actions">
-                <button class="btn btn-register btn-block" id="age-accept-btn" data-i18n="age_btn_accept">I am 18 or older - Enter</button>
-                <button class="btn btn-login btn-block" id="age-reject-btn" data-i18n="age_btn_reject">Exit</button>
+                <button class="btn btn-register btn-block" id="age-accept-btn" onclick="acceptAgeVerification()" data-i18n="age_btn_accept">I am 18 or older - Enter</button>
+                <button class="btn btn-login btn-block" id="age-reject-btn" onclick="rejectAgeVerification()" data-i18n="age_btn_reject">Exit</button>
             </div>
             <span class="discreet-disclaimer" data-i18n="discreet_packaging_guarantee"><i class="fa-solid fa-user-secret"></i> Discreet & 100% Anonymous Delivery Guaranteed</span>
         </div>
@@ -800,7 +828,7 @@
                 <div class="details-modal-image-wrapper" style="border-radius:12px; overflow:hidden; border:1px solid var(--border-color); position: relative;">
                     <img src="" alt="" id="detail-modal-image" style="width:100%; height:320px; object-fit:cover;">
                     <div id="detail-modal-blur-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,10,12,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; align-items:center; justify-content:center;">
-                        <button class="btn btn-primary" id="detail-modal-reveal-btn" style="background:#ff4d6d; border-color:#ff4d6d; padding: 10px 20px; font-size:0.9rem; font-weight:700;"><i class="fa-solid fa-eye"></i> Ver / View</button>
+                        <button class="btn btn-primary" id="detail-modal-reveal-btn" onclick="handleDetailModalRevealClick()" data-i18n="btn_reveal_photo" style="background:#ff4d6d; border-color:#ff4d6d; padding: 10px 20px; font-size:0.9rem; font-weight:700;"><i class="fa-solid fa-eye"></i> View</button>
                     </div>
                 </div>
                 <div class="details-modal-info" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between;">
@@ -1206,6 +1234,39 @@
         </a>
     </nav>
 
+    <!-- Dedicated Mobile Cart Modal -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" id="close-cart-modal" onclick="document.getElementById('cart-modal').style.display='none'">&times;</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                <h2 style="font-size:1.3rem; font-weight:800;"><i class="fa-solid fa-bag-shopping" style="color:var(--accent-hover); margin-right:8px;"></i> <span data-i18n="nav_cart">My Cart</span></h2>
+            </div>
+            
+            <div id="mobile-cart-items-container" style="display:flex; flex-direction:column; gap:12px; max-height:300px; overflow-y:auto; margin-bottom:16px;">
+                <!-- Dynamically populated cart items -->
+            </div>
+
+            <div style="border-top:1px solid var(--border-color); padding-top:14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1rem; margin-bottom:6px;">
+                    <span data-i18n="subtotal">Subtotal:</span>
+                    <span id="mobile-cart-subtotal">$0.00 USD</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-weight:500; font-size:0.82rem; color:var(--text-muted);">
+                    <span data-i18n="discreet_shipping_cost">Discreet Shipping:</span>
+                    <span id="mobile-cart-shipping">Free / Discreta</span>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btn-register btn-block" id="mobile-cart-checkout-btn" onclick="document.getElementById('cart-modal').style.display='none'; openCheckoutGatewayModal();" style="padding:14px; font-size:0.95rem; font-weight:700;"><i class="fa-solid fa-lock"></i> <span data-i18n="checkout_btn">Proceed to Checkout</span></button>
+                <button class="btn btn-login btn-block" onclick="document.getElementById('cart-modal').style.display='none'" style="padding:10px; font-size:0.85rem;">Continue Shopping</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UNDR Backend API Bridge (loads Supabase client + API layer) -->
+    <script type="module" src="js/bridge.js"></script>
+    <!-- Legacy Application Logic -->
     <script src="app.js"></script>
 </body>
 </html>

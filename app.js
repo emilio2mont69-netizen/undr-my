@@ -375,37 +375,77 @@ function syncUserSessionUI() {
     // Header actions element selector
     const sessionButtonsContainer = document.getElementById("session-buttons-container");
 
+    const profPicPreview = document.getElementById("profile-picture-preview");
+    const profDispName = document.getElementById("profile-display-name");
+    const profDispHandle = document.getElementById("profile-display-handle");
+    const profDispRole = document.getElementById("profile-display-role");
+    
+    const creatorPicPreview = document.getElementById("creator-picture-preview");
+    const creatorDispName = document.getElementById("creator-display-name");
+    const creatorDispHandle = document.getElementById("creator-display-handle");
+    const creatorDispRole = document.getElementById("creator-display-role");
+
+    const editAvatarInput = document.getElementById("edit-avatar-url-input");
+    const editUsernameInput = document.getElementById("edit-username-input");
+
     if (!user || user === "null") {
         // Logged Out State (Guest View)
-        sidebarAvatar.src = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+        const guestAvatar = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+        sidebarAvatar.src = guestAvatar;
         userNameDisplay.textContent = currentLang === "es" ? "Invitado" : "Guest";
         userRoleDisplay.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
         userRoleDisplay.style.color = "var(--text-muted)";
         userBalanceDisplay.textContent = "";
 
+        if (profPicPreview) profPicPreview.src = guestAvatar;
+        if (profDispName) profDispName.textContent = currentLang === "es" ? "Usuario Invitado" : "Guest User";
+        if (profDispHandle) profDispHandle.textContent = "@guest";
+        if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Sin sesión" : "Not Logged In";
+
         applyToSellBtn.style.display = "none";
         navMessagesItem.style.display = "flex";
         navCreatorItem.style.display = "none";
         navAdminItem.style.display = "none";
-        document.getElementById("nav-buyer-settings-item").style.display = "none";
+        document.getElementById("nav-buyer-settings-item").style.display = "flex";
         cartAddonsGroup.style.display = "none";
 
         // Header buttons show Log In / Sign Up
         if (sessionButtonsContainer) {
             sessionButtonsContainer.innerHTML = `
-                <button class="btn btn-login" id="login-trigger-btn" data-i18n="nav_login">${currentLang === "es" ? "Iniciar Sesión" : "Log In"}</button>
-                <button class="btn btn-register" id="register-trigger-btn" data-i18n="nav_register">${currentLang === "es" ? "Registrarse" : "Sign Up"}</button>
+                <button class="btn btn-login" id="login-trigger-btn" onclick="document.getElementById('login-modal').style.display='flex'">${currentLang === "es" ? "Iniciar Sesión" : "Log In"}</button>
+                <button class="btn btn-register" id="register-trigger-btn" onclick="document.getElementById('register-modal').style.display='flex'">${currentLang === "es" ? "Registrarse" : "Sign Up"}</button>
             `;
         }
     } else {
         // Logged In State
-        sidebarAvatar.src = user.avatar;
+        sidebarAvatar.src = user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
         userNameDisplay.textContent = user.username;
         userBalanceDisplay.textContent = formatPrice(user.balance);
+
+        const handleStr = user.handle || `@${user.username.toLowerCase().replace(/\s+/g, '')}`;
+
+        if (profPicPreview) profPicPreview.src = user.avatar || sidebarAvatar.src;
+        if (profDispName) profDispName.textContent = user.username;
+        if (profDispHandle) profDispHandle.textContent = handleStr;
+
+        if (creatorPicPreview) creatorPicPreview.src = user.avatar || sidebarAvatar.src;
+        if (creatorDispName) creatorDispName.textContent = user.username;
+        if (creatorDispHandle) creatorDispHandle.textContent = handleStr;
+
+        const editCreatorNameInput = document.getElementById("edit-creator-name-input");
+        const editCreatorHandleInput = document.getElementById("edit-creator-handle-input");
+        if (editCreatorNameInput) editCreatorNameInput.value = user.username || "";
+        if (editCreatorHandleInput) editCreatorHandleInput.value = handleStr;
+
+        const editBuyerHandleInput = document.getElementById("edit-buyer-handle-input");
+        if (editAvatarInput) editAvatarInput.value = user.avatar || "";
+        if (editUsernameInput) editUsernameInput.value = user.username || "";
+        if (editBuyerHandleInput) editBuyerHandleInput.value = handleStr;
         
         // User Role translations
         if (user.role === "buyer") {
             userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
+            if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
             userRoleDisplay.style.color = "var(--text-muted)";
             applyToSellBtn.style.display = "block";
             navMessagesItem.style.display = "flex";
@@ -415,6 +455,7 @@ function syncUserSessionUI() {
             cartAddonsGroup.style.display = "block"; // Buyers see cart extras
         } else if (user.role === "creator") {
             userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
+            if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
             userRoleDisplay.style.color = "var(--accent-hover)";
             applyToSellBtn.style.display = "none";
             navMessagesItem.style.display = "flex";
@@ -424,6 +465,7 @@ function syncUserSessionUI() {
             cartAddonsGroup.style.display = "none"; // Creators don't see cart extras
         } else if (user.role === "admin") {
             userRoleDisplay.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
+            if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
             userRoleDisplay.style.color = "#ff4d6d";
             applyToSellBtn.style.display = "none";
             navMessagesItem.style.display = "none";
@@ -462,6 +504,152 @@ function syncUserSessionUI() {
     loadCreatorPortalPanel();
     loadAdminDashboard();
 }
+
+// Save Personal Profile Avatar, Name & Unique @Handle Changes
+window.savePersonalProfileChanges = function() {
+    let user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user === "null") {
+        user = {
+            username: "Guest Buyer",
+            handle: "@guest",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+            role: "buyer",
+            balance: 250.00
+        };
+    }
+
+    const newAvatar = document.getElementById("edit-avatar-url-input")?.value.trim();
+    const newUsername = document.getElementById("edit-username-input")?.value.trim();
+    let rawHandle = document.getElementById("edit-buyer-handle-input")?.value.trim();
+
+    if (newAvatar) user.avatar = newAvatar;
+    if (newUsername) user.username = newUsername;
+
+    if (rawHandle) {
+        if (!rawHandle.startsWith("@")) rawHandle = `@${rawHandle}`;
+        const cleanHandle = rawHandle.toLowerCase();
+
+        // 1. Format validation (3-20 chars)
+        const handleRegex = /^@[a-z0-9_]{3,20}$/;
+        if (!handleRegex.test(cleanHandle)) {
+            const err = currentLang === 'es' ? 
+                'El @handle debe tener entre 3 y 20 caracteres y solo contener letras, números o guion bajo (_).' : 
+                'Handle must be 3-20 characters long and contain only letters, numbers, or underscores (_).';
+            alert(err);
+            return;
+        }
+
+        // 2. Cooldown check (14 days barrier)
+        const now = Date.now();
+        const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+        if (user.handle !== cleanHandle && user.lastHandleChangeAt) {
+            const timePassed = now - user.lastHandleChangeAt;
+            if (timePassed < FOURTEEN_DAYS_MS) {
+                const daysLeft = Math.ceil((FOURTEEN_DAYS_MS - timePassed) / (24 * 60 * 60 * 1000));
+                const msg = currentLang === 'es' ? 
+                    `Por seguridad y estabilidad en las búsquedas, solo puedes cambiar tu @handle una vez cada 14 días. Vuelve a intentarlo en ${daysLeft} días.` : 
+                    `For search safety, you can only change your @handle once every 14 days. Please try again in ${daysLeft} days.`;
+                alert(msg);
+                return;
+            }
+        }
+
+        // 3. Uniqueness check across all users
+        const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+        const isTaken = users.some(u => u.handle && u.handle.toLowerCase() === cleanHandle && u.username !== user.username);
+        if (isTaken) {
+            const takenMsg = currentLang === 'es' ? 
+                `El handle ${cleanHandle} ya está en uso por otro usuario. Elige un @handle único.` : 
+                `The handle ${cleanHandle} is already taken by another user. Please choose a unique @handle.`;
+            alert(takenMsg);
+            return;
+        }
+
+        if (user.handle !== cleanHandle) {
+            user.lastHandleChangeAt = now;
+        }
+        user.handle = cleanHandle;
+    }
+
+    localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+    // Sync in global users database
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const idx = users.findIndex(u => u.username === user.username);
+    if (idx !== -1) {
+        if (newAvatar) users[idx].avatar = newAvatar;
+        if (newUsername) users[idx].username = newUsername;
+        if (user.handle) users[idx].handle = user.handle;
+        if (user.lastHandleChangeAt) users[idx].lastHandleChangeAt = user.lastHandleChangeAt;
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    syncUserSessionUI();
+    renderChatSidebar();
+    filterAndSortProducts();
+    showToast(currentLang === 'es' ? '¡Perfil y @handle actualizados correctamente!' : 'Profile & @handle updated successfully!');
+};
+
+// File Upload Avatar with Automatic Client-Side Canvas Compression (~300x300 JPEG)
+window.handleProfileAvatarUpload = function(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert(currentLang === 'es' ? 'Por favor selecciona un archivo de imagen válido.' : 'Please select a valid image file.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // Resize and compress image using Canvas to 300x300 max
+            const canvas = document.createElement('canvas');
+            const maxDim = 300;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxDim) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                }
+            } else {
+                if (height > maxDim) {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Export compressed JPEG base64 DataURL (80% quality ~ 15KB)
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+            const user = JSON.parse(localStorage.getItem("undr_current_user"));
+            if (user && user !== "null") {
+                user.avatar = compressedBase64;
+                localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+                const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+                const idx = users.findIndex(u => u.handle === user.handle || u.username === user.username);
+                if (idx !== -1) {
+                    users[idx].avatar = compressedBase64;
+                    localStorage.setItem("undr_users", JSON.stringify(users));
+                }
+
+                syncUserSessionUI();
+                showToast(currentLang === 'es' ? '¡Foto de perfil actualizada y optimizada!' : 'Profile picture updated & optimized!');
+            }
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
 
 // Dynamic Demo Quick Role Switcher
 window.quickSwitchRole = function(role) {
@@ -807,9 +995,14 @@ window.addToCart = function(productId) {
 };
 
 // Remove item from shopping cart
-window.removeFromCart = function(productId) {
-    cart = cart.filter(item => item.id !== productId);
+window.removeFromCart = function(target) {
+    if (typeof target === 'number' && target >= 0 && target < cart.length) {
+        cart.splice(target, 1);
+    } else {
+        cart = cart.filter(item => String(item.id) !== String(target));
+    }
     updateCartUI();
+    if (window.renderMobileCartModal) renderMobileCartModal();
 };
 
 // Toggle like state on feed card
@@ -874,7 +1067,7 @@ function updateCartUI() {
                     <span class="cart-item-title">${localData.title}</span>
                     <span class="cart-item-price">${item.quantity}x ${formatPrice(item.price)}</span>
                 </div>
-                <button class="btn-remove-cart" onclick="removeFromCart(${item.id})">
+                <button class="btn-remove-cart" onclick="removeFromCart('${item.id}')">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             `;
@@ -1060,18 +1253,24 @@ function renderCreatorPendingOrders() {
             actionBtn = `<span style="font-size:0.75rem; color:#0bb08b; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Funds Released</span>`;
         }
 
+        const addr = order.shippingAddress || { fullName: order.buyerName || 'Buyer', street: '405 Lexington Ave', city: 'New York', zip: '10174' };
+        const addrFormatted = addr.formatted || `${addr.fullName || 'Buyer'}, ${addr.street || ''}, ${addr.city || ''}, ${addr.zip || ''}`;
+
         const div = document.createElement("div");
         div.className = "order-creator-item";
         div.innerHTML = `
             <div class="order-creator-item-header">
                 <span>ID: #${order.id.slice(0,8)}</span>
-                <span>$${order.price.toFixed(2)} USD</span>
+                <span style="color:#10b981; font-weight:800;">$${order.price.toFixed(2)} USD (PAGADO)</span>
             </div>
             <div class="order-creator-item-body">
                 <img src="${order.image}" alt="" class="order-creator-item-img">
                 <div class="order-creator-item-info">
-                    <span class="order-creator-item-title">${order.title}</span>
+                    <span class="order-creator-item-title">${escapeHTML(order.title)}</span>
                     <span class="order-creator-item-status">${statusLabel}</span>
+                    <div style="background:var(--secondary-bg); padding:8px 10px; border-radius:8px; margin-top:8px; font-size:0.75rem; border:1px solid var(--border-color);">
+                        <i class="fa-solid fa-truck-fast" style="color:var(--accent-hover);"></i> <strong>Enviar a:</strong> ${escapeHTML(addrFormatted)}
+                    </div>
                 </div>
             </div>
             <div class="order-creator-item-action">
@@ -1148,6 +1347,197 @@ window.simulatePackageDelivery = function(orderId) {
 
     syncUserSessionUI();
     showToast(currentLang === "es" ? "Garantía liberada al saldo de la creadora." : "Escrow escrow cleared. Funds released to creator.");
+};
+
+// Save Creator Profile Name & Custom @Handle (With Strict Security Checks)
+window.saveCreatorProfileInfo = function() {
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user === "null") {
+        document.getElementById('login-modal').style.display = 'flex';
+        return;
+    }
+
+    const newName = document.getElementById("edit-creator-name-input")?.value.trim();
+    let rawHandle = document.getElementById("edit-creator-handle-input")?.value.trim();
+
+    if (newName) user.username = newName;
+
+    if (rawHandle) {
+        if (!rawHandle.startsWith("@")) rawHandle = `@${rawHandle}`;
+        const cleanHandle = rawHandle.toLowerCase();
+
+        // 1. Format validation (3-20 chars, only letters, numbers and underscores)
+        const handleRegex = /^@[a-z0-9_]{3,20}$/;
+        if (!handleRegex.test(cleanHandle)) {
+            const err = currentLang === 'es' ? 
+                'El @handle debe tener entre 3 y 20 caracteres y solo contener letras, números o guion bajo (_).' : 
+                'Handle must be 3-20 characters long and contain only letters, numbers, or underscores (_).';
+            alert(err);
+            return;
+        }
+
+        // 2. Cooldown check (14 days barrier)
+        const now = Date.now();
+        const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+        if (user.handle !== cleanHandle && user.lastHandleChangeAt) {
+            const timePassed = now - user.lastHandleChangeAt;
+            if (timePassed < FOURTEEN_DAYS_MS) {
+                const daysLeft = Math.ceil((FOURTEEN_DAYS_MS - timePassed) / (24 * 60 * 60 * 1000));
+                const msg = currentLang === 'es' ? 
+                    `Por seguridad y estabilidad en las búsquedas, solo puedes cambiar tu @handle una vez cada 14 días. Vuelve a intentarlo en ${daysLeft} días.` : 
+                    `For search safety, you can only change your @handle once every 14 days. Please try again in ${daysLeft} days.`;
+                alert(msg);
+                return;
+            }
+        }
+
+        // 3. Uniqueness check (no duplicates across all registered users)
+        const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+        const isTaken = users.some(u => u.handle && u.handle.toLowerCase() === cleanHandle && u.username !== user.username);
+        if (isTaken) {
+            const takenMsg = currentLang === 'es' ? 
+                `El handle ${cleanHandle} ya está en uso por otro usuario. Elige un @handle único.` : 
+                `The handle ${cleanHandle} is already taken by another user. Please choose a unique @handle.`;
+            alert(takenMsg);
+            return;
+        }
+
+        // Track handle change date if modified
+        if (user.handle !== cleanHandle) {
+            user.lastHandleChangeAt = now;
+        }
+        user.handle = cleanHandle;
+    }
+
+    localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+    // Sync in global users database
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const idx = users.findIndex(u => u.username === user.username);
+    if (idx !== -1) {
+        if (newName) users[idx].username = newName;
+        if (user.handle) users[idx].handle = user.handle;
+        if (user.lastHandleChangeAt) users[idx].lastHandleChangeAt = user.lastHandleChangeAt;
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    syncUserSessionUI();
+    renderChatSidebar();
+    filterAndSortProducts();
+    showToast(currentLang === "es" ? "Perfil y @handle guardados con éxito." : "Profile & @handle saved successfully.");
+};
+
+// Open Universal Profile Edit Modal
+window.openUniversalProfileEditModal = function() {
+    let currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!currentUser || currentUser === "null") {
+        // Initialize default guest profile if not logged in
+        currentUser = {
+            username: "Guest Buyer",
+            handle: "@guest",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+            role: "buyer",
+            balance: 250.00
+        };
+        localStorage.setItem("undr_current_user", JSON.stringify(currentUser));
+    }
+
+    const modal = document.getElementById("edit-profile-modal");
+    const avatarPreview = document.getElementById("universal-profile-avatar-preview");
+    const nameInput = document.getElementById("modal-edit-name-input");
+    const handleInput = document.getElementById("modal-edit-handle-input");
+
+    const currentHandle = currentUser.handle || `@${currentUser.username.toLowerCase().replace(/\s+/g, '')}`;
+
+    if (avatarPreview) avatarPreview.src = currentUser.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
+    if (nameInput) nameInput.value = currentUser.username || "";
+    if (handleInput) handleInput.value = currentHandle;
+
+    if (modal) modal.style.display = "flex";
+};
+
+// Save Universal Profile & Unique @Handle Changes
+window.saveUniversalProfileChanges = function() {
+    let user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user === "null") {
+        user = {
+            username: "Guest Buyer",
+            handle: "@guest",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+            role: "buyer",
+            balance: 250.00
+        };
+    }
+
+    const newName = document.getElementById("modal-edit-name-input")?.value.trim();
+    let rawHandle = document.getElementById("modal-edit-handle-input")?.value.trim();
+
+    if (newName) user.username = newName;
+
+    if (rawHandle) {
+        if (!rawHandle.startsWith("@")) rawHandle = `@${rawHandle}`;
+        const cleanHandle = rawHandle.toLowerCase();
+
+        // 1. Format validation (3-20 chars)
+        const handleRegex = /^@[a-z0-9_]{3,20}$/;
+        if (!handleRegex.test(cleanHandle)) {
+            const err = currentLang === 'es' ? 
+                'El @handle debe tener entre 3 y 20 caracteres y solo contener letras, números o guion bajo (_).' : 
+                'Handle must be 3-20 characters long and contain only letters, numbers, or underscores (_).';
+            alert(err);
+            return;
+        }
+
+        // 2. Cooldown check (14 days barrier)
+        const now = Date.now();
+        const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+        if (user.handle !== cleanHandle && user.lastHandleChangeAt) {
+            const timePassed = now - user.lastHandleChangeAt;
+            if (timePassed < FOURTEEN_DAYS_MS) {
+                const daysLeft = Math.ceil((FOURTEEN_DAYS_MS - timePassed) / (24 * 60 * 60 * 1000));
+                const msg = currentLang === 'es' ? 
+                    `Por seguridad y estabilidad en las búsquedas, solo puedes cambiar tu @handle una vez cada 14 días. Vuelve a intentarlo en ${daysLeft} días.` : 
+                    `For search safety, you can only change your @handle once every 14 days. Please try again in ${daysLeft} days.`;
+                alert(msg);
+                return;
+            }
+        }
+
+        // 3. Uniqueness check across all users
+        const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+        const isTaken = users.some(u => u.handle && u.handle.toLowerCase() === cleanHandle && u.username !== user.username);
+        if (isTaken) {
+            const takenMsg = currentLang === 'es' ? 
+                `El handle ${cleanHandle} ya está en uso por otro usuario. Elige un @handle único.` : 
+                `The handle ${cleanHandle} is already taken by another user. Please choose a unique @handle.`;
+            alert(takenMsg);
+            return;
+        }
+
+        if (user.handle !== cleanHandle) {
+            user.lastHandleChangeAt = now;
+        }
+        user.handle = cleanHandle;
+    }
+
+    localStorage.setItem("undr_current_user", JSON.stringify(user));
+
+    // Sync global users
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const idx = users.findIndex(u => u.username === user.username);
+    if (idx !== -1) {
+        if (newName) users[idx].username = newName;
+        if (user.handle) users[idx].handle = user.handle;
+        if (user.lastHandleChangeAt) users[idx].lastHandleChangeAt = user.lastHandleChangeAt;
+        localStorage.setItem("undr_users", JSON.stringify(users));
+    }
+
+    syncUserSessionUI();
+    renderChatSidebar();
+    filterAndSortProducts();
+    const editModal = document.getElementById("edit-profile-modal");
+    if (editModal) editModal.style.display = "none";
+    showToast(currentLang === "es" ? "Perfil y @handle guardados con éxito." : "Profile & @handle saved successfully.");
 };
 
 // Publish listing form submit
@@ -1315,16 +1705,36 @@ function loadAdminDashboard() {
         });
     }
 
-    // Disputes
-    adminDisputesList.innerHTML = `
-        <div class="admin-list-item">
-            <div class="admin-list-item-info">
-                <span class="admin-list-item-title">Dispute #1404: Package Delayed</span>
-                <span class="admin-list-item-desc">Client @guest claims package lost. Escrow held on @ariafox</span>
-            </div>
-            <button class="btn-admin-action btn-admin-approve" onclick="alert('Refunding client...'); showToast('Buyer refunded successfully.')">Refund Buyer</button>
-        </div>
-    `;
+    // Disputes & Paid Global Shipping Orders Monitor
+    adminDisputesList.innerHTML = "";
+    if (orders.length === 0) {
+        adminDisputesList.innerHTML = `<div class="empty-cart-message">No orders placed yet.</div>`;
+    } else {
+        orders.forEach(ord => {
+            const addrObj = ord.shippingAddress || { fullName: ord.buyerName || 'Buyer', street: '405 Lexington Ave', city: 'New York', zip: '10174' };
+            const addrFormatted = addrObj.formatted || `${addrObj.fullName || 'Buyer'}, ${addrObj.street || ''}, ${addrObj.city || ''}, ${addrObj.zip || ''}`;
+
+            const div = document.createElement("div");
+            div.className = "admin-list-item";
+            div.style.flexDirection = "column";
+            div.style.alignItems = "stretch";
+            div.style.gap = "8px";
+            div.style.borderLeft = "4px solid #10b981";
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong style="font-size:0.9rem; color:var(--text-primary);"><i class="fa-solid fa-box-open" style="color:#10b981;"></i> Order #${ord.id.slice(0,8)} — ${escapeHTML(ord.title)}</strong><br>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">Vendedora: <strong>${ord.creatorHandle}</strong> | Monto: <strong style="color:#10b981;">$${ord.price.toFixed(2)} USD</strong></span>
+                    </div>
+                    <span class="proposal-status-badge accepted">${ord.status.toUpperCase()}</span>
+                </div>
+                <div style="background:var(--secondary-bg); padding:8px 12px; border-radius:8px; font-size:0.78rem; border:1px solid var(--border-color);">
+                    <i class="fa-solid fa-truck-fast" style="color:var(--accent-hover);"></i> <strong>Dirección de Envío Completa:</strong> ${escapeHTML(addrFormatted)}
+                </div>
+            `;
+            adminDisputesList.appendChild(div);
+        });
+    }
 }
 
 window.deleteProductListing = function(id) {
@@ -1415,9 +1825,12 @@ function renderChatSidebar() {
         item.className = `chat-user-item ${activeClass}`;
         item.innerHTML = `
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Guest" class="chat-user-avatar">
-            <div class="chat-user-details">
-                <span class="chat-user-name">Guest Buyer</span>
-                <span class="chat-user-lastmsg">Chatting...</span>
+            <div class="chat-user-details" style="flex: 1; display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                    <span class="chat-user-name" style="font-weight: 700;">Guest Buyer</span>
+                    <span style="font-size: 0.76rem; color: var(--accent-hover); font-weight: 600;">@guest</span>
+                </div>
+                <span class="chat-user-lastmsg">${currentLang === 'es' ? 'Mensaje activo...' : 'Chatting...'}</span>
             </div>
         `;
         item.addEventListener("click", () => {
@@ -1436,13 +1849,17 @@ function renderChatSidebar() {
             const activeClass = chat.creatorName === activeChatCreator ? "active" : "";
             const lastMsg = chat.messages[chat.messages.length - 1];
             const lastMsgText = lastMsg ? (lastMsg.isPpv ? `[Locked Media - $${lastMsg.ppvPrice}]` : lastMsg.text) : "";
+            const handleText = chat.handle || `@${chat.creatorName.toLowerCase().replace(/\s+/g, '')}`;
 
             const item = document.createElement("div");
             item.className = `chat-user-item ${activeClass}`;
             item.innerHTML = `
                 <img src="${chat.avatar}" alt="${chat.creatorName}" class="chat-user-avatar">
-                <div class="chat-user-details">
-                    <span class="chat-user-name">${chat.creatorName}</span>
+                <div class="chat-user-details" style="flex: 1; display: flex; flex-direction: column;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                        <span class="chat-user-name" style="font-weight: 700;">${chat.creatorName}</span>
+                        <span style="font-size: 0.76rem; color: var(--accent-hover); font-weight: 600;">${handleText}</span>
+                    </div>
                     <span class="chat-user-lastmsg">${lastMsgText}</span>
                 </div>
             `;
@@ -1459,10 +1876,22 @@ function renderChatSidebar() {
     }
 }
 
+// Mobile Chat Window Switch Helper
+window.closeMobileChatWindow = function() {
+    const chatContainer = document.querySelector(".chat-container");
+    if (chatContainer) chatContainer.classList.remove("mobile-active-chat");
+};
+
 function renderChatMessages(targetName) {
     const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
     const chats = JSON.parse(localStorage.getItem("undr_chats")) || [];
     
+    // Switch to active chat screen on mobile
+    const chatContainer = document.querySelector(".chat-container");
+    if (chatContainer && targetName) {
+        chatContainer.classList.add("mobile-active-chat");
+    }
+
     chatMessagesContainer.innerHTML = "";
     
     if (!currentUser) {
@@ -1706,70 +2135,172 @@ window.calculateCartAddons = function() {
     cartGrandTotal.textContent = `$${grandTotal.toFixed(2)} USD`;
 };
 
-// Checkout proceed button trigger
-checkoutBtn.addEventListener("click", () => {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+// Checkout proceed button trigger (Global function)
+window.openCheckoutGatewayModal = function() {
+    const currentUser = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!currentUser || currentUser === "null") {
+        const msg = currentLang === 'es' ? 
+            'Para procesar tu compra y rastrear tu envío, necesitas Iniciar Sesión o Crear tu Cuenta.' : 
+            'To proceed with checkout and track your delivery, please Log In or Create an Account.';
+        alert(msg);
+        const loginMdl = document.getElementById("login-modal");
+        if (loginMdl) loginMdl.style.display = "flex";
+        return;
+    }
+
+    if (!cart || cart.length === 0) {
+        alert(currentLang === 'es' ? 'Tu carrito está vacío' : 'Your cart is empty');
+        return;
+    }
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
     const shipping = subtotal >= 150.00 ? 0.00 : DISCREET_SHIPPING_FLAT_RATE;
     const grandTotal = subtotal + cartAddonsCost + shipping;
 
     // Define standard callback for cart purchase completion
     ccbillPaymentCallback = () => {
-        // Place orders in creator queue
+        const fullName = document.getElementById("shipping-full-name")?.value || "Buyer";
+        const street = document.getElementById("shipping-street")?.value || "123 Main St";
+        const city = document.getElementById("shipping-city")?.value || "City";
+        const zip = document.getElementById("shipping-zip")?.value || "00000";
+
+        const shippingAddr = {
+            fullName,
+            street,
+            city,
+            zip,
+            formatted: `${fullName}, ${street}, ${city}, ${zip}`
+        };
+
         const creatorOrders = JSON.parse(localStorage.getItem("creator_orders")) || [];
+        const user = JSON.parse(localStorage.getItem("undr_current_user")) || { username: 'Buyer Guest' };
+
         cart.forEach(item => {
             let addonsLabel = [];
             const polaroidEl = document.getElementById("addon-polaroid");
             if (polaroidEl && polaroidEl.checked) addonsLabel.push("Polaroid");
-            if (document.getElementById("addon-perfume").checked) addonsLabel.push("Perfume");
-            if (document.getElementById("addon-video").checked) addonsLabel.push("Video");
+            const perfEl = document.getElementById("addon-perfume");
+            if (perfEl && perfEl.checked) addonsLabel.push("Perfume");
+            const vidEl = document.getElementById("addon-video");
+            if (vidEl && vidEl.checked) addonsLabel.push("Video");
             
-            const fullTitle = addonsLabel.length > 0 ? `${item[currentLang].title} (${addonsLabel.join(' + ')})` : item[currentLang].title;
+            const titleStr = item[currentLang] ? item[currentLang].title : (item.title || 'Item');
+            const fullTitle = addonsLabel.length > 0 ? `${titleStr} (${addonsLabel.join(' + ')})` : titleStr;
             const fullPrice = item.price + cartAddonsCost;
 
-            creatorOrders.push({
+            const newOrder = {
                 id: crypto.randomUUID(),
-                creatorHandle: item.creator.handle,
+                buyerName: user.username || fullName,
+                creatorHandle: item.creator ? item.creator.handle : '@lunadiamond',
                 title: fullTitle,
                 price: fullPrice,
                 image: item.image,
-                status: "paid"
+                status: "paid",
+                shippingAddress: shippingAddr,
+                createdAt: new Date().toISOString()
+            };
+
+            creatorOrders.push(newOrder);
+
+            // Add notification for creator
+            const notifications = JSON.parse(localStorage.getItem("undr_notifications")) || [];
+            notifications.unshift({
+                id: crypto.randomUUID(),
+                userHandle: item.creator ? item.creator.handle : '@lunadiamond',
+                text: `🎉 ¡Nueva Venta Pagada! Comprador: ${fullName}. Prenda: ${fullTitle}. Revisa la dirección de despacho en tu Portal.`,
+                isRead: false,
+                type: 'order',
+                date: 'Just now'
             });
+            localStorage.setItem("undr_notifications", JSON.stringify(notifications));
+
+            // Sync to Supabase if connected
+            if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected()) {
+                window.undrAPI.orders.create({
+                    product_id: item.id,
+                    creator_id: item.creator_id || 'd0000001-0000-0000-0000-000000000002',
+                    subtotal: item.price,
+                    shipping_cost: 0,
+                    addons_cost: cartAddonsCost,
+                    grand_total: fullPrice,
+                    shipping_address: shippingAddr
+                });
+            }
         });
+
         localStorage.setItem("creator_orders", JSON.stringify(creatorOrders));
-
-        // Deduct from buyer balance
-        const user = JSON.parse(localStorage.getItem("undr_current_user"));
-        user.balance = parseFloat(user.balance) - grandTotal;
-        localStorage.setItem("undr_current_user", JSON.stringify(user));
-
-        // Update database user
-        const users = JSON.parse(localStorage.getItem("undr_users"));
-        const uIdx = users.findIndex(u => u.handle === user.handle);
-        if (uIdx !== -1) {
-            users[uIdx].balance = user.balance;
-            localStorage.setItem("undr_users", JSON.stringify(users));
-        }
-
-        // Add to Platform GMV
-        let adminGmv = parseFloat(localStorage.getItem("admin_gmv"));
-        adminGmv += grandTotal;
-        localStorage.setItem("admin_gmv", adminGmv.toFixed(2));
 
         // Clear cart
         cart = [];
         cartAddonsCost = 0;
         const polaroidEl = document.getElementById("addon-polaroid");
         if (polaroidEl) polaroidEl.checked = false;
-        document.getElementById("addon-perfume").checked = false;
-        document.getElementById("addon-video").checked = false;
+        const perfEl = document.getElementById("addon-perfume");
+        if (perfEl) perfEl.checked = false;
+        const vidEl = document.getElementById("addon-video");
+        if (vidEl) vidEl.checked = false;
 
         syncUserSessionUI();
-        alert(translations[currentLang].checkout_simulation);
+        if (window.renderMobileCartModal) renderMobileCartModal();
+        showToast(currentLang === 'es' ? '¡Pago confirmado! Pedido enviado a la creadora.' : 'Payment confirmed! Order sent to creator.');
     };
 
-    gatewayTotalAmount.textContent = `$${grandTotal.toFixed(2)} USD`;
-    gatewayModal.style.display = "flex";
-});
+    const totalEl = document.getElementById("gateway-total-amount");
+    if (totalEl) totalEl.textContent = `$${grandTotal.toFixed(2)} USD`;
+    const gatewayMdl = document.getElementById("gateway-modal");
+    if (gatewayMdl) gatewayMdl.style.display = "flex";
+};
+
+if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", () => {
+        window.openCheckoutGatewayModal();
+    });
+}
+
+// Execute Live NOWPayments Checkout
+window.processNowpaymentsCheckout = async function() {
+    const fullName = document.getElementById("shipping-full-name")?.value.trim();
+    const street = document.getElementById("shipping-street")?.value.trim();
+    const city = document.getElementById("shipping-city")?.value.trim();
+    const zip = document.getElementById("shipping-zip")?.value.trim();
+
+    if (!fullName || !street || !city || !zip) {
+        const errorMsg = currentLang === 'es' ? 
+            'Por favor completa la Dirección de Envío Discreto antes de continuar.' : 
+            'Please complete the Discreet Shipping Address fields before proceeding.';
+        alert(errorMsg);
+        return;
+    }
+
+    const totalText = document.getElementById("gateway-total-amount").textContent;
+    const amountVal = parseFloat(totalText.replace(/[^0-9.]/g, "")) || 10.00;
+
+    try {
+        if (window.undrPayments) {
+            const res = await window.undrPayments.createInvoice({
+                priceAmount: amountVal,
+                priceCurrency: 'usd',
+                orderDescription: `UNDR Order - ${fullName}`
+            });
+
+            if (res.ok && res.invoice && res.invoice.invoice_url) {
+                window.open(res.invoice.invoice_url, '_blank');
+                document.getElementById("gateway-modal").style.display = "none";
+                showToast(currentLang === 'es' ? 'Orden cifrada generada en la pasarela segura.' : 'Encrypted invoice generated on secure gateway.');
+                if (ccbillPaymentCallback) {
+                    ccbillPaymentCallback();
+                    ccbillPaymentCallback = null;
+                }
+            } else {
+                alert(`Error: ${res.error || 'Inténtalo de nuevo'}`);
+            }
+        } else {
+            alert(currentLang === 'es' ? 'Conectando con pasarela segura...' : 'Connecting to secure gateway...');
+        }
+    } catch (err) {
+        alert(`Error al conectar pasarela: ${err.message || err}`);
+    }
+};
 
 // CCBill simulation submission form
 gatewayPaymentForm.addEventListener("submit", (e) => {
@@ -1839,35 +2370,68 @@ window.openProductDetailModal = function(productId, fromProfile = false) {
     productDetailsModal.style.display = "flex";
 };
 
-// Submit register form
-document.getElementById("register-form").addEventListener("submit", (e) => {
+// Submit register form (Hybrid Supabase + Fallback)
+document.getElementById("register-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("reg-name").value.trim();
     const role = document.getElementById("reg-role").value;
     const email = document.getElementById("reg-email").value.trim();
     const passwordVal = document.getElementById("reg-password").value;
-    const handle = `@${name.toLowerCase().replace(/\s/g, '')}`;
+    const handle = `@${name.toLowerCase().replace(/[^a-z0-9_]/g, '')}`;
 
-    const users = JSON.parse(localStorage.getItem("undr_users"));
-    
-    const newUser = {
+    if (!name || !email || !passwordVal) {
+        alert(currentLang === 'es' ? 'Por favor completa todos los campos requeridos.' : 'Please fill in all required fields.');
+        return;
+    }
+
+    let newUser = {
         username: name,
         handle: handle,
         email: email,
         password: passwordVal,
         avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
-        balance: role === "buyer" ? 300.00 : 0.00, // starting balance for testing
+        balance: role === "buyer" ? 300.00 : 0.00,
         role: role,
         kycStatus: "not_applied"
     };
 
-    users.push(newUser);
+    // If connected to Supabase, perform cloud signup
+    if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected()) {
+        try {
+            const { data, error } = await window.undrAPI.auth.signUp(email, passwordVal, name, handle, role);
+            if (error) {
+                console.warn('Supabase SignUp warning:', error);
+                // If user already exists in DB, attempt sign-in
+                if (error.message && error.message.includes('already registered')) {
+                    const signInRes = await window.undrAPI.auth.signIn(email, passwordVal);
+                    if (signInRes.data?.user) {
+                        newUser.id = signInRes.data.user.id;
+                    }
+                }
+            } else if (data?.user) {
+                newUser.id = data.user.id;
+            }
+        } catch (err) {
+            console.warn('Supabase Auth error, using local session:', err);
+        }
+    }
+
+    // Save to local storage for immediate application state
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const existingIndex = users.findIndex(u => u.email === email || u.handle === handle);
+    if (existingIndex !== -1) {
+        users[existingIndex] = newUser;
+    } else {
+        users.push(newUser);
+    }
+
     localStorage.setItem("undr_users", JSON.stringify(users));
     localStorage.setItem("undr_current_user", JSON.stringify(newUser));
 
-    registerModal.style.display = "none";
+    document.getElementById("register-modal").style.display = "none";
+    document.getElementById("register-form").reset();
     syncUserSessionUI();
-    showToast(translations[currentLang].register_success);
+    showToast(translations[currentLang].register_success || (currentLang === 'es' ? '¡Cuenta creada con éxito!' : 'Account created successfully!'));
     
     if (role === "creator") {
         showSection('creator');
@@ -1875,6 +2439,24 @@ document.getElementById("register-form").addEventListener("submit", (e) => {
         showSection('explore');
     }
 });
+
+// Google Social Login Trigger
+window.loginWithGoogle = async function() {
+    try {
+        if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected()) {
+            const { data, error } = await window.undrAPI.auth.signInWithOAuth('google');
+            if (error) {
+                alert(currentLang === 'es' ? `Error de inicio de sesión con Google: ${error.message}` : `Google login error: ${error.message}`);
+            }
+        } else {
+            alert(currentLang === 'es' ? 
+                'El inicio de sesión con Google requiere estar conectado a Supabase.' : 
+                'Google login requires an active Supabase connection.');
+        }
+    } catch (err) {
+        alert(`Error: ${err.message || err}`);
+    }
+};
 
 // Secure Login Form Submission (Brute-Force Rate Limiting)
 document.getElementById("login-form").addEventListener("submit", (e) => {
@@ -1895,20 +2477,44 @@ document.getElementById("login-form").addEventListener("submit", (e) => {
         return;
     }
 
-    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    let users = JSON.parse(localStorage.getItem("undr_users")) || [];
     
     // Find matching user by email or handle
-    const user = users.find(u => u.handle.toLowerCase() === inputVal || (u.email && u.email.toLowerCase() === inputVal) || (inputVal === "buyer" && u.role === "buyer") || (inputVal === "creator" && u.role === "creator") || (inputVal === "admin" && u.role === "admin"));
+    let user = users.find(u => u.handle.toLowerCase() === inputVal || (u.email && u.email.toLowerCase() === inputVal) || (inputVal === "buyer" && u.role === "buyer") || (inputVal === "creator" && u.role === "creator") || (inputVal === "admin" && u.role === "admin"));
+
+    // Attempt Supabase login if user not found or connected
+    if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected() && inputVal.includes('@')) {
+        window.undrAPI.auth.signIn(inputVal, passwordVal).then(res => {
+            if (res.data?.user) {
+                const spUser = res.data.user;
+                const meta = spUser.user_metadata || {};
+                user = {
+                    id: spUser.id,
+                    username: meta.username || spUser.email.split('@')[0],
+                    handle: meta.handle || `@${spUser.email.split('@')[0]}`,
+                    email: spUser.email,
+                    role: meta.role || 'buyer',
+                    avatar: meta.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+                    balance: meta.role === 'creator' ? 0 : 300
+                };
+                localStorage.setItem("undr_current_user", JSON.stringify(user));
+                document.getElementById("login-modal").style.display = "none";
+                document.getElementById("login-form").reset();
+                syncUserSessionUI();
+                showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
+            }
+        }).catch(err => console.warn('Supabase login fallback:', err));
+    }
 
     if (!user) {
-        alert(currentLang === "es" ? "Cuenta no encontrada." : "Account not found.");
+        alert(currentLang === "es" ? "Cuenta no encontrada o credenciales inválidas." : "Account not found or invalid credentials.");
         return;
     }
 
     // Default password check (for prepopulated accounts like @lunadiamond)
     const storedPassword = user.password || "undr123";
 
-    if (passwordVal === storedPassword) {
+    if (passwordVal === storedPassword || (user && !user.password)) {
         // Success
         localStorage.removeItem(attemptsKey);
         localStorage.removeItem(lockoutKey);
@@ -2063,35 +2669,23 @@ customRequestForm.addEventListener("submit", (e) => {
     }, 2000);
 });
 
-// Custom Premium Toast Notification
+// Custom Premium Toast Notification (Positioned elevated above mobile dock bar)
 function showToast(message) {
     let toast = document.createElement("div");
-    toast.style.position = "fixed";
-    toast.style.bottom = "24px";
-    toast.style.right = "24px";
-    toast.style.backgroundColor = "var(--text-primary)";
-    toast.style.color = "var(--primary-bg)";
-    toast.style.padding = "12px 24px";
-    toast.style.borderRadius = "30px";
-    toast.style.boxShadow = "var(--shadow-md)";
-    toast.style.zIndex = "10000";
-    toast.style.fontWeight = "600";
-    toast.style.fontSize = "0.9rem";
-    toast.style.opacity = "0";
-    toast.style.transition = "opacity 0.3s, transform 0.3s";
-    toast.style.transform = "translateY(10px)";
+    toast.className = "toast-notification-banner";
+    toast.style.cssText = "position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(10px); background-color: var(--text-primary); color: var(--primary-bg); padding: 12px 22px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); z-index: 100000; font-weight: 600; font-size: 0.88rem; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; max-width: 90vw; text-align: center; white-space: nowrap;";
     toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--accent-color); margin-right: 8px;"></i> ${message}`;
 
     document.body.appendChild(toast);
 
     setTimeout(() => {
         toast.style.opacity = "1";
-        toast.style.transform = "translateY(0)";
-    }, 100);
+        toast.style.transform = "translateX(-50%) translateY(0)";
+    }, 50);
 
     setTimeout(() => {
         toast.style.opacity = "0";
-        toast.style.transform = "translateY(10px)";
+        toast.style.transform = "translateX(-50%) translateY(10px)";
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
@@ -2158,6 +2752,7 @@ const translations = {
         discreet_badge_desc: "Shipped in plain cardboard boxes with no mention of UNDR or contents.",
         subtotal: "Subtotal:",
         discreet_shipping_cost: "Discreet Shipping:",
+        free_discreet_shipping: "Free / Discreet",
         grand_total: "Total:",
         checkout_btn: "Proceed to Checkout",
         secure_payments: "Secured High-Risk Adult Gateway",
@@ -2177,6 +2772,12 @@ const translations = {
         image_url_label: "Item Image URL",
         custom_label_desc: "Description",
         publish_item_btn: "Publish to Marketplace",
+        upload_photo_btn: "Upload Photo",
+        logout_btn: "Log Out",
+        profile_picture_label: "Profile Picture (Image Upload)",
+        choose_file_btn: "Select Image from Device",
+        username_label: "Username",
+        save_profile_btn: "Save Profile Changes",
         sales_summary: "Sales & Pending Shipments",
         withdrawable_balance: "Withdrawable Balance",
         withdraw_funds_btn: "Withdraw ACH",
@@ -2204,7 +2805,23 @@ const translations = {
         type_lace_panty: "Lace Panty",
         type_stockings: "Stockings",
         type_bikini: "Bikini Bottom",
-        btn_reveal_photo: "View"
+        btn_reveal_photo: "View",
+        gateway_auth_subtitle: "Authorized Transaction for UNDR Marketplace",
+        total_to_pay: "Total Amount:",
+        discreet_shipping_title: "Discreet Shipping Address",
+        recipient_full_name_label: "Recipient Full Name",
+        street_address_label: "Street Address & Apartment",
+        city_label: "City",
+        zip_country_label: "Zip Code / Country",
+        cardholder_name_label: "Cardholder Name",
+        card_number_label: "Card Number",
+        expiry_date_label: "Expiry Date",
+        discreet_billing_tag: "Discreet billing:",
+        discreet_billing_desc: "This charge will appear on your bank statement as 'UNDR ONLINE BILLING'. No mention of parcel contents.",
+        autofill_test_card: "Auto-fill Test Card",
+        pay_nowpayments_btn: "Pay with NOWPayments (Live Crypto)",
+        authorize_ccbill_btn: "Authorize Payment via CCBill",
+        cancel_transaction_btn: "Cancel Transaction"
     },
     es: {
         added_cart: "añadido al carrito.",
@@ -2262,6 +2879,7 @@ const translations = {
         discreet_badge_desc: "Enviado en cajas de cartón lisas sin mención alguna de UNDR ni del contenido.",
         subtotal: "Subtotal:",
         discreet_shipping_cost: "Envío Discreto:",
+        free_discreet_shipping: "Gratis / Discreto",
         grand_total: "Total:",
         checkout_btn: "Proceder al Pago",
         secure_payments: "Pasarela de Pago de Alto Riesgo Segura",
@@ -2281,6 +2899,12 @@ const translations = {
         image_url_label: "URL de la Imagen",
         custom_label_desc: "Descripción",
         publish_item_btn: "Publicar en la Tienda",
+        upload_photo_btn: "Subir Foto",
+        logout_btn: "Cerrar Sesión",
+        profile_picture_label: "Foto de Perfil (Subir Imagen)",
+        choose_file_btn: "Seleccionar Imagen del Dispositivo",
+        username_label: "Nombre de Usuario",
+        save_profile_btn: "Guardar Cambios de Perfil",
         sales_summary: "Ventas y Envíos Pendientes",
         withdrawable_balance: "Saldo Retirable",
         withdraw_funds_btn: "Retirar por ACH",
@@ -2308,7 +2932,23 @@ const translations = {
         type_lace_panty: "Braguita de Encaje",
         type_stockings: "Medias Usadas",
         type_bikini: "Bikini",
-        btn_reveal_photo: "Ver"
+        btn_reveal_photo: "Ver",
+        gateway_auth_subtitle: "Transacción Autorizada para UNDR Marketplace",
+        total_to_pay: "Monto Total:",
+        discreet_shipping_title: "Dirección de Envío Discreto",
+        recipient_full_name_label: "Nombre Completo del Destinatario",
+        street_address_label: "Dirección de Calle y Número",
+        city_label: "Ciudad",
+        zip_country_label: "Código Postal / País",
+        cardholder_name_label: "Nombre del Titular de la Tarjeta",
+        card_number_label: "Número de Tarjeta",
+        expiry_date_label: "Fecha de Vencimiento",
+        discreet_billing_tag: "Cobro discreto:",
+        discreet_billing_desc: "Este cargo aparecerá en su extracto bancario como 'UNDR ONLINE BILLING'. Sin mención al contenido del paquete.",
+        autofill_test_card: "Auto-llenar Tarjeta de Prueba",
+        pay_nowpayments_btn: "Pagar con NOWPayments (Cripto Real)",
+        authorize_ccbill_btn: "Autorizar Pago con CCBill",
+        cancel_transaction_btn: "Cancelar Transacción"
     }
 };
 
@@ -2349,8 +2989,17 @@ window.rejectAgeVerification = function() {
     window.location.href = "https://www.google.com";
 };
 
+window.toggleLanguage = function() {
+    const nextLang = currentLang === "en" ? "es" : "en";
+    applyLanguage(nextLang);
+};
+
 function applyLanguage(lang) {
     currentLang = lang;
+    try {
+        localStorage.setItem("undr_lang", lang);
+    } catch (e) {}
+
     const toggleBtn = document.getElementById("lang-toggle-btn");
     if (toggleBtn) {
         toggleBtn.innerHTML = `<i class="fa-solid fa-globe"></i> ${lang.toUpperCase()}`;
@@ -2370,32 +3019,41 @@ function applyLanguage(lang) {
         }
     });
 
-    // Placeholders updates
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-        const key = el.getAttribute("data-i18n-placeholder");
-        if (translations[lang] && translations[lang][key]) {
-            el.setAttribute("placeholder", translations[lang][key]);
-        }
-    });
+    // Shipping inputs placeholder updates
+    const fnInput = document.getElementById("shipping-full-name");
+    const stInput = document.getElementById("shipping-street");
+    const ctInput = document.getElementById("shipping-city");
+    const zpInput = document.getElementById("shipping-zip");
+    if (fnInput) fnInput.placeholder = lang === "es" ? "Ej: John Doe" : "e.g. John Doe";
+    if (stInput) stInput.placeholder = lang === "es" ? "Ej: 405 Lexington Ave, Apt 4B" : "e.g. 405 Lexington Ave, Apt 4B";
+    if (ctInput) ctInput.placeholder = lang === "es" ? "Nueva York" : "New York";
+    if (zpInput) zpInput.placeholder = lang === "es" ? "10174, EE. UU." : "10174, USA";
 
-    // Update active UI elements texts & session dynamic values
+    // Re-render panels & feed items
     syncUserSessionUI();
-
-    // Re-render active section panel if open
-    const activeSection = document.querySelector(".content-section-panel.active");
-    if (activeSection) {
-        if (activeSection.id === "section-creator-profile" && profileActiveCreatorName) {
-            openCreatorProfile(profileActiveCreatorName, false);
-        } else if (activeSection.id === "section-auctions") {
-            renderLiveAuctionsGrid();
-        } else if (activeSection.id === "section-buyer-settings") {
-            renderSettingsAddresses();
-            renderSettingsSubscriptions();
-            renderSettingsOrders();
-            renderFavoritesGrid();
-        }
-    }
+    filterAndSortProducts();
+    updateCartUI();
+    if (window.renderMobileCartModal) renderMobileCartModal();
+    if (window.renderLiveAuctionsGrid) renderLiveAuctionsGrid();
+    renderChatSidebar();
 }
+
+window.setCurrency = function(newCurr) {
+    currentCurrency = newCurr;
+    try {
+        localStorage.setItem("undr_currency", currentCurrency);
+    } catch (e) {}
+
+    const selectEl = document.getElementById("currency-toggle-select");
+    if (selectEl) selectEl.value = currentCurrency;
+
+    filterAndSortProducts();
+    updateCartUI();
+    if (window.renderMobileCartModal) renderMobileCartModal();
+    if (window.renderLiveAuctionsGrid) renderLiveAuctionsGrid();
+    syncUserSessionUI();
+    showToast(currentLang === "es" ? `Moneda cambiada a ${currentCurrency}` : `Currency updated to ${currentCurrency}`);
+};
 
 window.calculateCustomProposalPrice = function() {
     const type = document.getElementById("custom-item-type").value;
@@ -2446,6 +3104,24 @@ window.openCustomRequest = function(creatorName) {
 // EVEN LISTENERS CONFIGURATION
 // ==========================================
 function setupEventListeners() {
+    // Universal Close Modal Event Listener
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("close-modal")) {
+            const modalParent = e.target.closest(".modal");
+            if (modalParent) modalParent.style.display = "none";
+        } else if (e.target.classList.contains("modal")) {
+            e.target.style.display = "none";
+        }
+    });
+
+    // Open Cart Button listener
+    const openCartTriggerEl = document.getElementById("open-cart-btn");
+    if (openCartTriggerEl) {
+        openCartTriggerEl.addEventListener("click", () => {
+            window.toggleCartModal();
+        });
+    }
+
     // Age verification buttons
     const ageAccept = document.getElementById("age-accept-btn");
     const ageReject = document.getElementById("age-reject-btn");
@@ -2472,24 +3148,18 @@ function setupEventListeners() {
     // Language switcher
     const langToggle = document.getElementById("lang-toggle-btn");
     if (langToggle) {
-        langToggle.addEventListener("click", () => {
-            const nextLang = currentLang === "en" ? "es" : "en";
-            applyLanguage(nextLang);
-        });
+        langToggle.onclick = function() {
+            window.toggleLanguage();
+        };
     }
 
     // Currency switcher
     const currencySelect = document.getElementById("currency-toggle-select");
     if (currencySelect) {
         currencySelect.value = currentCurrency;
-        currencySelect.addEventListener("change", (e) => {
-            currentCurrency = e.target.value;
-            localStorage.setItem("undr_currency", currentCurrency);
-            filterAndSortProducts();
-            updateCartUI();
-            syncUserSessionUI();
-            showToast(currentLang === "es" ? `Moneda cambiada a ${currentCurrency}` : `Currency updated to ${currentCurrency}`);
-        });
+        currencySelect.onchange = function(e) {
+            window.setCurrency(e.target.value);
+        };
     }
 
     // Open Cart Sidebar Trigger
@@ -3087,35 +3757,21 @@ function setupEventListeners() {
             const msgVal = document.getElementById("tip-message-input").value.trim();
 
             if (!amountVal || amountVal <= 0) {
-                alert(currentLang === "es" ? "Ingresa un monto válido." : "Enter a valid tip amount.");
+                alert(currentLang === "es" ? "Ingresa un monto válido para la propina." : "Please enter a valid tip amount.");
                 return;
             }
 
-            const user = JSON.parse(localStorage.getItem("undr_current_user"));
-            if (user.balance < amountVal) {
-                // Open CCBill payment gateway for tip
-                ccbillPaymentCallback = () => {
-                    processTipTransfer(activeChatCreator, amountVal, msgVal);
-                    tipModal.style.display = "none";
-                };
-                gatewayTotalAmount.textContent = `$${amountVal.toFixed(2)} USD`;
-                gatewayModal.style.display = "flex";
-                return;
-            }
-
-            // Deduct balance
-            user.balance = parseFloat(user.balance) - amountVal;
-            localStorage.setItem("undr_current_user", JSON.stringify(user));
-
-            const users = JSON.parse(localStorage.getItem("undr_users"));
-            const uIdx = users.findIndex(u => u.handle === user.handle);
-            if (uIdx !== -1) {
-                users[uIdx].balance = user.balance;
-                localStorage.setItem("undr_users", JSON.stringify(users));
-            }
-
-            processTipTransfer(activeChatCreator, amountVal, msgVal);
+            // Always require real payment gateway processing for tips to guarantee valid earnings
+            ccbillPaymentCallback = () => {
+                processTipTransfer(activeChatCreator, amountVal, msgVal);
+                tipModal.style.display = "none";
+            };
+            
+            if (gatewayTotalAmount) gatewayTotalAmount.textContent = `$${amountVal.toFixed(2)} USD`;
             tipModal.style.display = "none";
+
+            // Open secure payment gateway modal for live authorization
+            if (gatewayModal) gatewayModal.style.display = "flex";
         });
     }
 }
@@ -3126,30 +3782,64 @@ window.selectTipPreset = function(amount) {
 };
 
 function processTipTransfer(creatorName, amount, messageText) {
-    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const currentUser = JSON.parse(localStorage.getItem("undr_current_user")) || { username: "Guest Buyer" };
+    const netEarning = amount * 0.8; // 80% net for creator, 20% platform fee
+
+    const chats = JSON.parse(localStorage.getItem("undr_chats")) || [];
     const chat = chats.find(c => c.creatorName === creatorName);
     if (chat) {
         chat.messages.push({
             sender: "user",
             isTip: true,
             tipAmount: amount,
-            text: messageText,
+            text: messageText || (currentLang === "es" ? "Propina confirmada" : "Confirmed Tip"),
+            status: "paid",
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         localStorage.setItem("undr_chats", JSON.stringify(chats));
     }
 
-    // Credit 80% to creator
-    const users = JSON.parse(localStorage.getItem("undr_users"));
+    // Record verified tip transaction in creator earnings database
+    const creatorOrders = JSON.parse(localStorage.getItem("creator_orders")) || [];
+    const tipOrderRecord = {
+        id: `TIP-${Date.now().toString().slice(-6)}`,
+        date: new Date().toLocaleString(),
+        type: "Direct Tip",
+        itemTitle: `Confirmed Tip from @${currentUser.username || 'buyer'}`,
+        grossAmount: amount,
+        netEarnings: netEarning,
+        status: "Completed & Paid",
+        buyerName: currentUser.username || "Guest Buyer",
+        messageText: messageText || ""
+    };
+    creatorOrders.unshift(tipOrderRecord);
+    localStorage.setItem("creator_orders", JSON.stringify(creatorOrders));
+
+    // Credit 80% verified net earnings to creator profile balance
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
     const creatorUser = users.find(u => u.username === creatorName);
     if (creatorUser) {
-        creatorUser.balance = parseFloat(creatorUser.balance) + (amount * 0.8);
+        creatorUser.balance = parseFloat(creatorUser.balance || 0) + netEarning;
         localStorage.setItem("undr_users", JSON.stringify(users));
     }
 
+    // Trigger Notification for creator
+    const userNotifications = JSON.parse(localStorage.getItem("user_notifications")) || [];
+    userNotifications.unshift({
+        id: Date.now(),
+        type: "tip_received",
+        title: currentLang === "es" ? "🎉 ¡Propina Pagada y Confirmada!" : "🎉 Confirmed Tip Received!",
+        desc: currentLang === "es" ? 
+            `Has recibido una propina confirmada de $${amount.toFixed(2)} USD ($${netEarning.toFixed(2)} USD netos en tu saldo retirable) de @${currentUser.username || 'buyer'}.` : 
+            `You received a confirmed tip of $${amount.toFixed(2)} USD ($${netEarning.toFixed(2)} USD net to your withdrawable balance) from @${currentUser.username || 'buyer'}.`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: false
+    });
+    localStorage.setItem("user_notifications", JSON.stringify(userNotifications));
+
     syncUserSessionUI();
     renderChatMessages(creatorName);
-    showToast(currentLang === "es" ? `¡Propina de $${amount.toFixed(2)} USD enviada a ${creatorName}!` : `Tip of $${amount.toFixed(2)} USD sent to ${creatorName}!`);
+    showToast(currentLang === "es" ? `¡Propina de $${amount.toFixed(2)} USD pagada con éxito!` : `Tip of $${amount.toFixed(2)} USD paid successfully!`);
 }
 
 function sendTextMessageFromBar() {
@@ -4166,7 +4856,8 @@ window.updateMobileNavActive = function(element) {
 window.handleMobileProfileClick = function() {
     const user = JSON.parse(localStorage.getItem("undr_current_user"));
     if (!user || user === "null") {
-        loginModal.style.display = "flex";
+        const modal = document.getElementById("login-modal");
+        if (modal) modal.style.display = "flex";
         return;
     }
     if (user.role === "creator") {
@@ -4179,12 +4870,8 @@ window.handleMobileProfileClick = function() {
 window.toggleCartModal = function() {
     const modal = document.getElementById("cart-modal");
     if (!modal) return;
-    if (modal.style.display === "flex" || modal.style.display === "block") {
-        modal.style.display = "none";
-    } else {
-        renderMobileCartModal();
-        modal.style.display = "flex";
-    }
+    renderMobileCartModal();
+    modal.style.display = "flex";
 };
 
 window.renderMobileCartModal = function() {

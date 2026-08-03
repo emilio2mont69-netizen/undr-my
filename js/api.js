@@ -29,18 +29,24 @@ const failure = (error) => ({ data: null, error: { message: error.message || Str
 export const api = {
     // --- Auth Module ---
     auth: {
-        async signUp(email, password, username, handle) {
+        async signUp(email, password, username, handle, role = 'buyer') {
             try {
                 if (isSupabaseConfigured()) {
+                    const redirectUrl = window.location.origin + window.location.pathname;
                     const { data, error } = await supabase.auth.signUp({
-                        email, password, options: { data: { username, handle } }
+                        email, 
+                        password, 
+                        options: { 
+                            emailRedirectTo: redirectUrl,
+                            data: { username, handle, role } 
+                        }
                     });
                     if (error) throw error;
                     return success(data);
                 } else {
                     const users = getLocal('undr_users', []);
                     if (users.find(u => u.email === email)) throw new Error('User already exists');
-                    const newUser = { id: generateId(), email, username, handle, role: 'buyer', balance: 0, createdAt: new Date().toISOString() };
+                    const newUser = { id: generateId(), email, username, handle, role, balance: role === 'buyer' ? 300 : 0, createdAt: new Date().toISOString() };
                     users.push(newUser);
                     setLocal('undr_users', users);
                     setLocal('undr_currentUser', newUser);
@@ -60,6 +66,27 @@ export const api = {
                     if (!user) throw new Error('Invalid credentials');
                     setLocal('undr_currentUser', user);
                     return success({ user, session: { access_token: 'local_token' } });
+                }
+            } catch (error) { return failure(error); }
+        },
+        async signInWithOAuth(provider = 'google') {
+            try {
+                if (isSupabaseConfigured()) {
+                    const redirectUrl = window.location.origin + window.location.pathname;
+                    const { data, error } = await supabase.auth.signInWithOAuth({
+                        provider: provider,
+                        options: { 
+                            redirectTo: redirectUrl,
+                            queryParams: {
+                                access_type: 'offline',
+                                prompt: 'consent',
+                            }
+                        }
+                    });
+                    if (error) throw error;
+                    return success(data);
+                } else {
+                    throw new Error('OAuth login requires Supabase connection');
                 }
             } catch (error) { return failure(error); }
         },

@@ -153,13 +153,17 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 14px 18px;
+    padding: 0 16px;
+    height: 48px;
     color: var(--text-primary);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: clamp(0.82rem, 1.6vw, 0.95rem);
     font-weight: 500;
-    border-radius: var(--border-radius-lg);
-    transition: all var(--transition-speed) ease;
+    border-radius: 14px;
+    transition: background 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     position: relative;
 }
 
@@ -800,12 +804,18 @@ input:checked + .slider:before {
     font-weight: 700;
     line-height: 1.35;
     color: var(--text-primary);
+    min-height: 2.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .card-description {
     font-size: 0.85rem;
     color: var(--text-muted);
     line-height: 1.45;
+    min-height: 2.5rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -815,19 +825,22 @@ input:checked + .slider:before {
 /* Lingerie Spec Tags */
 .card-spec-tags {
     display: flex;
-    flex-wrap: wrap;
     gap: 6px;
+    flex-wrap: wrap;
     margin: 4px 0;
+    min-height: 26px;
+    align-items: center;
 }
 
 .spec-tag {
     font-size: 0.72rem;
     font-weight: 600;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
     background-color: var(--accent-light);
     color: var(--text-primary);
     border: 1px solid rgba(210, 185, 235, 0.3);
+    white-space: nowrap;
 }
 
 .spec-tag.tag-extra {
@@ -849,20 +862,25 @@ input:checked + .slider:before {
 }
 
 .btn-buy-item {
-    flex-grow: 1;
+    flex: 1;
+    min-width: 0;
     background-color: var(--accent-color);
     color: var(--primary-bg);
     border: none;
     border-radius: 20px;
-    padding: 11px;
+    padding: 0 10px;
+    height: 42px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: clamp(0.72rem, 1.8vw, 0.82rem);
     cursor: pointer;
     transition: all var(--transition-speed);
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-buy-item:hover {
@@ -871,16 +889,24 @@ input:checked + .slider:before {
 }
 
 .btn-request-custom {
-    flex-grow: 1;
+    flex: 1;
+    min-width: 0;
     background-color: var(--secondary-bg);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
     border-radius: 20px;
-    padding: 11px;
+    padding: 0 10px;
+    height: 42px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: clamp(0.72rem, 1.8vw, 0.82rem);
     cursor: pointer;
     transition: all var(--transition-speed);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-request-custom:hover {
@@ -2772,11 +2798,77 @@ body.creator-mode-active .nav-item.active {
         font-size: 0.85rem !important;
     }
 
-    /* Chat Mobile Responsive */
+    /* Mobile Tailored Chat UX & Smooth Navigation */
     .chat-container {
-        grid-template-columns: 1fr !important;
-        height: calc(100vh - 160px) !important;
-        border-radius: 12px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: calc(100vh - 150px) !important;
+        border-radius: 16px !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .chat-sidebar {
+        width: 100% !important;
+        height: 100% !important;
+        border-right: none !important;
+    }
+
+    .chat-main {
+        display: none !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* Active Conversation View on Mobile */
+    .chat-container.mobile-active-chat .chat-sidebar {
+        display: none !important;
+    }
+
+    .chat-container.mobile-active-chat .chat-main {
+        display: flex !important;
+    }
+
+    .chat-back-mobile-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: var(--accent-light) !important;
+        color: var(--accent-hover) !important;
+        border: none !important;
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 50% !important;
+        font-size: 0.95rem !important;
+        cursor: pointer !important;
+        margin-right: 8px !important;
+    }
+
+    .chat-header {
+        padding: 10px 12px !important;
+    }
+
+    .chat-messages-area {
+        padding: 12px !important;
+    }
+
+    .chat-input-bar {
+        padding: 8px 10px !important;
+        background: var(--primary-bg) !important;
+        border-top: 1px solid var(--border-color) !important;
+    }
+
+    .chat-input-bar input {
+        font-size: 0.88rem !important;
+        padding: 10px 14px !important;
+        border-radius: 20px !important;
+    }
+
+    .chat-bubble-media img {
+        max-width: 100% !important;
+        max-height: 220px !important;
+        border-radius: 14px !important;
+        object-fit: cover !important;
     }
 
     /* Mobile Sheet Modals - Sits on Top with Clear Bottom Margin */

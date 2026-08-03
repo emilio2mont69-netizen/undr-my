@@ -88,9 +88,9 @@
                     <i class="fa-solid fa-gem"></i>
                     <span data-i18n="nav_creator_portal">Creator Portal</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" id="nav-buyer-settings-item" onclick="showSection('buyer-settings', this)">
+                <a href="javascript:void(0)" class="nav-item" id="nav-buyer-settings-item" onclick="openUniversalProfileEditModal()">
                     <i class="fa-solid fa-user-gear"></i>
-                    <span data-i18n="nav_buyer_settings">Account Settings</span>
+                    <span data-i18n="nav_buyer_settings">Account & @Handle</span>
                 </a>
                 <a href="javascript:void(0)" class="nav-item" id="nav-admin-item" onclick="showSection('admin', this)" style="display:none;">
                     <i class="fa-solid fa-shield-halved"></i>
@@ -105,7 +105,7 @@
             
             <!-- Sidebar Footer with Current Session Profile -->
             <div class="sidebar-footer">
-                <div class="user-quick-profile">
+                <div class="user-quick-profile" onclick="openUniversalProfileEditModal()" style="cursor:pointer;" title="Click to edit profile & @handle">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Avatar" class="user-avatar" id="sidebar-avatar">
                     <div class="user-info">
                         <span class="user-name" id="user-name-display">Guest</span>
@@ -178,9 +178,9 @@
                     </button>
                     
                     <!-- Language switcher button -->
-                    <button class="btn btn-lang" id="lang-toggle-btn"><i class="fa-solid fa-globe"></i> EN</button>
+                    <button class="btn btn-lang" id="lang-toggle-btn" onclick="toggleLanguage()"><i class="fa-solid fa-globe"></i> EN</button>
                     <!-- Currency Switcher Select -->
-                    <select id="currency-toggle-select" class="btn btn-lang" style="padding: 6px 8px; cursor: pointer; font-weight: 700; background: var(--secondary-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size:0.78rem;">
+                    <select id="currency-toggle-select" class="btn btn-lang" onchange="setCurrency(this.value)" style="padding: 6px 8px; cursor: pointer; font-weight: 700; background: var(--secondary-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size:0.78rem;">
                         <option value="USD" selected>USD ($)</option>
                         <option value="EUR">EUR (€)</option>
                         <option value="GBP">GBP (£)</option>
@@ -263,6 +263,7 @@
                     <!-- Main Chat Panel -->
                     <div class="chat-main" id="chat-window">
                         <div class="chat-header">
+                            <button class="chat-back-mobile-btn" id="chat-back-mobile-btn" onclick="closeMobileChatWindow()" title="Back to chats"><i class="fa-solid fa-chevron-left"></i></button>
                             <img src="" alt="" class="chat-header-avatar" id="chat-active-avatar">
                             <div class="chat-header-info">
                                 <div style="display:flex; align-items:center; gap:6px;">
@@ -272,8 +273,8 @@
                                 <span class="chat-header-status" id="chat-active-handle">@handle</span>
                             </div>
                             <div class="chat-header-actions" id="chat-buyer-actions" style="display:flex; gap:8px;">
-                                <button class="btn btn-login" id="chat-send-tip-btn" style="padding: 6px 12px; font-size: 0.78rem; border-color: #ff4d6d; color: #ff4d6d;"><i class="fa-solid fa-heart"></i> Send Tip</button>
-                                <button class="btn btn-follow btn-custom-chat-trigger" id="chat-request-custom-btn" data-i18n="req_custom_btn">Request Custom</button>
+                                <button class="btn btn-login" id="chat-send-tip-btn" style="padding: 6px 10px; font-size: 0.78rem; border-color: #ff4d6d; color: #ff4d6d;"><i class="fa-solid fa-heart"></i> Tip</button>
+                                <button class="btn btn-follow btn-custom-chat-trigger" id="chat-request-custom-btn" data-i18n="req_custom_btn">Custom</button>
                             </div>
                         </div>
                         
@@ -294,6 +295,45 @@
 
             <!-- SECTION 3: Creator Portal & Onboarding -->
             <div id="section-creator" class="content-section-panel">
+                <!-- Creator Personal Profile Card Widget -->
+                <div class="widget" style="margin-bottom: 24px; background: linear-gradient(135deg, var(--secondary-bg), var(--accent-light)); border: 1.5px solid var(--accent-color); padding: 20px; border-radius: 16px;">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                        <div style="position: relative; cursor: pointer;" onclick="document.getElementById('edit-avatar-file-input').click()" title="Click to change photo">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100" alt="Creator Profile Picture" id="creator-picture-preview" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-hover); box-shadow: var(--shadow-sm);">
+                            <button class="btn" style="position: absolute; bottom: 0; right: 0; background: var(--accent-hover); color: #fff; border-radius: 50%; width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 2px solid #fff; pointer-events: none;"><i class="fa-solid fa-camera"></i></button>
+                        </div>
+                        <div>
+                            <h3 id="creator-display-name" style="font-size: 1.2rem; font-weight: 800; margin-bottom: 2px;">Luna Diamond</h3>
+                            <span id="creator-display-handle" style="font-size: 0.85rem; color: var(--accent-hover); font-weight: 600; display: block;">@lunadiamond</span>
+                            <span id="creator-display-role" class="proposal-status-badge accepted" style="margin-top: 4px; display: inline-block; font-size: 0.7rem;" data-i18n="creator_account_tag">Creator Account</span>
+                        </div>
+                    </div>
+
+                    <!-- Editable Creator Profile Inputs -->
+                    <div style="border-top: 1px dashed var(--border-color); padding-top: 14px; display: flex; flex-direction: column; gap: 12px;">
+                        <div class="form-row" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                                <label style="font-size: 0.78rem; font-weight: 700;" data-i18n="public_name_label">Display Name</label>
+                                <input type="text" id="edit-creator-name-input" placeholder="e.g. Luna Diamond" style="padding: 10px 12px; font-size: 0.85rem; border-radius: 10px;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                                <label style="font-size: 0.78rem; font-weight: 700;" data-i18n="handle_label">Creator @Handle</label>
+                                <input type="text" id="edit-creator-handle-input" placeholder="e.g. @lunadiamond" style="padding: 10px 12px; font-size: 0.85rem; border-radius: 10px;">
+                            </div>
+                        </div>
+
+                        <!-- Harmonized Action Buttons Side-by-Side -->
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 4px;">
+                            <button type="button" class="btn btn-primary" onclick="saveCreatorProfileInfo()" style="padding: 10px 20px; font-size: 0.85rem; border-radius: 10px; font-weight: 700; height: 40px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="save_profile_btn">Save Profile Changes</span>
+                            </button>
+                            <button type="button" class="btn btn-register" onclick="logoutCurrentSession()" style="background: #ff4d6d; border-color: #ff4d6d; color: #fff; padding: 10px 20px; font-size: 0.85rem; border-radius: 10px; font-weight: 700; height: 40px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout_btn">Log Out</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Creator KYC Onboarding Card -->
                 <div class="onboarding-card" id="kyc-onboarding-panel">
                     <i class="fa-solid fa-id-card-clip kyc-icon"></i>
@@ -662,9 +702,51 @@
                 </div>
             </div>
 
-            <!-- SECTION 6: Buyer Account Settings -->
+            <!-- SECTION 6: Buyer Account Settings & Personalization -->
             <div id="section-buyer-settings" class="content-section-panel">
                 <div class="buyer-settings-layout">
+                    <!-- Personal Profile Card Widget -->
+                    <div class="widget" style="margin-bottom: 24px; background: linear-gradient(135deg, var(--secondary-bg), var(--accent-light)); border: 1.5px solid var(--accent-color); padding: 20px; border-radius: 16px;">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                            <div style="position: relative; cursor: pointer;" onclick="document.getElementById('edit-avatar-file-input').click()" title="Click to change photo">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile Picture" id="profile-picture-preview" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-hover); box-shadow: var(--shadow-sm);">
+                                <button class="btn" style="position: absolute; bottom: 0; right: 0; background: var(--accent-hover); color: #fff; border-radius: 50%; width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 2px solid #fff; pointer-events: none;"><i class="fa-solid fa-camera"></i></button>
+                            </div>
+                            <div>
+                                <h3 id="profile-display-name" style="font-size: 1.2rem; font-weight: 800; margin-bottom: 2px;">Guest User</h3>
+                                <span id="profile-display-handle" style="font-size: 0.85rem; color: var(--accent-hover); font-weight: 600; display: block;">@guest</span>
+                                <span id="profile-display-role" class="proposal-status-badge accepted" style="margin-top: 4px; display: inline-block; font-size: 0.7rem;">Buyer Account</span>
+                            </div>
+                        </div>
+
+                        <!-- Hidden File Input for Avatar Upload -->
+                        <input type="file" id="edit-avatar-file-input" accept="image/*" style="display: none;" onchange="handleProfileAvatarUpload(event)">
+
+                        <!-- Edit Profile & @Handle Inline Form -->
+                        <div id="inline-edit-profile-form" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-color); display: flex; flex-direction: column; gap: 12px;">
+                            <div class="form-row" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <div class="form-group" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                                    <label style="font-size: 0.78rem; font-weight: 700;" data-i18n="username_label">Display Name / Nombre</label>
+                                    <input type="text" id="edit-username-input" placeholder="e.g. John Doe" style="padding: 10px 12px; font-size: 0.85rem; border-radius: 10px;">
+                                </div>
+                                <div class="form-group" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                                    <label style="font-size: 0.78rem; font-weight: 700;" data-i18n="handle_label">Unique @Handle</label>
+                                    <input type="text" id="edit-buyer-handle-input" placeholder="e.g. @guest" style="padding: 10px 12px; font-size: 0.85rem; border-radius: 10px;">
+                                </div>
+                            </div>
+                            
+                            <!-- Harmonized Action Buttons Side-by-Side -->
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 4px;">
+                                <button type="button" class="btn btn-primary" onclick="savePersonalProfileChanges()" style="padding: 10px 20px; font-size: 0.85rem; border-radius: 10px; font-weight: 700; height: 40px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="save_profile_btn">Save Profile Changes</span>
+                                </button>
+                                <button type="button" class="btn btn-register" onclick="logoutCurrentSession()" style="background: #ff4d6d; border-color: #ff4d6d; color: #fff; padding: 10px 20px; font-size: 0.85rem; border-radius: 10px; font-weight: 700; height: 40px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout_btn">Log Out</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <h2 style="margin-bottom: 24px;"><i class="fa-solid fa-user-gear" style="color:var(--accent-color);"></i> Buyer Account & Privacy settings</h2>
                     
                     <div class="creator-grid-panels">
@@ -873,44 +955,50 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="gateway-simulation-header" style="background:#1d1d22; padding:20px; border-radius:12px 12px 0 0; text-align:center; color:#fff; margin:-30px -30px 20px -30px;">
                 <h3 style="font-weight:700; font-size:1.1rem; color:#fff;"><i class="fa-solid fa-lock" style="color:var(--accent-color);"></i> CCBILL SECURE PAYMENT GATEWAY</h3>
-                <span style="font-size:0.75rem; color:#aaa;">Transacción autorizada para UNDR Marketplace</span>
+                <span style="font-size:0.75rem; color:#aaa;" data-i18n="gateway_auth_subtitle">Authorized Transaction for UNDR Marketplace</span>
             </div>
             
             <div class="gateway-details">
                 <div class="total-row" style="margin-bottom:16px;">
-                    <span style="font-weight:600;">Total a pagar:</span>
+                    <span style="font-weight:600;" data-i18n="total_to_pay">Total Amount:</span>
                     <span id="gateway-total-amount" style="font-size:1.3rem; font-weight:800; color:var(--text-primary);">$0.00 USD</span>
                 </div>
                 
                 <form id="gateway-payment-form" class="modal-form">
-                    <div class="form-group">
-                        <label>Cardholder Name</label>
-                        <input type="text" required placeholder="John Doe">
-                    </div>
-                    <div class="form-group">
-                        <label>Card Number</label>
-                        <input type="text" required placeholder="4000 1234 5678 9010" maxlength="19">
-                    </div>
-                    <div class="form-row" style="display:flex; gap:10px;">
-                        <div class="form-group" style="flex:1;">
-                            <label>Expiry Date</label>
-                            <input type="text" required placeholder="MM/YY" maxlength="5">
+                    <!-- Shipping Address Section -->
+                    <div style="background:var(--secondary-bg); padding:12px; border-radius:10px; border:1px solid var(--border-color); margin-bottom:14px;">
+                        <h4 style="font-size:0.88rem; font-weight:700; margin-bottom:8px; color:var(--accent-hover); display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-truck-fast"></i> <span data-i18n="discreet_shipping_title">Discreet Shipping Address</span>
+                        </h4>
+                        <div class="form-group" style="margin-bottom:8px;">
+                            <label style="font-size:0.75rem;" data-i18n="recipient_full_name_label">Recipient Full Name</label>
+                            <input type="text" id="shipping-full-name" required placeholder="John Doe" style="padding:8px; font-size:0.82rem;">
                         </div>
-                        <div class="form-group" style="flex:1;">
-                            <label>CVV</label>
-                            <input type="password" required placeholder="•••" maxlength="4">
+                        <div class="form-group" style="margin-bottom:8px;">
+                            <label style="font-size:0.75rem;" data-i18n="street_address_label">Street Address & Apartment</label>
+                            <input type="text" id="shipping-street" required placeholder="405 Lexington Ave, Apt 4B" style="padding:8px; font-size:0.82rem;">
+                        </div>
+                        <div class="form-row" style="display:flex; gap:8px;">
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label style="font-size:0.75rem;" data-i18n="city_label">City</label>
+                                <input type="text" id="shipping-city" required placeholder="New York" style="padding:8px; font-size:0.82rem;">
+                            </div>
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label style="font-size:0.75rem;" data-i18n="zip_country_label">Zip Code / Country</label>
+                                <input type="text" id="shipping-zip" required placeholder="10174, USA" style="padding:8px; font-size:0.82rem;">
+                            </div>
                         </div>
                     </div>
-                    
-                    <div style="background:var(--accent-light); padding:10px; border-radius:8px; font-size:0.72rem; color:var(--text-muted); line-height:1.4; margin:10px 0;">
-                        <i class="fa-solid fa-shield-halved"></i> <strong>Discreet billing:</strong> Este cargo aparecerá en su extracto bancario como <strong>"UNDR ONLINE BILLING"</strong>. Sin mención al contenido del paquete.
-                    </div>
-                    
-                    <button type="button" class="btn btn-login btn-block" onclick="autoFillTestCard()" style="margin-bottom:10px; font-size:0.8rem; border-color:var(--accent-hover); color:var(--accent-hover);"><i class="fa-solid fa-credit-card"></i> ⚡ Auto-llenar Tarjeta de Prueba (Fast Test Card)</button>
 
-                    <div class="age-actions">
-                        <button type="submit" class="btn btn-register btn-block" id="gateway-submit-btn">Authorize Payment via CCBill</button>
-                        <button type="button" class="btn btn-login btn-block" onclick="document.getElementById('gateway-modal').style.display='none'">Cancel Transaction</button>
+                    <div style="background:var(--accent-light); padding:10px; border-radius:8px; font-size:0.72rem; color:var(--text-muted); line-height:1.4; margin:12px 0;">
+                        <i class="fa-solid fa-shield-halved" style="color:var(--accent-hover);"></i> <strong data-i18n="discreet_billing_tag">Discreet billing:</strong> <span data-i18n="discreet_billing_desc">This charge will appear on your bank statement as "UNDR ONLINE BILLING". No mention of parcel contents. Payment credentials are encrypted directly on the payment processor page.</span>
+                    </div>
+
+                    <div class="age-actions" style="display:flex; flex-direction:column; gap:10px;">
+                        <button type="button" class="btn btn-primary btn-block" onclick="processNowpaymentsCheckout()" style="padding:14px; font-weight:700; background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; font-size:0.95rem;">
+                            <i class="fa-solid fa-lock"></i> <span data-i18n="pay_nowpayments_btn">Proceed to Secure Payment Gateway (NOWPayments)</span>
+                        </button>
+                        <button type="button" class="btn btn-login btn-block" onclick="document.getElementById('gateway-modal').style.display='none'" data-i18n="cancel_transaction_btn">Cancel Transaction</button>
                     </div>
                 </form>
             </div>
@@ -1055,10 +1143,59 @@
         </div>
     </div>
 
+    <!-- Universal Profile & @Handle Edit Modal -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content" style="max-width: 480px;">
+            <span class="close-modal" onclick="document.getElementById('edit-profile-modal').style.display='none'">&times;</span>
+            <div class="modal-header-branding" style="text-align:center; margin-bottom:16px;">
+                <i class="fa-solid fa-user-gear" style="font-size:2rem; color:var(--accent-color); margin-bottom:8px;"></i>
+                <h3 data-i18n="edit_profile_modal_title">Edit Profile & Unique @Handle</h3>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Customize your photo, public display name, and unique handle.</p>
+            </div>
+
+            <!-- Profile Avatar Preview & Upload -->
+            <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:18px;">
+                <div style="position:relative; cursor:pointer;" onclick="document.getElementById('edit-avatar-file-input').click()" title="Click to upload new photo">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120" alt="Avatar" id="universal-profile-avatar-preview" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-hover); box-shadow:var(--shadow-sm);">
+                    <button class="btn" style="position:absolute; bottom:0; right:0; background:var(--accent-hover); color:#fff; border-radius:50%; width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; font-size:0.9rem; border:2px solid #fff; pointer-events:none;"><i class="fa-solid fa-camera"></i></button>
+                </div>
+                <span style="font-size:0.75rem; color:var(--accent-hover); font-weight:600; margin-top:6px;"><i class="fa-solid fa-cloud-arrow-up"></i> Tap photo to upload new picture</span>
+            </div>
+
+            <form class="modal-form" onsubmit="event.preventDefault(); saveUniversalProfileChanges();">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label style="font-weight:700; font-size:0.82rem;" data-i18n="public_name_label">Display Name / Nombre Público</label>
+                    <input type="text" id="modal-edit-name-input" required placeholder="e.g. Luna Diamond" style="padding:10px; font-size:0.9rem;">
+                </div>
+
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label style="font-weight:700; font-size:0.82rem;" data-i18n="handle_label">Unique @Handle (Search Identity)</label>
+                    <input type="text" id="modal-edit-handle-input" required placeholder="e.g. @lunadiamond" style="padding:10px; font-size:0.9rem;">
+                </div>
+
+                <div style="background:var(--accent-light); padding:10px 12px; border-radius:10px; font-size:0.73rem; color:var(--text-muted); line-height:1.45; margin-bottom:16px; border:1px solid rgba(210,185,235,0.4);">
+                    <i class="fa-solid fa-shield-halved" style="color:var(--accent-hover);"></i> <strong>Handle Security Rules:</strong>
+                    <ul style="margin:4px 0 0 16px; padding:0;">
+                        <li>Must be 3-20 characters (letters, numbers, <code>_</code>).</li>
+                        <li>Must be unique (no duplicates allowed).</li>
+                        <li>Can only be changed <strong>once every 14 days</strong> for search stability.</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="padding:12px; font-weight:700; font-size:0.9rem; margin-bottom:10px;">
+                    <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="save_profile_btn">Save Profile & @Handle</span>
+                </button>
+                <button type="button" class="btn btn-register btn-block" onclick="logoutCurrentSession()" style="background:#ff4d6d; border-color:#ff4d6d; color:#fff; padding:10px;">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout_btn">Log Out</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Login Modal -->
     <div class="modal" id="login-modal">
         <div class="modal-content">
-            <span class="close-modal" id="close-login">&times;</span>
+            <span class="close-modal" id="close-login" onclick="document.getElementById('login-modal').style.display='none'">&times;</span>
             <div class="modal-header-branding">
                 <img src="./logofase.PNG" alt="UNDR" class="modal-logo">
                 <h3 data-i18n="login_title">Log In</h3>
@@ -1069,14 +1206,29 @@
                 <button class="btn btn-secondary" onclick="demoLogin('creator')"><i class="fa-solid fa-gem"></i> Login as Creator (@lunadiamond)</button>
                 <button class="btn btn-secondary" onclick="demoLogin('admin')"><i class="fa-solid fa-shield-halved"></i> Login as Admin Staff</button>
             </div>
-            <form class="modal-form" id="login-form" style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+
+            <!-- Social Login OAuth Google Button -->
+            <div style="margin-top: 14px; text-align: center;">
+                <button class="btn btn-secondary btn-block" onclick="loginWithGoogle()" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffffff; color: #333333; border: 1px solid #e0e0e0; font-weight: 600; padding: 10px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    Continue with Google
+                </button>
+            </div>
+
+            <div style="display: flex; align-items: center; margin: 16px 0; color: var(--text-muted); font-size: 0.8rem;">
+                <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+                <span style="padding: 0 10px;">or with email</span>
+                <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+            </div>
+
+            <form class="modal-form" id="login-form">
                 <div class="form-group">
                     <label>Email or Username</label>
                     <input type="text" id="login-username" required placeholder="email@example.com or @handle">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="login-password" required placeholder="Default password is: undr123">
+                    <input type="password" id="login-password" required placeholder="Your password">
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Log In securely</button>
             </form>
@@ -1086,11 +1238,25 @@
     <!-- Register Modal -->
     <div class="modal" id="register-modal">
         <div class="modal-content">
-            <span class="close-modal" id="close-register">&times;</span>
+            <span class="close-modal" id="close-register" onclick="this.closest('.modal').style.display='none'">&times;</span>
             <div class="modal-header-branding">
                 <img src="./logofase.PNG" alt="UNDR" class="modal-logo">
                 <h3 data-i18n="register_title">Create Account</h3>
                 <p>Join the UNDR community</p>
+            </div>
+
+            <!-- Social Registration Google Button -->
+            <div style="margin-bottom: 14px; text-align: center;">
+                <button class="btn btn-secondary btn-block" onclick="loginWithGoogle()" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffffff; color: #333333; border: 1px solid #e0e0e0; font-weight: 600; padding: 10px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    Sign up with Google
+                </button>
+            </div>
+
+            <div style="display: flex; align-items: center; margin: 14px 0; color: var(--text-muted); font-size: 0.8rem;">
+                <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+                <span style="padding: 0 10px;">or register with email</span>
+                <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
             </div>
             <form class="modal-form" id="register-form">
                 <div class="form-group">
@@ -1120,7 +1286,7 @@
     <!-- Authenticity Explainer Modal -->
     <div class="modal" id="auth-modal">
         <div class="modal-content">
-            <span class="close-modal" id="close-auth">&times;</span>
+            <span class="close-modal" id="close-auth" onclick="this.closest('.modal').style.display='none'">&times;</span>
             <div class="modal-header-branding">
                 <i class="fa-solid fa-certificate badge-cert-icon"></i>
                 <h3 data-i18n="auth_modal_title">How Our Authenticity Guarantee Works</h3>
@@ -1154,7 +1320,7 @@
     <!-- Request Custom Modal -->
     <div class="modal" id="custom-modal">
         <div class="modal-content">
-            <span class="close-modal" id="close-custom">&times;</span>
+            <span class="close-modal" id="close-custom" onclick="this.closest('.modal').style.display='none'">&times;</span>
             <div class="modal-header-branding">
                 <i class="fa-solid fa-wand-magic-sparkles modal-branding-icon"></i>
                 <h3 data-i18n="custom_modal_title">Request Custom Item</h3>
@@ -1253,7 +1419,7 @@
                 </div>
                 <div style="display:flex; justify-content:space-between; font-weight:500; font-size:0.82rem; color:var(--text-muted);">
                     <span data-i18n="discreet_shipping_cost">Discreet Shipping:</span>
-                    <span id="mobile-cart-shipping">Free / Discreta</span>
+                    <span id="mobile-cart-shipping" data-i18n="free_discreet_shipping">Free / Discreet</span>
                 </div>
             </div>
 

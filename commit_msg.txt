@@ -1,1 +1,1 @@
-fix: update package.json build script for Vercel static deployment
+refactor: remove floating sticky legal bar for clean mobile and desktop UI

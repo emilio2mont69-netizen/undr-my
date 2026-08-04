@@ -917,6 +917,22 @@ window.showSection = function(sectionName, element = null, updateHash = true) {
         }
     }
 
+    // Sync mobile bottom dock bar active highlight
+    const mobileNavItems = document.querySelectorAll(".mobile-nav-item");
+    mobileNavItems.forEach(item => item.classList.remove("active"));
+    const mobileIdMap = {
+        "explore": "mobile-nav-explore",
+        "auctions": "mobile-nav-auctions",
+        "chat": "mobile-nav-chat",
+        "creator": "mobile-nav-profile",
+        "buyer-settings": "mobile-nav-profile"
+    };
+    const mobileTargetId = mobileIdMap[sectionName];
+    if (mobileTargetId) {
+        const mobNavEl = document.getElementById(mobileTargetId);
+        if (mobNavEl) mobNavEl.classList.add("active");
+    }
+
     // Load dynamic updates
     if (sectionName === "chat") {
         renderChatMessages(activeChatCreator);

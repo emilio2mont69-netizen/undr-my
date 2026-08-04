@@ -2870,21 +2870,33 @@ body.creator-mode-active .nav-item.active {
     }
 
     .mobile-nav-item i {
-        font-size: 1.65rem !important;
-        color: var(--text-muted) !important;
-        transition: color 0.2s ease, transform 0.2s ease !important;
+        font-size: 1.4rem;
+        color: var(--text-muted);
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .mobile-nav-item span {
+        font-size: 0.68rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-top: 2px;
     }
 
     .mobile-nav-item.active {
         color: var(--accent-hover) !important;
-        background: var(--accent-light) !important;
-        border-radius: 20px !important;
+        background: rgba(255, 77, 109, 0.12) !important;
+        border-radius: 16px !important;
     }
 
     .mobile-nav-item.active i {
         color: var(--accent-hover) !important;
-        transform: scale(1.08) !important;
-    } /* Remove zoom distortion effect on active icons */
+        transform: scale(1.1) !important;
+    }
+
+    .mobile-nav-item.active span {
+        color: var(--accent-hover) !important;
+        font-weight: 700 !important;
+    }
 
     /* Creator Profile Mobile Layout */
     .profile-cover {

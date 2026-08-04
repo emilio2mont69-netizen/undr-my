@@ -1,1 +1,1 @@
-fix: disable service worker auto-registration, purge browser cache on index.html load, and bundle supabase-js directly
+fix: highlight mobile bottom nav items on active tab switch and remove css important override

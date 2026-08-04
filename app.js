@@ -2603,18 +2603,20 @@ window.processNowpaymentsCheckout = async function() {
 };
 
 // CCBill simulation submission form
-gatewayPaymentForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    gatewayModal.style.display = "none";
-    showToast(translations[currentLang].checkout_success);
+if (gatewayPaymentForm) {
+    gatewayPaymentForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (gatewayModal) gatewayModal.style.display = "none";
+        showToast(translations[currentLang].checkout_success);
 
-    setTimeout(() => {
-        if (ccbillPaymentCallback) {
-            ccbillPaymentCallback();
-            ccbillPaymentCallback = null;
-        }
-    }, 1200);
-});
+        setTimeout(() => {
+            if (ccbillPaymentCallback) {
+                ccbillPaymentCallback();
+                ccbillPaymentCallback = null;
+            }
+        }, 1200);
+    });
+}
 
 // ==========================================
 // REGISTER & PRODUCT DETAIL FLOW
@@ -2630,15 +2632,24 @@ window.openProductDetailModal = function(productId, fromProfile = false) {
     const titleText = localData.title || product.title || "";
     const descText = localData.description || product.description || "";
     
-    document.getElementById("detail-modal-image").src = product.image;
-    document.getElementById("detail-modal-avatar").src = product.creator.avatar;
-    document.getElementById("detail-modal-creator-name").textContent = product.creator.handle;
-    document.getElementById("detail-modal-title").textContent = titleText;
-    document.getElementById("detail-modal-price").textContent = formatPrice(product.price);
-    document.getElementById("detail-modal-desc").textContent = descText;
+    const imgEl = document.getElementById("detail-modal-image");
+    const avatarEl = document.getElementById("detail-modal-avatar");
+    const creatorNameEl = document.getElementById("detail-modal-creator-name");
+    const titleEl = document.getElementById("detail-modal-title");
+    const priceEl = document.getElementById("detail-modal-price");
+    const descEl = document.getElementById("detail-modal-desc");
+    const tagSizeEl = document.getElementById("detail-modal-tag-size");
+    const tagWearEl = document.getElementById("detail-modal-tag-wear");
+
+    if (imgEl) imgEl.src = product.image;
+    if (avatarEl) avatarEl.src = product.creator.avatar;
+    if (creatorNameEl) creatorNameEl.textContent = product.creator.handle;
+    if (titleEl) titleEl.textContent = titleText;
+    if (priceEl) priceEl.textContent = formatPrice(product.price);
+    if (descEl) descEl.textContent = descText;
     
-    document.getElementById("detail-modal-tag-size").textContent = `Size ${product.size}`;
-    document.getElementById("detail-modal-tag-wear").textContent = product.wearTime;
+    if (tagSizeEl) tagSizeEl.textContent = `Size ${product.size}`;
+    if (tagWearEl) tagWearEl.textContent = product.wearTime;
 
     // Handle Blur Overlay
     const blurOverlay = document.getElementById("detail-modal-blur-overlay");
@@ -2658,87 +2669,94 @@ window.openProductDetailModal = function(productId, fromProfile = false) {
     }
 
     // Bind action buttons
-    document.getElementById("detail-modal-buy-btn").onclick = () => {
-        addToCart(product.id);
-        productDetailsModal.style.display = "none";
-    };
-    document.getElementById("detail-modal-custom-btn").onclick = () => {
-        openCustomRequest(product.creator.name);
-        productDetailsModal.style.display = "none";
-    };
+    const buyBtn = document.getElementById("detail-modal-buy-btn");
+    const customBtn = document.getElementById("detail-modal-custom-btn");
+    if (buyBtn) {
+        buyBtn.onclick = () => {
+            addToCart(product.id);
+            if (productDetailsModal) productDetailsModal.style.display = "none";
+        };
+    }
+    if (customBtn) {
+        customBtn.onclick = () => {
+            openCustomRequest(product.creator.name);
+            if (productDetailsModal) productDetailsModal.style.display = "none";
+        };
+    }
 
-    productDetailsModal.style.display = "flex";
+    if (productDetailsModal) productDetailsModal.style.display = "flex";
 };
 
 // Submit register form (Hybrid Supabase + Fallback)
-document.getElementById("register-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = document.getElementById("reg-name").value.trim();
-    const role = document.getElementById("reg-role").value;
-    const email = document.getElementById("reg-email").value.trim();
-    const passwordVal = document.getElementById("reg-password").value;
-    const handle = `@${name.toLowerCase().replace(/[^a-z0-9_]/g, '')}`;
+const regFormEl = document.getElementById("register-form");
+if (regFormEl) {
+    regFormEl.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("reg-name").value.trim();
+        const role = document.getElementById("reg-role").value;
+        const email = document.getElementById("reg-email").value.trim();
+        const passwordVal = document.getElementById("reg-password").value;
+        const handle = `@${name.toLowerCase().replace(/[^a-z0-9_]/g, '')}`;
 
-    if (!name || !email || !passwordVal) {
-        alert(currentLang === 'es' ? 'Por favor completa todos los campos requeridos.' : 'Please fill in all required fields.');
-        return;
-    }
-
-    let newUser = {
-        username: name,
-        handle: handle,
-        email: email,
-        password: passwordVal,
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
-        balance: role === "buyer" ? 300.00 : 0.00,
-        role: role,
-        kycStatus: "not_applied"
-    };
-
-    // If connected to Supabase, perform cloud signup
-    if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected()) {
-        try {
-            const { data, error } = await window.undrAPI.auth.signUp(email, passwordVal, name, handle, role);
-            if (error) {
-                console.warn('Supabase SignUp warning:', error);
-                // If user already exists in DB, attempt sign-in
-                if (error.message && error.message.includes('already registered')) {
-                    const signInRes = await window.undrAPI.auth.signIn(email, passwordVal);
-                    if (signInRes.data?.user) {
-                        newUser.id = signInRes.data.user.id;
-                    }
-                }
-            } else if (data?.user) {
-                newUser.id = data.user.id;
-            }
-        } catch (err) {
-            console.warn('Supabase Auth error, using local session:', err);
+        if (!name || !email || !passwordVal) {
+            alert(currentLang === 'es' ? 'Por favor completa todos los campos requeridos.' : 'Please fill in all required fields.');
+            return;
         }
-    }
 
-    // Save to local storage for immediate application state
-    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
-    const existingIndex = users.findIndex(u => u.email === email || u.handle === handle);
-    if (existingIndex !== -1) {
-        users[existingIndex] = newUser;
-    } else {
-        users.push(newUser);
-    }
+        let newUser = {
+            username: name,
+            handle: handle,
+            email: email,
+            password: passwordVal,
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+            balance: role === "buyer" ? 300.00 : 0.00,
+            role: role,
+            kycStatus: "not_applied"
+        };
 
-    localStorage.setItem("undr_users", JSON.stringify(users));
-    localStorage.setItem("undr_current_user", JSON.stringify(newUser));
+        if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected()) {
+            try {
+                const { data, error } = await window.undrAPI.auth.signUp(email, passwordVal, name, handle, role);
+                if (error) {
+                    console.warn('Supabase SignUp warning:', error);
+                    if (error.message && error.message.includes('already registered')) {
+                        const signInRes = await window.undrAPI.auth.signIn(email, passwordVal);
+                        if (signInRes.data?.user) {
+                            newUser.id = signInRes.data.user.id;
+                        }
+                    }
+                } else if (data?.user) {
+                    newUser.id = data.user.id;
+                }
+            } catch (err) {
+                console.warn('Supabase Auth error, using local session:', err);
+            }
+        }
 
-    document.getElementById("register-modal").style.display = "none";
-    document.getElementById("register-form").reset();
-    syncUserSessionUI();
-    showToast(translations[currentLang].register_success || (currentLang === 'es' ? '¡Cuenta creada con éxito!' : 'Account created successfully!'));
-    
-    if (role === "creator") {
-        showSection('creator');
-    } else {
-        showSection('explore');
-    }
-});
+        const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+        const existingIndex = users.findIndex(u => u.email === email || u.handle === handle);
+        if (existingIndex !== -1) {
+            users[existingIndex] = newUser;
+        } else {
+            users.push(newUser);
+        }
+
+        localStorage.setItem("undr_users", JSON.stringify(users));
+        localStorage.setItem("undr_current_user", JSON.stringify(newUser));
+
+        const regMdl = document.getElementById("register-modal");
+        if (regMdl) regMdl.style.display = "none";
+        regFormEl.reset();
+        syncUserSessionUI();
+        showToast(translations[currentLang].register_success || (currentLang === 'es' ? '¡Cuenta creada con éxito!' : 'Account created successfully!'));
+        
+        if (role === "creator") {
+            showSection('creator');
+        } else {
+            showSection('explore');
+        }
+    });
+}
 
 // Google Social Login Trigger
 window.loginWithGoogle = async function() {
@@ -2759,225 +2777,231 @@ window.loginWithGoogle = async function() {
 };
 
 // Secure Login Form Submission (Brute-Force Rate Limiting)
-document.getElementById("login-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const inputVal = document.getElementById("login-username").value.trim().toLowerCase();
-    const passwordVal = document.getElementById("login-password").value;
+const loginFormEl = document.getElementById("login-form");
+if (loginFormEl) {
+    loginFormEl.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const inputVal = document.getElementById("login-username").value.trim().toLowerCase();
+        const passwordVal = document.getElementById("login-password").value;
 
-    // Rate Limiting checks
-    const lockoutKey = `undr_lockout_${inputVal}`;
-    const attemptsKey = `undr_attempts_${inputVal}`;
-    
-    const lockoutUntil = parseInt(localStorage.getItem(lockoutKey) || "0");
-    if (Date.now() < lockoutUntil) {
-        const remainingSecs = Math.ceil((lockoutUntil - Date.now()) / 1000);
-        alert(currentLang === "es" ? 
-            `Esta cuenta está bloqueada temporalmente por seguridad. Inténtalo de nuevo en ${remainingSecs} segundos.` : 
-            `This account is temporarily locked for security. Try again in ${remainingSecs} seconds.`);
-        return;
-    }
-
-    let users = JSON.parse(localStorage.getItem("undr_users")) || [];
-    
-    // Find matching user by email, handle, or username (also support @handle with leading @)
-    const cleanInput = inputVal.startsWith('@') ? inputVal : inputVal;
-    let user = users.find(u => 
-        (u.handle && u.handle.toLowerCase() === cleanInput) || 
-        (u.email && u.email.toLowerCase() === cleanInput) || 
-        (u.username && u.username.toLowerCase() === cleanInput) ||
-        (cleanInput === "buyer" && u.role === "buyer") || 
-        (cleanInput === "creator" && u.role === "creator") || 
-        (cleanInput === "admin" && u.role === "admin")
-    );
-
-    // Attempt Supabase login if user not found or connected
-    if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected() && inputVal.includes('@')) {
-        window.undrAPI.auth.signIn(inputVal, passwordVal).then(res => {
-            if (res.data?.user) {
-                const spUser = res.data.user;
-                const meta = spUser.user_metadata || {};
-                user = {
-                    id: spUser.id,
-                    username: meta.username || spUser.email.split('@')[0],
-                    handle: meta.handle || `@${spUser.email.split('@')[0]}`,
-                    email: spUser.email,
-                    role: meta.role || 'buyer',
-                    avatar: meta.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
-                    balance: meta.role === 'creator' ? 0 : 300
-                };
-                localStorage.setItem("undr_current_user", JSON.stringify(user));
-                document.getElementById("login-modal").style.display = "none";
-                document.getElementById("login-form").reset();
-                syncUserSessionUI();
-                showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
-            }
-        }).catch(err => console.warn('Supabase login fallback:', err));
-    }
-
-    if (!user) {
-        alert(currentLang === "es" ? "Cuenta no encontrada o credenciales inválidas." : "Account not found or invalid credentials.");
-        return;
-    }
-
-    // Password check: registered users must match stored password,
-    // demo/prepopulated accounts (no password set) accept any password
-    const storedPassword = user.password;
-    const isDemo = !storedPassword; // Prepopulated demo accounts have no password field
-
-    if (isDemo || passwordVal === storedPassword) {
-        // Success
-        localStorage.removeItem(attemptsKey);
-        localStorage.removeItem(lockoutKey);
-        localStorage.setItem("undr_current_user", JSON.stringify(user));
+        const lockoutKey = `undr_lockout_${inputVal}`;
+        const attemptsKey = `undr_attempts_${inputVal}`;
         
-        loginModal.style.display = "none";
-        document.getElementById("login-form").reset();
-        syncUserSessionUI();
-        showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
-        showSection('explore');
-    } else {
-        // Fail: increment attempts
-        let failedAttempts = parseInt(localStorage.getItem(attemptsKey) || "0");
-        failedAttempts += 1;
-        localStorage.setItem(attemptsKey, failedAttempts.toString());
-
-        if (failedAttempts >= 5) {
-            // Lockout account for 30 seconds
-            const lockTime = Date.now() + 30000;
-            localStorage.setItem(lockoutKey, lockTime.toString());
+        const lockoutUntil = parseInt(localStorage.getItem(lockoutKey) || "0");
+        if (Date.now() < lockoutUntil) {
+            const remainingSecs = Math.ceil((lockoutUntil - Date.now()) / 1000);
             alert(currentLang === "es" ? 
-                "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada por 30 segundos por seguridad." : 
-                "Too many failed attempts. Your account has been locked for 30 seconds for security.");
-        } else {
-            alert(currentLang === "es" ? 
-                `Contraseña incorrecta. Intento ${failedAttempts} de 5 antes de bloqueo de seguridad.` : 
-                `Incorrect password. Attempt ${failedAttempts} of 5 before security lockout.`);
+                `Esta cuenta está bloqueada temporalmente por seguridad. Inténtalo de nuevo en ${remainingSecs} segundos.` : 
+                `This account is temporarily locked for security. Try again in ${remainingSecs} seconds.`);
+            return;
         }
-    }
-});
+
+        let users = JSON.parse(localStorage.getItem("undr_users")) || [];
+        
+        const cleanInput = inputVal.startsWith('@') ? inputVal : inputVal;
+        let user = users.find(u => 
+            (u.handle && u.handle.toLowerCase() === cleanInput) || 
+            (u.email && u.email.toLowerCase() === cleanInput) || 
+            (u.username && u.username.toLowerCase() === cleanInput) ||
+            (cleanInput === "buyer" && u.role === "buyer") || 
+            (cleanInput === "creator" && u.role === "creator") || 
+            (cleanInput === "admin" && u.role === "admin")
+        );
+
+        if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected() && inputVal.includes('@')) {
+            window.undrAPI.auth.signIn(inputVal, passwordVal).then(res => {
+                if (res.data?.user) {
+                    const spUser = res.data.user;
+                    const meta = spUser.user_metadata || {};
+                    user = {
+                        id: spUser.id,
+                        username: meta.username || spUser.email.split('@')[0],
+                        handle: meta.handle || `@${spUser.email.split('@')[0]}`,
+                        email: spUser.email,
+                        role: meta.role || 'buyer',
+                        avatar: meta.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+                        balance: meta.role === 'creator' ? 0 : 300
+                    };
+                    localStorage.setItem("undr_current_user", JSON.stringify(user));
+                    const loginMdl = document.getElementById("login-modal");
+                    if (loginMdl) loginMdl.style.display = "none";
+                    loginFormEl.reset();
+                    syncUserSessionUI();
+                    showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
+                }
+            }).catch(err => console.warn('Supabase login fallback:', err));
+        }
+
+        if (!user) {
+            alert(currentLang === "es" ? "Cuenta no encontrada o credenciales inválidas." : "Account not found or invalid credentials.");
+            return;
+        }
+
+        const storedPassword = user.password;
+        const isDemo = !storedPassword;
+
+        if (isDemo || passwordVal === storedPassword) {
+            localStorage.removeItem(attemptsKey);
+            localStorage.removeItem(lockoutKey);
+            localStorage.setItem("undr_current_user", JSON.stringify(user));
+            
+            const loginMdl = document.getElementById("login-modal");
+            if (loginMdl) loginMdl.style.display = "none";
+            loginFormEl.reset();
+            syncUserSessionUI();
+            showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
+            showSection('explore');
+        } else {
+            let failedAttempts = parseInt(localStorage.getItem(attemptsKey) || "0");
+            failedAttempts += 1;
+            localStorage.setItem(attemptsKey, failedAttempts.toString());
+
+            if (failedAttempts >= 5) {
+                const lockTime = Date.now() + 30000;
+                localStorage.setItem(lockoutKey, lockTime.toString());
+                alert(currentLang === "es" ? 
+                    "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada por 30 segundos por seguridad." : 
+                    "Too many failed attempts. Your account has been locked for 30 seconds for security.");
+            } else {
+                alert(currentLang === "es" ? 
+                    `Contraseña incorrecta. Intento ${failedAttempts} de 5 antes de bloqueo de seguridad.` : 
+                    `Incorrect password. Attempt ${failedAttempts} of 5 before security lockout.`);
+            }
+        }
+    });
+}
 
 // ==========================================
 // CHAT PROPOSALS SUBMISSIONS
 // ==========================================
-chatProposalForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const style = document.getElementById("proposal-item-style").value;
-    const wear = document.getElementById("proposal-wear-time").value;
-    const notes = document.getElementById("proposal-notes").value.trim();
+if (chatProposalForm) {
+    chatProposalForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const style = document.getElementById("proposal-item-style").value;
+        const wear = document.getElementById("proposal-wear-time").value;
+        const notes = document.getElementById("proposal-notes").value.trim();
 
-    const chats = JSON.parse(localStorage.getItem("undr_chats"));
-    const chat = chats.find(c => c.creatorName === activeChatCreator);
-    if (!chat) return;
+        const chats = JSON.parse(localStorage.getItem("undr_chats"));
+        const chat = chats.find(c => c.creatorName === activeChatCreator);
+        if (!chat) return;
 
-    chat.messages.push({
-        sender: "user",
-        isProposal: true,
-        style: style,
-        wear: wear,
-        notes: notes,
-        status: "requested",
-        price: 0
-    });
-
-    localStorage.setItem("undr_chats", JSON.stringify(chats));
-    chatProposalModal.style.display = "none";
-    chatProposalForm.reset();
-
-    renderChatMessages(activeChatCreator);
-    renderChatSidebar();
-
-    // Trigger mock invoice response from creator after 2 seconds (if user is buyer)
-    setTimeout(() => {
-        chat.messages.push({
-            sender: "creator",
-            isProposal: true,
-            style: style,
-            wear: wear,
-            notes: notes,
-            status: "offered",
-            price: 125.00
-        });
-        localStorage.setItem("undr_chats", JSON.stringify(chats));
-        renderChatMessages(activeChatCreator);
-        renderChatSidebar();
-        showToast("Creator sent invoice for custom proposal!");
-    }, 2000);
-});
-
-// Bind proposal triggers
-document.getElementById("chat-request-custom-btn").addEventListener("click", () => {
-    chatProposalModal.style.display = "flex";
-});
-
-// Close buttons for modals
-closeDetails.addEventListener("click", () => productDetailsModal.style.display = "none");
-closeProposalModal.addEventListener("click", () => chatProposalModal.style.display = "none");
-
-// Custom product proposal request from explorer card form
-customRequestForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    customModal.style.display = "none";
-    showToast(translations[currentLang].custom_submitted);
-    
-    // Add custom proposal message to chat dynamically
-    const style = document.getElementById("custom-item-type").value;
-    const wear = document.getElementById("custom-item-duration").value;
-    const activity = document.getElementById("custom-item-activity").value;
-    const notesEl = document.getElementById("custom-item-instructions");
-    const notes = notesEl ? notesEl.value : "";
-    
-    const polaroidEl = document.getElementById("custom-extra-polaroid");
-    const isPolaroid = polaroidEl ? polaroidEl.checked : false;
-    const videoEl = document.getElementById("custom-extra-video");
-    const isVideo = videoEl ? videoEl.checked : false;
-    const price = calculateCustomProposalPrice();
-
-    let extras = [];
-    if (isPolaroid) extras.push(currentLang === "es" ? "Foto Polaroid firmada" : "Signed Polaroid photo");
-    if (isVideo) extras.push(currentLang === "es" ? "Vídeo del empaquetado" : "Packaging video proof");
-
-    const extrasText = extras.length > 0 ? extras.join(", ") : (currentLang === "es" ? "Ninguno" : "None");
-    const fullNotes = `Activity: ${activity} | Extras: ${extrasText} | Details: ${notes}`;
-
-    const chats = JSON.parse(localStorage.getItem("undr_chats"));
-    const chat = chats.find(c => c.creatorName === activeChatCreator);
-    if (chat) {
         chat.messages.push({
             sender: "user",
             isProposal: true,
             style: style,
             wear: wear,
-            notes: fullNotes,
+            notes: notes,
             status: "requested",
-            price: price
+            price: 0
         });
-        localStorage.setItem("undr_chats", JSON.stringify(chats));
-    }
-    
-    customRequestForm.reset();
-    showSection('chat');
 
-    // Trigger mock invoice response from creator after 2 seconds
-    setTimeout(() => {
-        const freshChats = JSON.parse(localStorage.getItem("undr_chats"));
-        const freshChat = freshChats.find(c => c.creatorName === activeChatCreator);
-        if (freshChat) {
-            freshChat.messages.push({
+        localStorage.setItem("undr_chats", JSON.stringify(chats));
+        if (chatProposalModal) chatProposalModal.style.display = "none";
+        chatProposalForm.reset();
+
+        renderChatMessages(activeChatCreator);
+        renderChatSidebar();
+
+        setTimeout(() => {
+            chat.messages.push({
                 sender: "creator",
                 isProposal: true,
                 style: style,
                 wear: wear,
-                notes: fullNotes,
+                notes: notes,
                 status: "offered",
-                price: price
+                price: 125.00
             });
-            localStorage.setItem("undr_chats", JSON.stringify(freshChats));
+            localStorage.setItem("undr_chats", JSON.stringify(chats));
             renderChatMessages(activeChatCreator);
             renderChatSidebar();
             showToast("Creator sent invoice for custom proposal!");
+        }, 2000);
+    });
+}
+
+// Bind proposal triggers
+const chatReqCustomBtn = document.getElementById("chat-request-custom-btn");
+if (chatReqCustomBtn && chatProposalModal) {
+    chatReqCustomBtn.addEventListener("click", () => {
+        chatProposalModal.style.display = "flex";
+    });
+}
+
+// Close buttons for modals
+if (closeDetails && productDetailsModal) {
+    closeDetails.addEventListener("click", () => productDetailsModal.style.display = "none");
+}
+if (closeProposalModal && chatProposalModal) {
+    closeProposalModal.addEventListener("click", () => chatProposalModal.style.display = "none");
+}
+
+// Custom product proposal request from explorer card form
+if (customRequestForm) {
+    customRequestForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (customModal) customModal.style.display = "none";
+        showToast(translations[currentLang].custom_submitted);
+        
+        const style = document.getElementById("custom-item-type").value;
+        const wear = document.getElementById("custom-item-duration").value;
+        const activity = document.getElementById("custom-item-activity").value;
+        const notesEl = document.getElementById("custom-item-instructions");
+        const notes = notesEl ? notesEl.value : "";
+        
+        const polaroidEl = document.getElementById("custom-extra-polaroid");
+        const isPolaroid = polaroidEl ? polaroidEl.checked : false;
+        const videoEl = document.getElementById("custom-extra-video");
+        const isVideo = videoEl ? videoEl.checked : false;
+        const price = calculateCustomProposalPrice();
+
+        let extras = [];
+        if (isPolaroid) extras.push(currentLang === "es" ? "Foto Polaroid firmada" : "Signed Polaroid photo");
+        if (isVideo) extras.push(currentLang === "es" ? "Vídeo del empaquetado" : "Packaging video proof");
+
+        const extrasText = extras.length > 0 ? extras.join(", ") : (currentLang === "es" ? "Ninguno" : "None");
+        const fullNotes = `Activity: ${activity} | Extras: ${extrasText} | Details: ${notes}`;
+
+        const chats = JSON.parse(localStorage.getItem("undr_chats"));
+        const chat = chats.find(c => c.creatorName === activeChatCreator);
+        if (chat) {
+            chat.messages.push({
+                sender: "user",
+                isProposal: true,
+                style: style,
+                wear: wear,
+                notes: fullNotes,
+                status: "requested",
+                price: price
+            });
+            localStorage.setItem("undr_chats", JSON.stringify(chats));
         }
-    }, 2000);
-});
+        
+        customRequestForm.reset();
+        showSection('chat');
+
+        // Trigger mock invoice response from creator after 2 seconds
+        setTimeout(() => {
+            const freshChats = JSON.parse(localStorage.getItem("undr_chats"));
+            const freshChat = freshChats.find(c => c.creatorName === activeChatCreator);
+            if (freshChat) {
+                freshChat.messages.push({
+                    sender: "creator",
+                    isProposal: true,
+                    style: style,
+                    wear: wear,
+                    notes: fullNotes,
+                    status: "offered",
+                    price: price
+                });
+                localStorage.setItem("undr_chats", JSON.stringify(freshChats));
+                renderChatMessages(activeChatCreator);
+                renderChatSidebar();
+                showToast("Creator sent invoice for custom proposal!");
+            }
+        }, 2000);
+    });
+}
 
 // Custom Premium Toast Notification (Positioned elevated above mobile dock bar)
 function showToast(message) {
@@ -3534,30 +3558,33 @@ function setupEventListeners() {
     }
 
     // Search input
-    searchInput.addEventListener("input", filterAndSortProducts);
-    sortSelect.addEventListener("change", filterAndSortProducts);
+    if (searchInput) searchInput.addEventListener("input", filterAndSortProducts);
+    if (sortSelect) sortSelect.addEventListener("change", filterAndSortProducts);
 
     // Advanced search filter dropdown trigger
-    searchFilterTrigger.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isVisible = advancedFiltersPanel.style.display === "flex";
-        advancedFiltersPanel.style.display = isVisible ? "none" : "flex";
-        searchFilterTrigger.classList.toggle("active", !isVisible);
-    });
+    if (searchFilterTrigger && advancedFiltersPanel) {
+        searchFilterTrigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isVisible = advancedFiltersPanel.style.display === "flex";
+            advancedFiltersPanel.style.display = isVisible ? "none" : "flex";
+            searchFilterTrigger.classList.toggle("active", !isVisible);
+        });
 
-    // Close advanced filter panel when clicking outside
-    document.addEventListener("click", (e) => {
-        if (!advancedFiltersPanel.contains(e.target) && e.target !== searchFilterTrigger) {
+        document.addEventListener("click", (e) => {
+            if (advancedFiltersPanel && !advancedFiltersPanel.contains(e.target) && e.target !== searchFilterTrigger) {
+                advancedFiltersPanel.style.display = "none";
+                searchFilterTrigger.classList.remove("active");
+            }
+        });
+    }
+
+    if (applyAdvFiltersBtn && advancedFiltersPanel && searchFilterTrigger) {
+        applyAdvFiltersBtn.addEventListener("click", () => {
+            filterAndSortProducts();
             advancedFiltersPanel.style.display = "none";
             searchFilterTrigger.classList.remove("active");
-        }
-    });
-
-    applyAdvFiltersBtn.addEventListener("click", () => {
-        filterAndSortProducts();
-        advancedFiltersPanel.style.display = "none";
-        searchFilterTrigger.classList.remove("active");
-    });
+        });
+    }
 
     // Drag & Drop Image listing upload
     const dropzone = document.getElementById("new-item-image-dropzone");
@@ -3984,28 +4011,32 @@ function setupEventListeners() {
     });
 
     // Authenticity info triggers
-    authInfoBtn.addEventListener("click", () => authModal.style.display = "flex");
-    closeAuth.addEventListener("click", () => authModal.style.display = "none");
-    closeCustom.addEventListener("click", () => customModal.style.display = "none");
+    if (authInfoBtn && authModal) authInfoBtn.addEventListener("click", () => authModal.style.display = "flex");
+    if (closeAuth && authModal) closeAuth.addEventListener("click", () => authModal.style.display = "none");
+    if (closeCustom && customModal) closeCustom.addEventListener("click", () => customModal.style.display = "none");
 
     // Chat text input send actions
-    chatSendMsgBtn.addEventListener("click", sendTextMessageFromBar);
-    chatTextInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendTextMessageFromBar();
-    });
+    if (chatSendMsgBtn) chatSendMsgBtn.addEventListener("click", sendTextMessageFromBar);
+    if (chatTextInput) {
+        chatTextInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendTextMessageFromBar();
+        });
+    }
 
     // Creator withdraw actions
-    creatorWithdrawBtn.addEventListener("click", () => {
-        const user = JSON.parse(localStorage.getItem("undr_current_user"));
-        if (parseFloat(user.balance) <= 0) {
-            alert(currentLang === "es" ? "No tienes fondos suficientes para retirar." : "No balance available for withdrawal.");
-            return;
-        }
-        alert(currentLang === "es" ? `Transferencia ACH de $${user.balance} USD iniciada a tu cuenta bancaria.` : `ACH withdrawal of $${user.balance} USD initiated to your bank account.`);
-        user.balance = 0.00;
-        localStorage.setItem("undr_current_user", JSON.stringify(user));
-        syncUserSessionUI();
-    });
+    if (creatorWithdrawBtn) {
+        creatorWithdrawBtn.addEventListener("click", () => {
+            const user = JSON.parse(localStorage.getItem("undr_current_user"));
+            if (!user || parseFloat(user.balance) <= 0) {
+                alert(currentLang === "es" ? "No tienes fondos suficientes para retirar." : "No balance available for withdrawal.");
+                return;
+            }
+            alert(currentLang === "es" ? `Transferencia ACH de $${user.balance} USD iniciada a tu cuenta bancaria.` : `ACH withdrawal of $${user.balance} USD initiated to your bank account.`);
+            user.balance = 0.00;
+            localStorage.setItem("undr_current_user", JSON.stringify(user));
+            syncUserSessionUI();
+        });
+    }
 
     // Interactive PPV Modal Triggers & Form Handling
     const ppvModal = document.getElementById("ppv-send-modal");
@@ -4021,14 +4052,14 @@ function setupEventListeners() {
     if (simulatePpvTriggerBtn) {
         simulatePpvTriggerBtn.addEventListener("click", () => {
             uploadedPpvImageBase64 = "";
-            ppvPreview.style.display = "none";
-            ppvPrompt.style.display = "block";
-            ppvForm.reset();
-            ppvModal.style.display = "flex";
+            if (ppvPreview) ppvPreview.style.display = "none";
+            if (ppvPrompt) ppvPrompt.style.display = "block";
+            if (ppvForm) ppvForm.reset();
+            if (ppvModal) ppvModal.style.display = "flex";
         });
     }
 
-    if (closePpvModal) {
+    if (closePpvModal && ppvModal) {
         closePpvModal.addEventListener("click", () => ppvModal.style.display = "none");
     }
 

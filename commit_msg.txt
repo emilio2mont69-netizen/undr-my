@@ -1,1 +1,1 @@
-fix: remove duplicate edit-profile-modal div from HTML, restore openUniversalProfileEditModal trigger for mobile profile button, and ensure cart modal works
+fix: wrap all top-level event listeners with strict null checks to prevent unhandled TypeErrors from breaking site interactivity

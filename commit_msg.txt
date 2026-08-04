@@ -1,1 +1,1 @@
-refactor: rewrite legal compliance pages with exhaustive formal text, clean copyright and remove DMCA section
+fix: purge stale dist cache, bump SW cache to undr-v4, and force hide sticky-legal-bar on all mobile devices

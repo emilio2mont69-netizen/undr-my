@@ -10,7 +10,7 @@
  * Registration: js/push-notifications.js calls navigator.serviceWorker.register('/sw.js')
  */
 
-const CACHE_NAME = 'undr-v3';
+const CACHE_NAME = 'undr-v4';
 const OFFLINE_ASSETS = [
     '/',
     '/index.html',

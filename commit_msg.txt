@@ -1,1 +1,1 @@
-fix: remove unused src directory and clean package.json/vite.config.js to resolve Vercel and GitHub Actions build check failures
+fix: untrack dist directory and update .gitignore to enable clean Vercel GitHub build compilation

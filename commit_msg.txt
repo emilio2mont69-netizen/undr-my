@@ -1,1 +1,1 @@
-fix: change default .age-modal CSS display to none to eliminate invisible full-screen click blocking overlay
+fix: remove unused src directory and clean package.json/vite.config.js to resolve Vercel and GitHub Actions build check failures

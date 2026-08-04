@@ -5,6 +5,17 @@
  */
 
 import { supabase, isSupabaseConfigured } from './supabase-config.js';
+import {
+    uploadProductImage,
+    uploadAvatarImage,
+    uploadKycDocument,
+    uploadPpvMedia,
+    getPublicUrl,
+    createSignedUrl,
+    validateFile,
+    compressImage
+} from './storage.js';
+
 
 // --- LocalStorage Fallback Helpers ---
 const getLocal = (key, defaultVal = []) => {
@@ -458,6 +469,37 @@ export const api = {
         async sendTip(conversationId, tipData) {
             return this.sendMessage(conversationId, { type: 'tip', ...tipData });
         },
+        subscribeToMessages(conversationId, callback) {
+            if (!isSupabaseConfigured()) {
+                return { unsubscribe: () => {} };
+            }
+            const channel = supabase.channel(`realtime:messages:${conversationId}`)
+                .on(
+                    'postgres_changes',
+                    { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
+                    (payload) => callback(payload.new)
+                )
+                .subscribe();
+            return channel;
+        },
+        subscribeToTyping(conversationId, userId, callback) {
+            if (!isSupabaseConfigured()) {
+                return { track: async () => {}, untrack: async () => {}, unsubscribe: () => {} };
+            }
+            const channel = supabase.channel(`presence:typing:${conversationId}`);
+            
+            channel.on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState();
+                const typingUsers = Object.values(state).flatMap(p => p).filter(p => p.typing && p.user_id !== userId);
+                callback(typingUsers);
+            }).subscribe();
+
+            return {
+                track: async () => await channel.track({ user_id: userId, typing: true, updated_at: new Date().toISOString() }),
+                untrack: async () => await channel.track({ user_id: userId, typing: false, updated_at: new Date().toISOString() }),
+                unsubscribe: () => channel.unsubscribe()
+            };
+        },
         async sendProposal(conversationId, proposalData) {
             return this.sendMessage(conversationId, { type: 'proposal', ...proposalData });
         }
@@ -779,5 +821,46 @@ export const api = {
                 }
             } catch (error) { return failure(error); }
         }
+    },
+
+    // --- Cloud Storage Module ---
+    storage: {
+        async validate(file, options) {
+            return validateFile(file, options);
+        },
+        async compress(file, options) {
+            return compressImage(file, options);
+        },
+        async uploadProduct(file, creatorHandle) {
+            try {
+                const res = await uploadProductImage(file, creatorHandle);
+                return success(res);
+            } catch (err) { return failure(err); }
+        },
+        async uploadAvatar(file, userHandle) {
+            try {
+                const res = await uploadAvatarImage(file, userHandle);
+                return success(res);
+            } catch (err) { return failure(err); }
+        },
+        async uploadKyc(file, userId, docType) {
+            try {
+                const res = await uploadKycDocument(file, userId, docType);
+                return success(res);
+            } catch (err) { return failure(err); }
+        },
+        async uploadPpv(file, conversationId) {
+            try {
+                const res = await uploadPpvMedia(file, conversationId);
+                return success(res);
+            } catch (err) { return failure(err); }
+        },
+        getPublicUrl(bucket, path) {
+            return getPublicUrl(bucket, path);
+        },
+        async getSignedUrl(bucket, path, expires) {
+            return createSignedUrl(bucket, path, expires);
+        }
     }
 };
+

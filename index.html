@@ -9,10 +9,18 @@
     <meta property="og:description" content="UNDR">
     <meta property="og:site_name" content="UNDR">
     <meta name="twitter:title" content="UNDR">
-    <meta name="twitter:description" content="UNDR">
-    <!-- Google Fonts: Outfit -->
+    <!-- PWA Web App Manifest & Mobile Theme Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff4d6d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UNDR">
+    <link rel="apple-touch-icon" href="logofase.PNG">
+    <!-- Preconnect origins for Core Web Vitals (LCP/FID optimization) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link rel="preconnect" href="https://swwlphueayxryooqlwhe.supabase.co" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -76,9 +84,10 @@
                     <i class="fa-solid fa-house"></i>
                     <span data-i18n="nav_explore">Explore Models</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" id="nav-messages-item" onclick="showSection('chat', this)">
+                <a href="javascript:void(0)" class="nav-item" id="nav-messages-item" onclick="showSection('chat', this)" style="position:relative;">
                     <i class="fa-solid fa-envelope"></i>
                     <span data-i18n="nav_messages">Direct Messages</span>
+                    <span class="badge" id="nav-messages-badge" style="display:none; position:absolute; top:6px; right:10px; background:var(--accent-color); color:#fff; font-size:0.65rem; font-weight:800; padding:1px 5px; border-radius:999px; min-width:16px; text-align:center;"></span>
                 </a>
                 <a href="javascript:void(0)" class="nav-item" id="nav-auctions-item" onclick="showSection('auctions', this)">
                     <i class="fa-solid fa-gavel"></i>
@@ -264,13 +273,26 @@
                     <div class="chat-main" id="chat-window">
                         <div class="chat-header">
                             <button class="chat-back-mobile-btn" id="chat-back-mobile-btn" onclick="closeMobileChatWindow()" title="Back to chats"><i class="fa-solid fa-chevron-left"></i></button>
-                            <img src="" alt="" class="chat-header-avatar" id="chat-active-avatar">
+                            <div class="chat-avatar-wrapper" style="position:relative; flex-shrink:0;">
+                                <img src="" alt="" class="chat-header-avatar" id="chat-active-avatar">
+                                <span id="chat-online-dot" style="display:none; position:absolute; bottom:1px; right:1px; width:10px; height:10px; border-radius:50%; background:#22c55e; border:2px solid var(--primary-bg);"></span>
+                            </div>
                             <div class="chat-header-info">
                                 <div style="display:flex; align-items:center; gap:6px;">
                                     <span class="chat-header-name" id="chat-active-name">Select a Creator</span>
                                     <i class="fa-solid fa-circle-check verified-icon" id="chat-active-verified" style="display:none; color:var(--accent-color); font-size:0.85rem;"></i>
                                 </div>
                                 <span class="chat-header-status" id="chat-active-handle">@handle</span>
+                                <span id="chat-status-text" style="font-size:0.72rem; color:var(--text-muted); display:none;">Active today</span>
+                            </div>
+                            <!-- Typing Indicator -->
+                            <div id="chat-typing-indicator" style="display:none; align-items:center; gap:4px; margin-left:auto; padding:0 10px; color:var(--text-muted); font-size:0.78rem; font-style:italic;">
+                                <span>typing</span>
+                                <span class="typing-dots">
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                </span>
                             </div>
                             <div class="chat-header-actions" id="chat-buyer-actions" style="display:flex; gap:8px;">
                                 <button class="btn btn-login" id="chat-send-tip-btn" style="padding: 6px 10px; font-size: 0.78rem; border-color: #ff4d6d; color: #ff4d6d;"><i class="fa-solid fa-heart"></i> Tip</button>
@@ -356,27 +378,64 @@
                     </div>
 
                     <div class="kyc-form-mock" id="kyc-form-fields">
-                        <div class="form-group">
-                            <label data-i18n="legal_first_name_label">Legal First Name</label>
-                            <input type="text" id="kyc-first-name" required placeholder="Jane">
+                        <div class="form-row" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 140px;">
+                                <label data-i18n="legal_first_name_label">Legal First Name</label>
+                                <input type="text" id="kyc-first-name" required placeholder="Jane">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 140px;">
+                                <label data-i18n="legal_last_name_label">Legal Last Name</label>
+                                <input type="text" id="kyc-last-name" required placeholder="Doe">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label data-i18n="legal_last_name_label">Legal Last Name</label>
-                            <input type="text" id="kyc-last-name" required placeholder="Doe">
+
+                        <div class="form-row" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 140px;">
+                                <label>Date of Birth (18+ Required)</label>
+                                <input type="date" id="kyc-dob" required value="2001-05-15" style="padding: 10px 12px; font-size: 0.85rem; border-radius: 10px;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 140px;">
+                                <label data-i18n="ssn_label">Social Security / Tax ID (Last 4)</label>
+                                <input type="text" id="kyc-ssn" required placeholder="1234" maxlength="4">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label data-i18n="ssn_label">Social Security Number (Last 4 digits)</label>
-                            <input type="text" id="kyc-ssn" required placeholder="1234" maxlength="4">
+
+                        <div class="form-row" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 140px;">
+                                <label>Government ID Document Type</label>
+                                <select id="kyc-doc-type" style="padding: 10px 12px; font-size: 0.85rem; border-radius: 10px; width: 100%; background: var(--secondary-bg); color: var(--text-color); border: 1px solid var(--border-color);">
+                                    <option value="driver_license">Driver's License / Licencia de Conducir</option>
+                                    <option value="passport">Official Passport / Pasaporte</option>
+                                    <option value="national_id">National Photo ID Card / Cédula / DNI</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 140px;">
+                                <label>Country of ID Issuance</label>
+                                <input type="text" id="kyc-country" required value="United States" placeholder="e.g. United States, Colombia">
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <label>ID Card Document Image (18+)</label>
+                            <label>Official Government ID Document (Front & Back)</label>
                             <input type="file" id="kyc-id-file" accept="image/*" style="padding: 6px;">
                         </div>
                         <div class="form-group">
-                            <label>Live Selfie Photo Verification</label>
+                            <label>Live Biometric Selfie Verification</label>
                             <input type="file" id="kyc-selfie-file" accept="image/*" style="padding: 6px;">
                         </div>
-                        <button class="btn btn-register btn-block" id="start-kyc-mock-btn"><i class="fa-solid fa-paper-plane"></i> Submit Legal Documents to Admin Review</button>
+
+                        <!-- 18 U.S.C. § 2257 Federal Legal Compliance Consent -->
+                        <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+                            <div style="display:flex; gap:10px; align-items:flex-start;">
+                                <input type="checkbox" id="kyc-2257-consent" required style="margin-top:3px; cursor:pointer;">
+                                <label for="kyc-2257-consent" style="font-size:0.78rem; color:var(--text-color); line-height:1.4; cursor:pointer;">
+                                    <i class="fa-solid fa-scale-balanced" style="color: #8b5cf6; margin-right: 4px;"></i>
+                                    <strong>18 U.S.C. § 2257 Legal Certification:</strong> I certify under penalty of perjury that I am at least 18 years of age and that all legal identification documents submitted are authentic. I agree to UNDR's record-keeping policy pursuant to federal law.
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-register btn-block" id="start-kyc-mock-btn" style="padding: 12px; font-weight: 700;"><i class="fa-solid fa-shield-halved"></i> Submit 18+ Verification to Legal Admin Review</button>
                     </div>
                 </div>
 
@@ -593,10 +652,11 @@
                     </div>
 
                     <!-- Operations Navigation Tabs -->
-                    <div class="admin-tabs" style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:20px;">
+                    <div class="admin-tabs" style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:20px; flex-wrap:wrap;">
                         <button class="category-chip active" onclick="switchAdminTab('kyc', this)">KYC verification Wall</button>
                         <button class="category-chip" onclick="switchAdminTab('moderation', this)">Moderation Queue</button>
                         <button class="category-chip" onclick="switchAdminTab('disputes', this)">Disputes & Escrow</button>
+                        <button class="category-chip" onclick="switchAdminTab('analytics', this)"><i class="fa-solid fa-chart-line" style="color:var(--accent-hover);"></i> Analytics & Audit Logs</button>
                     </div>
                     
                     <!-- Tab Panel 1: KYC Human verification Wall -->
@@ -625,6 +685,31 @@
                             <h3 data-i18n="dispute_resolution">Active Disputes</h3>
                             <div class="admin-list" id="admin-disputes-list">
                                 <!-- Dispute logs dynamically loaded -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel 4: Analytics & Audit Logs -->
+                    <div class="admin-tab-content" id="admin-tab-analytics">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px;">
+                            <div class="widget" style="padding:16px;">
+                                <h3><i class="fa-solid fa-chart-area" style="color:#ff4d6d;"></i> Revenue Growth Trend (GMV)</h3>
+                                <div style="position:relative; height:200px; width:100%; margin-top:12px;">
+                                    <canvas id="admin-revenue-chart-canvas" style="width:100%; height:200px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="widget" style="padding:16px;">
+                                <h3><i class="fa-solid fa-chart-simple" style="color:#8b5cf6;"></i> Sales Ranking by Creator</h3>
+                                <div style="position:relative; height:200px; width:100%; margin-top:12px;">
+                                    <canvas id="admin-creator-sales-chart-canvas" style="width:100%; height:200px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="widget">
+                            <h3><i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> System Audit & Activity Logs</h3>
+                            <div class="admin-list" id="admin-audit-logs-list" style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+                                <!-- Audit logs dynamically loaded -->
                             </div>
                         </div>
                     </div>
@@ -777,6 +862,43 @@
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-register btn-block" style="padding:10px;">Save Secured Address</button>
+                            </form>
+                        </div>
+
+                        <!-- Notification Preferences Panel -->
+                        <div class="widget">
+                            <h3><i class="fa-solid fa-bell" style="color:var(--accent-hover);"></i> Notification Preferences</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">Manage how UNDR sends you order updates, tracking alerts, and live auction outbids.</p>
+                            <form id="notification-preferences-form" style="display:flex; flex-direction:column; gap:12px; background:var(--primary-bg); padding:16px; border-radius:10px; border:1px solid var(--border-color);" onsubmit="event.preventDefault(); saveUserNotificationPreferencesUI();">
+                                <div style="display:flex; align-items:center; justify-content:space-between;">
+                                    <div>
+                                        <strong style="font-size:0.85rem; display:block;">📧 Email Order Receipts</strong>
+                                        <span style="font-size:0.75rem; color:var(--text-muted);">Receive HTML receipts for purchases & sales</span>
+                                    </div>
+                                    <input type="checkbox" id="pref-email-orders" checked style="width:18px; height:18px;">
+                                </div>
+                                <div style="display:flex; align-items:center; justify-content:space-between;">
+                                    <div>
+                                        <strong style="font-size:0.85rem; display:block;">📧 Email Chat Alerts</strong>
+                                        <span style="font-size:0.75rem; color:var(--text-muted);">Email alerts when receiving private PPV media</span>
+                                    </div>
+                                    <input type="checkbox" id="pref-email-chat" checked style="width:18px; height:18px;">
+                                </div>
+                                <div style="display:flex; align-items:center; justify-content:space-between;">
+                                    <div>
+                                        <strong style="font-size:0.85rem; display:block;">🔔 Web Push Messages</strong>
+                                        <span style="font-size:0.75rem; color:var(--text-muted);">Browser push notifications for direct chat DMs</span>
+                                    </div>
+                                    <input type="checkbox" id="pref-push-dms" checked style="width:18px; height:18px;">
+                                </div>
+                                <div style="display:flex; align-items:center; justify-content:space-between;">
+                                    <div>
+                                        <strong style="font-size:0.85rem; display:block;">⚡ Live Auction Outbid Alerts</strong>
+                                        <span style="font-size:0.75rem; color:var(--text-muted);">Instant alert when someone outbids your price</span>
+                                    </div>
+                                    <input type="checkbox" id="pref-push-auctions" checked style="width:18px; height:18px;">
+                                </div>
+                                <button type="submit" class="btn btn-register" style="margin-top:6px; padding:10px; font-size:0.85rem; font-weight:700;"><i class="fa-solid fa-floppy-disk"></i> Save Preferences</button>
                             </form>
                         </div>
 
@@ -1231,6 +1353,10 @@
                     <input type="password" id="login-password" required placeholder="Your password">
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Log In securely</button>
+                <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                    Don't have an account? 
+                    <a href="javascript:void(0)" onclick="document.getElementById('login-modal').style.display='none'; document.getElementById('register-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Create Account / Registrarse</a>
+                </div>
             </form>
         </div>
     </div>
@@ -1278,7 +1404,26 @@
                     <label for="reg-password" data-i18n="password_label">Password</label>
                     <input type="password" id="reg-password" required placeholder="Create a secure password">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn">Register</button>
+                <!-- Legal & Age Compliance Checkboxes -->
+                <div style="background: var(--secondary-bg); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <input type="checkbox" id="reg-age" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
+                        <label for="reg-age" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
+                            <strong>Soy mayor de 18 años</strong> (o la mayoría de edad en mi jurisdicción) y declaro tener capacidad legal para acceder a esta plataforma.
+                        </label>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <input type="checkbox" id="reg-terms" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
+                        <label for="reg-terms" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
+                            Acepto los <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Términos de Servicio</a>, la <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Política de Privacidad</a>, y la declaración <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">18 U.S.C. § 2257</a>.
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn" style="font-weight: 700; padding: 12px;">Crear Cuenta / Register</button>
+                <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                    Already have an account? 
+                    <a href="javascript:void(0)" onclick="document.getElementById('register-modal').style.display='none'; document.getElementById('login-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Log In / Iniciar Sesión</a>
+                </div>
             </form>
         </div>
     </div>
@@ -1430,9 +1575,101 @@
         </div>
     </div>
 
+    <!-- Sticky / Fixed Legal Compliance Bar (Always Visible at Bottom) -->
+    <div id="sticky-legal-bar" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(14, 16, 23, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(255, 77, 109, 0.3); z-index: 9990; padding: 8px 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.4);">
+        <div style="max-width: 1200px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.76rem; color: #9ca3af; font-weight: 600;">
+                <i class="fa-solid fa-shield-halved" style="color: #ff4d6d; font-size: 0.9rem;"></i>
+                <span>UNDR Compliance & 18 U.S.C. § 2257 Exempt</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 0.78rem; font-weight: 700;">
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #e5e7eb; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ff4d6d'" onmouseout="this.style.color='#e5e7eb'"><i class="fa-solid fa-file-contract" style="color:#ff4d6d; margin-right:4px;"></i> Términos</a>
+                <span style="color: #374151;">|</span>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #e5e7eb; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ff4d6d'" onmouseout="this.style.color='#e5e7eb'"><i class="fa-solid fa-user-shield" style="color:#3b82f6; margin-right:4px;"></i> Privacidad</a>
+                <span style="color: #374151;">|</span>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; text-decoration: none; background: rgba(255,77,109,0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255,77,109,0.4);"><i class="fa-solid fa-circle-exclamation" style="margin-right:4px;"></i> 18 U.S.C. § 2257</a>
+                <span style="color: #374151;">|</span>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('refunds')" style="color: #e5e7eb; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ff4d6d'" onmouseout="this.style.color='#e5e7eb'"><i class="fa-solid fa-rotate-left" style="color:#10b981; margin-right:4px;"></i> Reembolsos</a>
+                <span style="color: #374151;">|</span>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('dmca')" style="color: #e5e7eb; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ff4d6d'" onmouseout="this.style.color='#e5e7eb'"><i class="fa-solid fa-copyright" style="color:#f59e0b; margin-right:4px;"></i> DMCA</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- UNDR Legal Footer -->
+    <footer style="background:var(--primary-bg); border-top:1px solid var(--border-color); padding:30px 20px 60px 20px; text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:40px;">
+        <div style="max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:16px; align-items:center;">
+            <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; font-weight:600;">
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color:var(--text-color); text-decoration:none;">Terms of Service</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color:var(--text-color); text-decoration:none;">Privacy Policy (GDPR/CCPA)</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('cookies')" style="color:var(--text-color); text-decoration:none;">Cookie Policy</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color:#ff4d6d; text-decoration:none;">18 U.S.C. § 2257 Statement</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('refunds')" style="color:var(--text-color); text-decoration:none;">Refunds & Disputes</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('dmca')" style="color:var(--text-color); text-decoration:none;">DMCA Notice</a>
+            </div>
+            <div>
+                © 2026 UNDR Logistics & Content Marketplace. 18 U.S.C. § 2257 Record-Keeping Exempt & Certified. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Legal Viewer Modal -->
+    <div id="legal-document-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:99999; justify-content:center; align-items:center; padding:20px;">
+        <div class="modal-content" style="background:var(--primary-bg); width:100%; max-width:650px; border-radius:16px; padding:24px; position:relative; max-height:85vh; overflow-y:auto; border:1px solid var(--border-color); color:var(--text-color);">
+            <span class="close-modal" onclick="window.undrLegal.closeLegalModal()" style="position:absolute; top:16px; right:20px; font-size:1.6rem; cursor:pointer; color:var(--text-muted);">&times;</span>
+            <h2 id="legal-modal-title" style="font-size:1.3rem; font-weight:800; margin-bottom:16px; color:var(--accent-hover);">Legal Document</h2>
+            <div id="legal-modal-body" style="font-size:0.88rem; line-height:1.6; color:var(--text-color);">
+                <!-- Dynamic legal document content loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-consent-banner" style="display:none; position:fixed; bottom:20px; left:20px; right:20px; max-width:500px; background:var(--secondary-bg); border:1px solid var(--accent-hover); padding:16px; border-radius:12px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.3); align-items:center; justify-content:space-between; gap:12px; color:var(--text-color);">
+        <div style="font-size:0.8rem; line-height:1.4;">
+            <i class="fa-solid fa-cookie-bite" style="color:#ff4d6d; margin-right:6px;"></i>
+            <strong>Cookies & Privacy:</strong> We use essential cookies to manage cart sessions and user authentication under GDPR / CCPA regulations.
+        </div>
+        <button class="btn btn-primary" onclick="window.undrLegal.acceptCookieConsent()" style="padding:8px 14px; font-size:0.75rem; font-weight:bold; white-space:nowrap;">Accept</button>
+    </div>
+
+    <!-- PWA Add to Home Screen Banner -->
+    <div id="pwa-install-banner" style="display:none; position:fixed; top:12px; left:50%; transform:translateX(-50%); width:90%; max-width:480px; background:linear-gradient(135deg, #0e1017, #1a1d2d); border:1px solid #ff4d6d; padding:12px 16px; border-radius:14px; z-index:99999; box-shadow:0 8px 30px rgba(255, 77, 109, 0.25); align-items:center; justify-content:space-between; gap:12px; color:#ffffff;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="/logofase.PNG" alt="UNDR" style="width:36px; height:36px; border-radius:8px; object-fit:cover;">
+            <div style="font-size:0.8rem;">
+                <strong style="color:#ff4d6d; display:block;">Instalar Aplicación UNDR</strong>
+                <span style="color:#9ca3af; font-size:0.72rem;">Acceso rápido desde tu pantalla de inicio</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+            <button className="btn btn-primary" onclick="window.undrPWA.triggerPWAInstall()" style="padding:6px 12px; font-size:0.75rem; font-weight:bold; background:#ff4d6d; border:none; border-radius:6px;">Instalar</button>
+            <button className="btn" onclick="window.undrPWA.hideInstallBanner()" style="padding:6px; background:none; border:none; color:#9ca3af; font-size:1.1rem; cursor:pointer;">&times;</button>
+        </div>
+    </div>
+
     <!-- UNDR Backend API Bridge (loads Supabase client + API layer) -->
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/kyc-engine.js"></script>
+    <script type="module" src="js/auctions-realtime.js"></script>
+    <script type="module" src="js/shipping-engine.js"></script>
+    <script type="module" src="js/notifications-engine.js"></script>
+    <script type="module" src="js/search-engine.js"></script>
+    <script type="module" src="js/admin-analytics.js"></script>
+    <script type="module" src="js/legal-compliance.js"></script>
+    <script type="module" src="js/pwa-install.js"></script>
     <script type="module" src="js/bridge.js"></script>
+    <script type="module" src="js/chat-bridge.js"></script>
+    <script type="module" src="js/push-notifications.js"></script>
     <!-- Legacy Application Logic -->
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
+
+
+
+
+
+
+
+
 </body>
 </html>

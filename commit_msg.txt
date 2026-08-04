@@ -1,1 +1,1 @@
-fix: eliminate top-level await CDN blocking, enforce automatic fallback data recovery for products, and add fail-safe event handlers
+fix: purge service worker cache undr-v5 and enforce network-first static asset delivery to fix unstyled page fallback

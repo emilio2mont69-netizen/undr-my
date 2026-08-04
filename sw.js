@@ -10,68 +10,57 @@
  * Registration: js/push-notifications.js calls navigator.serviceWorker.register('/sw.js')
  */
 
-const CACHE_NAME = 'undr-v4';
+const CACHE_NAME = 'undr-v5-cache-purge';
 const OFFLINE_ASSETS = [
     '/',
     '/index.html',
-    '/style.css',
-    '/app.js',
-    '/js/storage.js',
-    '/js/kyc-engine.js',
-    '/js/auctions-realtime.js',
-    '/js/shipping-engine.js',
-    '/js/notifications-engine.js',
-    '/js/search-engine.js',
-    '/js/admin-analytics.js',
-    '/js/legal-compliance.js',
-    '/js/bridge.js',
-    '/js/chat-bridge.js',
-    '/js/push-notifications.js',
     '/logofase.PNG',
 ];
 
-// ─── Install: Cache Core Assets ───────────────────────────────────────────────
+// ─── Install: Skip waiting immediately ─────────────────────────────────────────
 self.addEventListener('install', (event) => {
     self.skipWaiting();
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(OFFLINE_ASSETS).catch((err) => {
-                console.warn('[UNDR SW] Cache install partial failure:', err);
-            });
-        })
-    );
 });
 
-// ─── Activate: Clean old caches ───────────────────────────────────────────────
+// ─── Activate: Purge ALL old caches immediately ────────────────────────────────
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keyList) => {
             return Promise.all(
-                keyList.map((key) => {
-                    if (key !== CACHE_NAME) {
-                        return caches.delete(key);
-                    }
-                })
+                keyList.map((key) => caches.delete(key))
             );
-        })
+        }).then(() => self.clients.claim())
     );
-    self.clients.claim(); // Take control immediately
 });
 
-// ─── Fetch: Serve from cache with network fallback ───────────────────────────
+// ─── Fetch: Network-first, never return HTML for CSS/JS assets ───────────────
 self.addEventListener('fetch', (event) => {
-    // Only handle GET requests for same-origin
     if (event.request.method !== 'GET') return;
     if (!event.request.url.startsWith(self.location.origin)) return;
-    // Don't cache Supabase API calls
     if (event.request.url.includes('supabase.co')) return;
 
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) return cachedResponse;
-            return fetch(event.request).catch(() => caches.match('/index.html'));
-        })
-    );
+    const url = new URL(event.request.url);
+    const isStaticAsset = url.pathname.endsWith('.css') || 
+                          url.pathname.endsWith('.js') || 
+                          url.pathname.endsWith('.png') || 
+                          url.pathname.endsWith('.jpg') || 
+                          url.pathname.endsWith('.svg') ||
+                          url.pathname.includes('/assets/');
+
+    if (isStaticAsset) {
+        // Direct network fetch for static assets - NEVER fallback to /index.html HTML
+        event.respondWith(
+            fetch(event.request).catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // For HTML navigation requests, network first with /index.html fallback
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request).catch(() => caches.match('/index.html'))
+        );
+    }
 });
 
 // ─── Push: Receive push notification from server ─────────────────────────────

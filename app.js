@@ -873,6 +873,10 @@ window.showSection = function(sectionName, element = null, updateHash = true) {
     const navItems = document.querySelectorAll(".nav-item");
     navItems.forEach(item => item.classList.remove("active"));
 
+    // Sync mobile bottom dock nav items
+    const mobileNavItems = document.querySelectorAll(".mobile-nav-item");
+    mobileNavItems.forEach(item => item.classList.remove("active"));
+
     const sidebarLeft = document.querySelector(".sidebar-left");
     if (sidebarLeft && window.innerWidth <= 900) {
         sidebarLeft.style.display = "";
@@ -906,6 +910,19 @@ window.showSection = function(sectionName, element = null, updateHash = true) {
             const navEl = document.getElementById(targetId);
             if (navEl) navEl.classList.add("active");
         }
+    }
+
+    const mobileMap = {
+        "explore": "mobile-nav-explore",
+        "auctions": "mobile-nav-auctions",
+        "chat": "mobile-nav-chat",
+        "creator": "mobile-nav-profile",
+        "buyer-settings": "mobile-nav-profile"
+    };
+    const mobTargetId = mobileMap[sectionName];
+    if (mobTargetId) {
+        const mobEl = document.getElementById(mobTargetId);
+        if (mobEl) mobEl.classList.add("active");
     }
 
     // Load dynamic updates

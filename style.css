@@ -2690,9 +2690,7 @@ body.creator-mode-active .nav-item.active {
     }
 
     #session-buttons-container {
-        display: flex !important;
-        align-items: center !important;
-        gap: 4px !important;
+        display: none !important;
     }
 
     /* Full-width Search Bar Row 2 (order 3 ensures it sits under Logo & Actions) */
@@ -2859,35 +2857,50 @@ body.creator-mode-active .nav-item.active {
 
     .mobile-nav-item {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        color: var(--text-muted) !important;
+        color: var(--text-muted);
         text-decoration: none !important;
         flex: 1 !important;
-        height: 100% !important;
+        height: 85% !important;
+        margin: 0 2px !important;
+        border-radius: 16px !important;
         transition: all 0.2s ease !important;
+        cursor: pointer !important;
+        user-select: none !important;
+        -webkit-tap-highlight-color: transparent !important;
     }
 
     .mobile-nav-item span {
-        display: none !important; /* Hide text labels for sleek minimalist icon-only dock bar */
+        display: block !important;
+        font-size: 0.64rem !important;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-top: 2px !important;
     }
 
     .mobile-nav-item i {
-        font-size: 1.65rem !important;
-        color: var(--text-muted) !important;
+        font-size: 1.25rem !important;
+        color: var(--text-muted);
         transition: color 0.2s ease, transform 0.2s ease !important;
     }
 
     .mobile-nav-item.active {
-        color: var(--accent-hover) !important;
-        background: var(--accent-light) !important;
-        border-radius: 20px !important;
+        color: #ff4d6d !important;
+        background: rgba(255, 77, 109, 0.18) !important;
+        box-shadow: 0 2px 10px rgba(255, 77, 109, 0.25) !important;
     }
 
     .mobile-nav-item.active i {
-        color: var(--accent-hover) !important;
-        transform: scale(1.08) !important;
-    } /* Remove zoom distortion effect on active icons */
+        color: #ff4d6d !important;
+        transform: scale(1.15) !important;
+    }
+
+    .mobile-nav-item.active span {
+        color: #ff4d6d !important;
+        font-weight: 800 !important;
+    }
 
     /* Creator Profile Mobile Layout */
     .profile-cover {

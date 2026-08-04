@@ -1,1 +1,1 @@
-fix: translate all login/register modal strings with data-i18n, unify 18+ terms checkbox, and update mobile profile menu click handler
+feat: add dynamic Creator/Seller document upload section (KYC 18+) with 72-hour review SLA notice to registration workflow

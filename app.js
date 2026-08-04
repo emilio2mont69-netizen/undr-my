@@ -2710,15 +2710,28 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
 
     document.getElementById("register-modal").style.display = "none";
     document.getElementById("register-form").reset();
+    if (window.toggleCreatorKYCRegistrationFields) window.toggleCreatorKYCRegistrationFields("buyer");
     syncUserSessionUI();
-    showToast(translations[currentLang].register_success || (currentLang === 'es' ? '¡Cuenta creada con éxito!' : 'Account created successfully!'));
-    
+
     if (role === "creator") {
+        const creatorNotice = currentLang === 'es' ? 
+            '¡Cuenta registrada! Documentos en revisión (Tarda hasta 72h hábiles en ser aprobada por moderación).' : 
+            'Account registered! Documents under review (Manual approval takes up to 72 business hours).';
+        showToast(creatorNotice);
+        alert(creatorNotice);
         showSection('creator');
     } else {
+        showToast(translations[currentLang].register_success || (currentLang === 'es' ? '¡Cuenta creada con éxito!' : 'Account created successfully!'));
         showSection('explore');
     }
 });
+
+window.toggleCreatorKYCRegistrationFields = function(role) {
+    const fields = document.getElementById("creator-kyc-registration-fields");
+    if (fields) {
+        fields.style.display = role === "creator" ? "flex" : "none";
+    }
+};
 
 // Google Social Login Trigger
 window.loginWithGoogle = async function() {
@@ -3135,9 +3148,21 @@ const translations = {
         google_signin_text: "Continue with Google",
         google_signup_text: "Sign up with Google",
         or_email_login: "or with email",
-        or_email_register: "or register with email"
+        or_email_register: "or register with email",
+        creator_kyc_header: "Creator Identity Verification (KYC 18+)",
+        kyc_sla_notice_title: "Human Document Review SLA Notice:",
+        kyc_sla_notice_desc: "Manual verification of official ID documents by our compliance team can take up to 72 business hours. Your creator profile will stay in 'Pending Review' status until approved.",
+        kyc_id_type_label: "Government ID Type",
+        kyc_id_front_label: "Front Photo of Official 18+ ID",
+        kyc_selfie_label: "Live Selfie holding your ID"
     },
     es: {
+        creator_kyc_header: "Verificación de Identidad de Creadora (KYC +18)",
+        kyc_sla_notice_title: "Aviso de Tiempo de Revisión de Documentos:",
+        kyc_sla_notice_desc: "La verificación manual de tus documentos de identidad por nuestro equipo de cumplimiento puede tomar hasta 72 horas hábiles. Tu cuenta de creadora permanecerá en estado 'En Revisión' hasta ser aprobada.",
+        kyc_id_type_label: "Tipo de Documento Oficial",
+        kyc_id_front_label: "Foto Frontal de tu ID Oficial (+18)",
+        kyc_selfie_label: "Selfie en Vivo sosteniendo tu ID",
         added_cart: "añadido al carrito.",
         added_favorites: "Añadido a favoritos.",
         item_word: "artículo",

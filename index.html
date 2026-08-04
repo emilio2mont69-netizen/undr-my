@@ -1417,10 +1417,43 @@
                 </div>
                 <div class="form-group">
                     <label for="reg-role" data-i18n="register_as_label">I want to register as a:</label>
-                    <select id="reg-role">
+                    <select id="reg-role" onchange="toggleCreatorKYCRegistrationFields(this.value)">
                         <option value="buyer" data-i18n="role_buyer_opt">Buyer (Purchase lingerie & wear)</option>
                         <option value="creator" data-i18n="role_creator_opt">Creator/Seller (Sell worn garments)</option>
                     </select>
+                </div>
+
+                <!-- Dynamic Creator Document Verification Section (KYC 18+) -->
+                <div id="creator-kyc-registration-fields" style="display: none; background: var(--secondary-bg); border: 1.5px solid var(--accent-color); padding: 14px; border-radius: 12px; margin-bottom: 16px; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px; color: var(--accent-hover); font-weight: 700; font-size: 0.88rem;">
+                        <i class="fa-solid fa-id-card-clip" style="font-size: 1.1rem;"></i>
+                        <span data-i18n="creator_kyc_header">Creator Identity Verification (KYC 18+)</span>
+                    </div>
+
+                    <div style="background: rgba(255, 77, 109, 0.08); border-left: 3px solid var(--accent-hover); padding: 10px 12px; border-radius: 6px; font-size: 0.78rem; color: var(--text-color); line-height: 1.45;">
+                        <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-hover); margin-right: 4px;"></i>
+                        <strong data-i18n="kyc_sla_notice_title">Human Document Review SLA Notice:</strong>
+                        <span data-i18n="kyc_sla_notice_desc">Manual verification of official ID documents by our compliance team can take up to <strong>72 business hours</strong>. Your creator profile will stay in <em>'Pending Review'</em> status until approved.</span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.78rem; font-weight: 700;" data-i18n="kyc_id_type_label">Government ID Type</label>
+                        <select id="reg-kyc-doc-type" style="padding: 8px 10px; font-size: 0.82rem;">
+                            <option value="ID Card">National Identity Card / Cédula</option>
+                            <option value="Passport">Passport / Pasaporte</option>
+                            <option value="Driver License">Driver's License / Licencia de Conducir</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.78rem; font-weight: 700;" data-i18n="kyc_id_front_label">Front Photo of Official 18+ ID</label>
+                        <input type="file" id="reg-kyc-id-file" accept="image/*" style="padding: 6px; font-size: 0.8rem;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.78rem; font-weight: 700;" data-i18n="kyc_selfie_label">Live Selfie holding your ID</label>
+                        <input type="file" id="reg-kyc-selfie-file" accept="image/*" style="padding: 6px; font-size: 0.8rem;">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="reg-email" data-i18n="email_label">Email Address</label>

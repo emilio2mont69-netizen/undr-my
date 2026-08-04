@@ -40,7 +40,7 @@ body {
     background-color: rgba(25, 25, 29, 0.95);
     backdrop-filter: blur(8px);
     z-index: 100000 !important;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     padding: 20px;

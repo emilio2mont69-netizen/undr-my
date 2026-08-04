@@ -29,9 +29,9 @@
     <script>
         (function() {
             try {
-                if (localStorage.getItem("undr_age_verified") === "true" || sessionStorage.getItem("undr_age_verified") === "true") {
-                    document.write('<style>#age-modal { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }</style>');
-                }
+                sessionStorage.setItem("undr_age_verified", "true");
+                localStorage.setItem("undr_age_verified", "true");
+                document.write('<style>#age-modal { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }</style>');
             } catch(e) {}
         })();
 

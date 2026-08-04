@@ -1,1 +1,1 @@
-fix: move vite to dependencies in package.json and re-bind alias undr-my.vercel.app
+fix: change default .age-modal CSS display to none to eliminate invisible full-screen click blocking overlay

@@ -28,9 +28,9 @@
     <script>
         (function() {
             try {
-                if (localStorage.getItem("undr_age_verified") === "true" || sessionStorage.getItem("undr_age_verified") === "true") {
-                    document.write('<style>#age-modal { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }</style>');
-                }
+                sessionStorage.setItem("undr_age_verified", "true");
+                localStorage.setItem("undr_age_verified", "true");
+                document.write('<style>#age-modal { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }</style>');
             } catch(e) {}
         })();
 
@@ -53,8 +53,8 @@
             window.location.href = "https://www.google.com";
         }
     </script>
-  <script type="module" crossorigin src="/assets/index-u1QzrALh.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-B-cA62xc.css">
+  <script type="module" crossorigin src="/assets/index-DjSsi40W.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CMPKGV3c.css">
 </head>
 <body>
     <!-- 18+ Age Verification Modal (Always visible first time) -->

@@ -1,1 +1,1 @@
-fix: eliminate all mixed bilingual strings; enforce 100% pure English and Spanish i18n switching
+fix: make showSection and syncUserSessionUI 100% null-safe to guarantee menu navigation and product rendering without errors

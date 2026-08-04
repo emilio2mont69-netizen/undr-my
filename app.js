@@ -436,27 +436,30 @@ function syncUserSessionUI() {
 
     const editAvatarInput = document.getElementById("edit-avatar-url-input");
     const editUsernameInput = document.getElementById("edit-username-input");
+    const navBuyerSettings = document.getElementById("nav-buyer-settings-item");
 
     if (!user || user === "null") {
         // Logged Out State (Guest View)
         const guestAvatar = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
-        sidebarAvatar.src = guestAvatar;
-        userNameDisplay.textContent = currentLang === "es" ? "Invitado" : "Guest";
-        userRoleDisplay.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
-        userRoleDisplay.style.color = "var(--text-muted)";
-        userBalanceDisplay.textContent = "";
+        if (typeof sidebarAvatar !== 'undefined' && sidebarAvatar) sidebarAvatar.src = guestAvatar;
+        if (typeof userNameDisplay !== 'undefined' && userNameDisplay) userNameDisplay.textContent = currentLang === "es" ? "Invitado" : "Guest";
+        if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
+            userRoleDisplay.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
+            userRoleDisplay.style.color = "var(--text-muted)";
+        }
+        if (typeof userBalanceDisplay !== 'undefined' && userBalanceDisplay) userBalanceDisplay.textContent = "";
 
         if (profPicPreview) profPicPreview.src = guestAvatar;
         if (profDispName) profDispName.textContent = currentLang === "es" ? "Usuario Invitado" : "Guest User";
         if (profDispHandle) profDispHandle.textContent = "@guest";
         if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Sin sesión" : "Not Logged In";
 
-        applyToSellBtn.style.display = "none";
-        navMessagesItem.style.display = "flex";
-        navCreatorItem.style.display = "none";
-        navAdminItem.style.display = "none";
-        document.getElementById("nav-buyer-settings-item").style.display = "flex";
-        cartAddonsGroup.style.display = "none";
+        if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "none";
+        if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "flex";
+        if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "none";
+        if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "none";
+        if (navBuyerSettings) navBuyerSettings.style.display = "flex";
+        if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "none";
 
         // Header buttons show Log In / Sign Up
         if (sessionButtonsContainer) {
@@ -467,17 +470,18 @@ function syncUserSessionUI() {
         }
     } else {
         // Logged In State
-        sidebarAvatar.src = user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
-        userNameDisplay.textContent = user.username;
-        userBalanceDisplay.textContent = formatPrice(user.balance);
+        const defaultAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
+        if (typeof sidebarAvatar !== 'undefined' && sidebarAvatar) sidebarAvatar.src = user.avatar || defaultAvatar;
+        if (typeof userNameDisplay !== 'undefined' && userNameDisplay) userNameDisplay.textContent = user.username;
+        if (typeof userBalanceDisplay !== 'undefined' && userBalanceDisplay) userBalanceDisplay.textContent = formatPrice(user.balance);
 
         const handleStr = user.handle || `@${user.username.toLowerCase().replace(/\s+/g, '')}`;
 
-        if (profPicPreview) profPicPreview.src = user.avatar || sidebarAvatar.src;
+        if (profPicPreview) profPicPreview.src = user.avatar || defaultAvatar;
         if (profDispName) profDispName.textContent = user.username;
         if (profDispHandle) profDispHandle.textContent = handleStr;
 
-        if (creatorPicPreview) creatorPicPreview.src = user.avatar || sidebarAvatar.src;
+        if (creatorPicPreview) creatorPicPreview.src = user.avatar || defaultAvatar;
         if (creatorDispName) creatorDispName.textContent = user.username;
         if (creatorDispHandle) creatorDispHandle.textContent = handleStr;
 
@@ -493,35 +497,41 @@ function syncUserSessionUI() {
         
         // User Role translations
         if (user.role === "buyer") {
-            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
+            if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
+                userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
+                userRoleDisplay.style.color = "var(--text-muted)";
+            }
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
-            userRoleDisplay.style.color = "var(--text-muted)";
-            applyToSellBtn.style.display = "block";
-            navMessagesItem.style.display = "flex";
-            navCreatorItem.style.display = "none";
-            navAdminItem.style.display = "none";
-            document.getElementById("nav-buyer-settings-item").style.display = "flex";
-            cartAddonsGroup.style.display = "block"; // Buyers see cart extras
+            if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "block";
+            if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "flex";
+            if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "none";
+            if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "none";
+            if (navBuyerSettings) navBuyerSettings.style.display = "flex";
+            if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "block";
         } else if (user.role === "creator") {
-            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
+            if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
+                userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
+                userRoleDisplay.style.color = "var(--accent-hover)";
+            }
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
-            userRoleDisplay.style.color = "var(--accent-hover)";
-            applyToSellBtn.style.display = "none";
-            navMessagesItem.style.display = "flex";
-            navCreatorItem.style.display = "flex";
-            navAdminItem.style.display = "none";
-            document.getElementById("nav-buyer-settings-item").style.display = "none";
-            cartAddonsGroup.style.display = "none"; // Creators don't see cart extras
+            if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "none";
+            if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "flex";
+            if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "flex";
+            if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "none";
+            if (navBuyerSettings) navBuyerSettings.style.display = "none";
+            if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "none";
         } else if (user.role === "admin") {
-            userRoleDisplay.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
+            if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
+                userRoleDisplay.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
+                userRoleDisplay.style.color = "#ff4d6d";
+            }
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
-            userRoleDisplay.style.color = "#ff4d6d";
-            applyToSellBtn.style.display = "none";
-            navMessagesItem.style.display = "none";
-            navCreatorItem.style.display = "none";
-            navAdminItem.style.display = "flex";
-            document.getElementById("nav-buyer-settings-item").style.display = "none";
-            cartAddonsGroup.style.display = "none";
+            if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "none";
+            if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "none";
+            if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "none";
+            if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "flex";
+            if (navBuyerSettings) navBuyerSettings.style.display = "none";
+            if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "none";
         }
 
         // Toggle auth action buttons in header
@@ -862,13 +872,7 @@ window.logoutCurrentSession = function() {
 
 // Global dynamic Section switcher
 window.showSection = function(sectionName, element = null, updateHash = true) {
-    exploreSection.classList.remove("active");
-    chatSection.classList.remove("active");
-    creatorSection.classList.remove("active");
-    adminSection.classList.remove("active");
-    creatorProfileSection.classList.remove("active");
-    buyerSettingsSection.classList.remove("active");
-    auctionsSection.classList.remove("active");
+    document.querySelectorAll(".content-section-panel").forEach(panel => panel.classList.remove("active"));
 
     const navItems = document.querySelectorAll(".nav-item");
     navItems.forEach(item => item.classList.remove("active"));

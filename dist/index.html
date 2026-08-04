@@ -1356,8 +1356,8 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Log In securely</button>
                 <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                    Don't have an account? 
-                    <a href="javascript:void(0)" onclick="document.getElementById('login-modal').style.display='none'; document.getElementById('register-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Create Account / Registrarse</a>
+                    <span data-i18n="dont_have_account_text">Don't have an account?</span> 
+                    <a href="javascript:void(0)" onclick="document.getElementById('login-modal').style.display='none'; document.getElementById('register-modal').style.display='flex';" data-i18n="register_link_text" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Create Account</a>
                 </div>
             </form>
         </div>
@@ -1394,8 +1394,8 @@
                 <div class="form-group">
                     <label for="reg-role">I want to register as a:</label>
                     <select id="reg-role">
-                        <option value="buyer">Buyer (Comprador de ropa interior)</option>
-                        <option value="creator">Creator/Seller (Vendedora de ropa interior)</option>
+                        <option value="buyer" data-i18n="opt_role_buyer">Buyer (Underwear Buyer)</option>
+                        <option value="creator" data-i18n="opt_role_creator">Creator/Seller (Underwear Seller)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1410,21 +1410,21 @@
                 <div style="background: var(--secondary-bg); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
                     <div style="display: flex; align-items: flex-start; gap: 10px;">
                         <input type="checkbox" id="reg-age" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
-                        <label for="reg-age" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
-                            <strong>Soy mayor de 18 años</strong> (o la mayoría de edad en mi jurisdicción) y declaro tener capacidad legal para acceder a esta plataforma.
+                        <label for="reg-age" data-i18n="reg_age_label" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
+                            <strong>I am 18 years of age or older</strong> (or legal age of majority in my jurisdiction) and declare legal capacity to access this site.
                         </label>
                     </div>
                     <div style="display: flex; align-items: flex-start; gap: 10px;">
                         <input type="checkbox" id="reg-terms" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
-                        <label for="reg-terms" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
-                            Acepto los <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Términos de Servicio</a>, la <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Política de Privacidad</a>, y la declaración <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">18 U.S.C. § 2257</a>.
+                        <label for="reg-terms" data-i18n="reg_terms_label" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
+                            I accept the <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Terms of Service</a>, <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Privacy Policy</a>, and <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">18 U.S.C. § 2257 Statement</a>.
                         </label>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn" style="font-weight: 700; padding: 12px;">Crear Cuenta / Register</button>
+                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn" style="font-weight: 700; padding: 12px;">Create Account</button>
                 <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                    Already have an account? 
-                    <a href="javascript:void(0)" onclick="document.getElementById('register-modal').style.display='none'; document.getElementById('login-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Log In / Iniciar Sesión</a>
+                    <span data-i18n="already_have_account_text">Already have an account?</span> 
+                    <a href="javascript:void(0)" onclick="document.getElementById('register-modal').style.display='none'; document.getElementById('login-modal').style.display='flex';" data-i18n="login_link_text" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Log In</a>
                 </div>
             </form>
         </div>
@@ -1583,14 +1583,14 @@
     <footer style="background:var(--primary-bg); border-top:1px solid var(--border-color); padding:30px 20px 60px 20px; text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:40px;">
         <div style="max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:16px; align-items:center;">
             <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; font-weight:600;">
-                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color:var(--text-color); text-decoration:none;">Terms of Service / Términos</a>
-                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color:var(--text-color); text-decoration:none;">Privacy Policy / Privacidad</a>
-                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('cookies')" style="color:var(--text-color); text-decoration:none;">Cookie Policy / Cookies</a>
-                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color:#ff4d6d; text-decoration:none;">18 U.S.C. § 2257 Compliance</a>
-                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('refunds')" style="color:var(--text-color); text-decoration:none;">Refunds & Disputes / Reembolsos</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color:var(--text-color); text-decoration:none;" data-i18n="footer_terms">Terms of Service</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color:var(--text-color); text-decoration:none;" data-i18n="footer_privacy">Privacy Policy</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('cookies')" style="color:var(--text-color); text-decoration:none;" data-i18n="footer_cookies">Cookie Policy</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color:#ff4d6d; text-decoration:none;" data-i18n="footer_2257">18 U.S.C. § 2257 Compliance</a>
+                <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('refunds')" style="color:var(--text-color); text-decoration:none;" data-i18n="footer_refunds">Refunds & Disputes</a>
             </div>
-            <div style="color:var(--text-muted); font-size:0.75rem;">
-                © 2026 UNDR. Todos los derechos reservados.
+            <div style="color:var(--text-muted); font-size:0.75rem;" data-i18n="footer_copyright">
+                © 2026 UNDR. All Rights Reserved.
             </div>
         </div>
     </footer>

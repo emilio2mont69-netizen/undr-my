@@ -1,1 +1,1 @@
-fix: deploy fresh clean vite build with zero sticky legal bar and hard CSS suppression
+fix: eliminate all mixed bilingual strings; enforce 100% pure English and Spanish i18n switching

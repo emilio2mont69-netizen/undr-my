@@ -223,7 +223,7 @@ if (!localStorage.getItem("undr_notifications")) {
 }
 
 // Current runtime state
-let currentLang = "en";
+let currentLang = localStorage.getItem("undr_lang") || "en";
 let cart = [];
 let activeChatCreator = "Luna Diamond";
 let cartAddonsCost = 0;
@@ -3355,7 +3355,12 @@ window.rejectAgeVerification = function() {
 window.toggleLanguage = function() {
     const nextLang = currentLang === "en" ? "es" : "en";
     applyLanguage(nextLang);
+    if (window.showToast) {
+        window.showToast(nextLang === "es" ? "Idioma cambiado a Español 🇪🇸" : "Language changed to English 🇺🇸");
+    }
 };
+
+window.applyLanguage = applyLanguage;
 
 function applyLanguage(lang) {
     currentLang = lang;
@@ -3381,6 +3386,21 @@ function applyLanguage(lang) {
             }
         }
     });
+
+    // Input placeholders translations
+    const searchInp = document.getElementById("search-input");
+    const regNameInp = document.getElementById("reg-name");
+    const regEmailInp = document.getElementById("reg-email");
+    const regPassInp = document.getElementById("reg-password");
+    const loginUserInp = document.getElementById("login-username");
+    const loginPassInp = document.getElementById("login-password");
+
+    if (searchInp) searchInp.placeholder = lang === "es" ? "Buscar creadoras, tallas, estilos..." : "Search models, sizes, styles...";
+    if (regNameInp) regNameInp.placeholder = lang === "es" ? "Ej: John Doe" : "John Doe";
+    if (regEmailInp) regEmailInp.placeholder = lang === "es" ? "correo@ejemplo.com" : "email@example.com";
+    if (regPassInp) regPassInp.placeholder = lang === "es" ? "Crea una contraseña segura" : "Create a secure password";
+    if (loginUserInp) loginUserInp.placeholder = lang === "es" ? "correo@ejemplo.com o @usuario" : "email@example.com or @handle";
+    if (loginPassInp) loginPassInp.placeholder = lang === "es" ? "Tu contraseña" : "Your password";
 
     // Shipping inputs placeholder updates
     const fnInput = document.getElementById("shipping-full-name");

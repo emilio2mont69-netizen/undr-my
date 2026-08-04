@@ -1,1 +1,1 @@
-fix: add inline fail-safe window.toggleCreatorKYCRegistrationFields and event listener to expand Creator KYC document upload section on change
+fix: initialize currentLang from localStorage and update all input placeholders dynamically in applyLanguage

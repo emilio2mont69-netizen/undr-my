@@ -1,1 +1,1 @@
-fix: remove fixed backend status badge overlay causing header touch block and refine mobile bottom nav layout
+fix: disable automatic git deployments in vercel.json to stop failed deployment notification emails

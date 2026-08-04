@@ -1,1 +1,1 @@
-fix: update vercel.json with explicit vite framework preset, buildCommand, outputDirectory, and asset rewrite exclusions
+fix: update package.json main entry point to app.js to fix Vercel GitHub automatic deployment error

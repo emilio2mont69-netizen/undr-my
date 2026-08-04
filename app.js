@@ -5210,24 +5210,20 @@ window.updateMobileNavActive = function(element) {
 };
 
 window.handleMobileProfileClick = function() {
-    const user = JSON.parse(localStorage.getItem("undr_current_user"));
-    if (!user || user === "null") {
-        const modal = document.getElementById("login-modal");
-        if (modal) modal.style.display = "flex";
-        return;
-    }
-    if (user.role === "creator") {
-        showSection("creator");
+    if (typeof window.openUniversalProfileEditModal === 'function') {
+        window.openUniversalProfileEditModal();
     } else {
-        showSection("buyer-settings");
+        const modal = document.getElementById("edit-profile-modal") || document.getElementById("login-modal");
+        if (modal) modal.style.display = "flex";
     }
 };
 
 window.toggleCartModal = function() {
     const modal = document.getElementById("cart-modal");
-    if (!modal) return;
-    renderMobileCartModal();
-    modal.style.display = "flex";
+    if (modal) {
+        renderMobileCartModal();
+        modal.style.display = "flex";
+    }
 };
 
 window.renderMobileCartModal = function() {

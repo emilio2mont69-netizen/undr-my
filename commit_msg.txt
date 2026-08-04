@@ -1,1 +1,1 @@
-fix: resolve mobile bottom dock active tab highlighting, guarantee product rendering, and fix profile session trigger
+fix: remove duplicate edit-profile-modal div from HTML, restore openUniversalProfileEditModal trigger for mobile profile button, and ensure cart modal works

@@ -1,1 +1,1 @@
-fix: add direct inline onclick handlers for Log In, Sign Up, Currency, and Language controls in index.html
+fix: wrap age verification script correctly inside script tag in index.html head

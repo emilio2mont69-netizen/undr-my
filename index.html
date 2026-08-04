@@ -60,11 +60,7 @@
             if (window.applyLanguage) { window.applyLanguage(next); }
             else { window.location.reload(); }
         };
-    </script>
-    <!-- Main Stylesheet -->
-    <link rel="stylesheet" href="style.css">
-
-        function acceptAgeVerification() {
+        window.acceptAgeVerification = function() {
             try {
                 sessionStorage.setItem("undr_age_verified", "true");
                 localStorage.setItem("undr_age_verified", "true");
@@ -77,12 +73,13 @@
                 ageMdl.style.setProperty("pointer-events", "none", "important");
                 ageMdl.style.setProperty("visibility", "hidden", "important");
             }
-        }
-
-        function rejectAgeVerification() {
+        };
+        window.rejectAgeVerification = function() {
             window.location.href = "https://www.google.com";
-        }
+        };
     </script>
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- 18+ Age Verification Modal (Always visible first time) -->

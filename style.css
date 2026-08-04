@@ -2669,7 +2669,8 @@ body.creator-mode-active .nav-item.active {
         order: 2 !important;
         display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
     }
 
     #lang-toggle-btn {
@@ -2689,7 +2690,9 @@ body.creator-mode-active .nav-item.active {
     }
 
     #session-buttons-container {
-        display: none !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
     }
 
     /* Full-width Search Bar Row 2 (order 3 ensures it sits under Logo & Actions) */

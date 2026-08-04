@@ -1,1 +1,1 @@
-feat: add dynamic Creator/Seller document upload section (KYC 18+) with 72-hour review SLA notice to registration workflow
+refactor: remove redundant Explore Creators and How authenticity works buttons from hero banner

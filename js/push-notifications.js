@@ -317,15 +317,21 @@ export function showNotificationPrompt(userId) {
 
     document.body.appendChild(banner);
 
-    document.getElementById('push-enable-btn').addEventListener('click', async () => {
-        banner.remove();
-        await subscribeWebPush(userId);
-    });
+    const enableBtn = document.getElementById('push-enable-btn');
+    if (enableBtn) {
+        enableBtn.addEventListener('click', async () => {
+            banner.remove();
+            await subscribeWebPush(userId);
+        });
+    }
 
-    document.getElementById('push-dismiss-btn').addEventListener('click', () => {
-        localStorage.setItem('undr_push_dismissed', 'true');
-        banner.remove();
-    });
+    const dismissBtn = document.getElementById('push-dismiss-btn');
+    if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+            localStorage.setItem('undr_push_dismissed', 'true');
+            banner.remove();
+        });
+    }
 
     // Auto-remove after 12 seconds
     setTimeout(() => {

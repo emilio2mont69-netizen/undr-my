@@ -174,16 +174,22 @@ const DEFAULT_CHATS = [
 ];
 
 // Initialize Storage Database
-if (!localStorage.getItem("undr_users")) {
+const storedUsersRaw = localStorage.getItem("undr_users");
+if (!storedUsersRaw || storedUsersRaw === "[]" || storedUsersRaw === "null") {
     localStorage.setItem("undr_users", JSON.stringify(DEFAULT_USERS));
 }
+
 if (!localStorage.getItem("undr_current_user")) {
     localStorage.setItem("undr_current_user", "null"); // Starts as Anonymous Guest
 }
-if (!localStorage.getItem("undr_products")) {
+
+const storedProductsRaw = localStorage.getItem("undr_products");
+if (!storedProductsRaw || storedProductsRaw === "[]" || storedProductsRaw === "null") {
     localStorage.setItem("undr_products", JSON.stringify(DEFAULT_PRODUCTS));
 }
-if (!localStorage.getItem("undr_chats")) {
+
+const storedChatsRaw = localStorage.getItem("undr_chats");
+if (!storedChatsRaw || storedChatsRaw === "[]" || storedChatsRaw === "null") {
     localStorage.setItem("undr_chats", JSON.stringify(DEFAULT_CHATS));
 }
 if (!localStorage.getItem("undr_kyc_applications")) {

@@ -23,20 +23,21 @@ export const isSupabaseConfigured = () => {
     );
 };
 
-/**
- * Supabase client instance.
- * Initialized with official createClient using standard JWT anon key.
- */
 let supabase = null;
 
+// Asynchronous non-blocking initialization
 if (isSupabaseConfigured()) {
-    try {
-        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (err) {
-        console.warn('⚠️ Failed to load Supabase client:', err.message);
-        supabase = null;
-    }
+    import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')
+        .then(mod => {
+            if (mod && mod.createClient) {
+                supabase = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                window.undrSupabaseClient = supabase;
+            }
+        })
+        .catch(err => {
+            console.warn('⚠️ Supabase CDN background load notice (using local offline fallback):', err.message);
+            supabase = null;
+        });
 }
 
 export { supabase };

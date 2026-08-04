@@ -1,1 +1,1 @@
-fix: restore explicit onclick handlers for notification bell, category chips, authenticity modal, and add strict null checks for all interactive header and hero controls
+fix: eliminate top-level await CDN blocking, enforce automatic fallback data recovery for products, and add fail-safe event handlers

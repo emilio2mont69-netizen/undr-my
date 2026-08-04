@@ -60,6 +60,12 @@
             if (window.applyLanguage) { window.applyLanguage(next); }
             else { window.location.reload(); }
         };
+        window.toggleCreatorKYCRegistrationFields = window.toggleCreatorKYCRegistrationFields || function(val) {
+            var fields = document.getElementById("creator-kyc-registration-fields");
+            if (fields) {
+                fields.style.setProperty("display", val === "creator" ? "flex" : "none", "important");
+            }
+        };
         window.acceptAgeVerification = function() {
             try {
                 sessionStorage.setItem("undr_age_verified", "true");

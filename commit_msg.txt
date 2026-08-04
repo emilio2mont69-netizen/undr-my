@@ -1,1 +1,1 @@
-refactor: remove redundant Explore Creators and How authenticity works buttons from hero banner
+fix: add inline fail-safe window.toggleCreatorKYCRegistrationFields and event listener to expand Creator KYC document upload section on change

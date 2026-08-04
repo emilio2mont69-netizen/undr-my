@@ -3486,6 +3486,14 @@ function setupEventListeners() {
         });
     }
 
+    // Registration Role Selector Listener (Creator KYC Documents Expansion)
+    const regRoleSelect = document.getElementById("reg-role");
+    if (regRoleSelect) {
+        regRoleSelect.addEventListener("change", (e) => {
+            window.toggleCreatorKYCRegistrationFields(e.target.value);
+        });
+    }
+
     // Age verification buttons
     const ageAccept = document.getElementById("age-accept-btn");
     const ageReject = document.getElementById("age-reject-btn");

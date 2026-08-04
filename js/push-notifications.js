@@ -375,7 +375,7 @@ window.undrPush = {
     isPushSupported,
 };
 
-// Auto-register SW immediately (doesn't require auth)
-registerServiceWorker();
+// Auto-register SW immediately disabled to prevent stale caching
+// registerServiceWorker();
 
 console.log('%c🔔 UNDR Push Notifications module loaded', 'color: #9b59b6; font-weight: bold; font-size: 13px;');

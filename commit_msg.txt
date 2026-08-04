@@ -1,1 +1,1 @@
-fix: add strict null safety checks to showSection and syncUserSessionUI in app.js
+fix: disable service worker auto-registration, purge browser cache on index.html load, and bundle supabase-js directly

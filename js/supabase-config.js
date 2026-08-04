@@ -1,43 +1,27 @@
-/**
- * @fileoverview Supabase client configuration and initialization.
- * 
- * Configured with active project credentials.
- */
+import { createClient } from '@supabase/supabase-js';
 
-// Supabase project credentials
 export const SUPABASE_URL = 'https://swwlphueayxryooqlwhe.supabase.co';
 export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3d2xwaHVlYXl4cnlvb3Fsd2hlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MDAwMjcsImV4cCI6MjEwMTI3NjAyN30.K4qnNFyn_0jSOAUMS-btlzpvxkn5AcTAbzc7z1G1pZA';
 
-/**
- * Checks if Supabase has been configured with real credentials.
- * @returns {boolean} True if configured, false otherwise.
- */
 export const isSupabaseConfigured = () => {
     return (
         SUPABASE_URL &&
         SUPABASE_ANON_KEY &&
-        SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
-        SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY' &&
         SUPABASE_URL.startsWith('https://') &&
         SUPABASE_ANON_KEY.startsWith('eyJ')
     );
 };
 
-let supabase = null;
+let supabaseInstance = null;
 
-// Asynchronous non-blocking initialization
-if (isSupabaseConfigured()) {
-    import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')
-        .then(mod => {
-            if (mod && mod.createClient) {
-                supabase = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                window.undrSupabaseClient = supabase;
-            }
-        })
-        .catch(err => {
-            console.warn('⚠️ Supabase CDN background load notice (using local offline fallback):', err.message);
-            supabase = null;
-        });
+try {
+    if (isSupabaseConfigured()) {
+        supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.undrSupabaseClient = supabaseInstance;
+    }
+} catch (err) {
+    console.warn('Supabase initialization fallback:', err);
 }
 
-export { supabase };
+export const supabase = supabaseInstance;
+export default supabaseInstance;

@@ -2856,49 +2856,35 @@ body.creator-mode-active .nav-item.active {
 
     .mobile-nav-item {
         display: flex !important;
-        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         color: var(--text-muted) !important;
         text-decoration: none !important;
         flex: 1 !important;
-        height: 82% !important;
-        margin: 0 2px !important;
-        border-radius: 16px !important;
+        height: 100% !important;
         transition: all 0.2s ease !important;
-        cursor: pointer !important;
-        user-select: none !important;
-        -webkit-tap-highlight-color: transparent !important;
     }
 
     .mobile-nav-item span {
-        display: block !important;
-        font-size: 0.65rem !important;
-        font-weight: 600 !important;
-        color: var(--text-muted);
-        margin-top: 2px !important;
+        display: none !important; /* Hide text labels for sleek minimalist icon-only dock bar */
     }
 
     .mobile-nav-item i {
-        font-size: 1.25rem !important;
-        color: var(--text-muted);
-        transition: color 0.2s ease, transform 0.2s ease;
+        font-size: 1.65rem !important;
+        color: var(--text-muted) !important;
+        transition: color 0.2s ease, transform 0.2s ease !important;
     }
 
     .mobile-nav-item.active {
         color: var(--accent-hover) !important;
-        background: rgba(255, 77, 109, 0.15) !important;
+        background: var(--accent-light) !important;
+        border-radius: 20px !important;
     }
 
     .mobile-nav-item.active i {
         color: var(--accent-hover) !important;
-        transform: scale(1.15) !important;
-    }
-
-    .mobile-nav-item.active span {
-        color: var(--accent-hover) !important;
-        font-weight: 800 !important;
-    }
+        transform: scale(1.08) !important;
+    } /* Remove zoom distortion effect on active icons */
 
     /* Creator Profile Mobile Layout */
     .profile-cover {

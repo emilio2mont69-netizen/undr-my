@@ -1,0 +1,1 @@
+fix: remove vercel.json for clean static site deployment

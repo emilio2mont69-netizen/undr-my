@@ -174,22 +174,16 @@ const DEFAULT_CHATS = [
 ];
 
 // Initialize Storage Database
-const storedUsersRaw = localStorage.getItem("undr_users");
-if (!storedUsersRaw || storedUsersRaw === "[]" || storedUsersRaw === "null") {
+if (!localStorage.getItem("undr_users")) {
     localStorage.setItem("undr_users", JSON.stringify(DEFAULT_USERS));
 }
-
 if (!localStorage.getItem("undr_current_user")) {
     localStorage.setItem("undr_current_user", "null"); // Starts as Anonymous Guest
 }
-
-const storedProductsRaw = localStorage.getItem("undr_products");
-if (!storedProductsRaw || storedProductsRaw === "[]" || storedProductsRaw === "null") {
+if (!localStorage.getItem("undr_products")) {
     localStorage.setItem("undr_products", JSON.stringify(DEFAULT_PRODUCTS));
 }
-
-const storedChatsRaw = localStorage.getItem("undr_chats");
-if (!storedChatsRaw || storedChatsRaw === "[]" || storedChatsRaw === "null") {
+if (!localStorage.getItem("undr_chats")) {
     localStorage.setItem("undr_chats", JSON.stringify(DEFAULT_CHATS));
 }
 if (!localStorage.getItem("undr_kyc_applications")) {
@@ -442,30 +436,27 @@ function syncUserSessionUI() {
 
     const editAvatarInput = document.getElementById("edit-avatar-url-input");
     const editUsernameInput = document.getElementById("edit-username-input");
-    const navBuyerSettings = document.getElementById("nav-buyer-settings-item");
 
     if (!user || user === "null") {
         // Logged Out State (Guest View)
         const guestAvatar = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
-        if (typeof sidebarAvatar !== 'undefined' && sidebarAvatar) sidebarAvatar.src = guestAvatar;
-        if (typeof userNameDisplay !== 'undefined' && userNameDisplay) userNameDisplay.textContent = currentLang === "es" ? "Invitado" : "Guest";
-        if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
-            userRoleDisplay.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
-            userRoleDisplay.style.color = "var(--text-muted)";
-        }
-        if (typeof userBalanceDisplay !== 'undefined' && userBalanceDisplay) userBalanceDisplay.textContent = "";
+        sidebarAvatar.src = guestAvatar;
+        userNameDisplay.textContent = currentLang === "es" ? "Invitado" : "Guest";
+        userRoleDisplay.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
+        userRoleDisplay.style.color = "var(--text-muted)";
+        userBalanceDisplay.textContent = "";
 
         if (profPicPreview) profPicPreview.src = guestAvatar;
         if (profDispName) profDispName.textContent = currentLang === "es" ? "Usuario Invitado" : "Guest User";
         if (profDispHandle) profDispHandle.textContent = "@guest";
         if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Sin sesión" : "Not Logged In";
 
-        if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "none";
-        if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "flex";
-        if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "none";
-        if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "none";
-        if (navBuyerSettings) navBuyerSettings.style.display = "flex";
-        if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "none";
+        applyToSellBtn.style.display = "none";
+        navMessagesItem.style.display = "flex";
+        navCreatorItem.style.display = "none";
+        navAdminItem.style.display = "none";
+        document.getElementById("nav-buyer-settings-item").style.display = "flex";
+        cartAddonsGroup.style.display = "none";
 
         // Header buttons show Log In / Sign Up
         if (sessionButtonsContainer) {
@@ -476,18 +467,17 @@ function syncUserSessionUI() {
         }
     } else {
         // Logged In State
-        const defaultAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
-        if (typeof sidebarAvatar !== 'undefined' && sidebarAvatar) sidebarAvatar.src = user.avatar || defaultAvatar;
-        if (typeof userNameDisplay !== 'undefined' && userNameDisplay) userNameDisplay.textContent = user.username;
-        if (typeof userBalanceDisplay !== 'undefined' && userBalanceDisplay) userBalanceDisplay.textContent = formatPrice(user.balance);
+        sidebarAvatar.src = user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
+        userNameDisplay.textContent = user.username;
+        userBalanceDisplay.textContent = formatPrice(user.balance);
 
         const handleStr = user.handle || `@${user.username.toLowerCase().replace(/\s+/g, '')}`;
 
-        if (profPicPreview) profPicPreview.src = user.avatar || defaultAvatar;
+        if (profPicPreview) profPicPreview.src = user.avatar || sidebarAvatar.src;
         if (profDispName) profDispName.textContent = user.username;
         if (profDispHandle) profDispHandle.textContent = handleStr;
 
-        if (creatorPicPreview) creatorPicPreview.src = user.avatar || defaultAvatar;
+        if (creatorPicPreview) creatorPicPreview.src = user.avatar || sidebarAvatar.src;
         if (creatorDispName) creatorDispName.textContent = user.username;
         if (creatorDispHandle) creatorDispHandle.textContent = handleStr;
 
@@ -503,41 +493,35 @@ function syncUserSessionUI() {
         
         // User Role translations
         if (user.role === "buyer") {
-            if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
-                userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
-                userRoleDisplay.style.color = "var(--text-muted)";
-            }
+            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
-            if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "block";
-            if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "flex";
-            if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "none";
-            if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "none";
-            if (navBuyerSettings) navBuyerSettings.style.display = "flex";
-            if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "block";
+            userRoleDisplay.style.color = "var(--text-muted)";
+            applyToSellBtn.style.display = "block";
+            navMessagesItem.style.display = "flex";
+            navCreatorItem.style.display = "none";
+            navAdminItem.style.display = "none";
+            document.getElementById("nav-buyer-settings-item").style.display = "flex";
+            cartAddonsGroup.style.display = "block"; // Buyers see cart extras
         } else if (user.role === "creator") {
-            if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
-                userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
-                userRoleDisplay.style.color = "var(--accent-hover)";
-            }
+            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
-            if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "none";
-            if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "flex";
-            if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "flex";
-            if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "none";
-            if (navBuyerSettings) navBuyerSettings.style.display = "none";
-            if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "none";
+            userRoleDisplay.style.color = "var(--accent-hover)";
+            applyToSellBtn.style.display = "none";
+            navMessagesItem.style.display = "flex";
+            navCreatorItem.style.display = "flex";
+            navAdminItem.style.display = "none";
+            document.getElementById("nav-buyer-settings-item").style.display = "none";
+            cartAddonsGroup.style.display = "none"; // Creators don't see cart extras
         } else if (user.role === "admin") {
-            if (typeof userRoleDisplay !== 'undefined' && userRoleDisplay) {
-                userRoleDisplay.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
-                userRoleDisplay.style.color = "#ff4d6d";
-            }
+            userRoleDisplay.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
-            if (typeof applyToSellBtn !== 'undefined' && applyToSellBtn) applyToSellBtn.style.display = "none";
-            if (typeof navMessagesItem !== 'undefined' && navMessagesItem) navMessagesItem.style.display = "none";
-            if (typeof navCreatorItem !== 'undefined' && navCreatorItem) navCreatorItem.style.display = "none";
-            if (typeof navAdminItem !== 'undefined' && navAdminItem) navAdminItem.style.display = "flex";
-            if (navBuyerSettings) navBuyerSettings.style.display = "none";
-            if (typeof cartAddonsGroup !== 'undefined' && cartAddonsGroup) cartAddonsGroup.style.display = "none";
+            userRoleDisplay.style.color = "#ff4d6d";
+            applyToSellBtn.style.display = "none";
+            navMessagesItem.style.display = "none";
+            navCreatorItem.style.display = "none";
+            navAdminItem.style.display = "flex";
+            document.getElementById("nav-buyer-settings-item").style.display = "none";
+            cartAddonsGroup.style.display = "none";
         }
 
         // Toggle auth action buttons in header
@@ -878,9 +862,16 @@ window.logoutCurrentSession = function() {
 
 // Global dynamic Section switcher
 window.showSection = function(sectionName, element = null, updateHash = true) {
-    document.querySelectorAll(".content-section-panel").forEach(panel => panel.classList.remove("active"));
-    document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
-    document.querySelectorAll(".mobile-nav-item").forEach(item => item.classList.remove("active"));
+    exploreSection.classList.remove("active");
+    chatSection.classList.remove("active");
+    creatorSection.classList.remove("active");
+    adminSection.classList.remove("active");
+    creatorProfileSection.classList.remove("active");
+    buyerSettingsSection.classList.remove("active");
+    auctionsSection.classList.remove("active");
+
+    const navItems = document.querySelectorAll(".nav-item");
+    navItems.forEach(item => item.classList.remove("active"));
 
     const sidebarLeft = document.querySelector(".sidebar-left");
     if (sidebarLeft && window.innerWidth <= 900) {
@@ -917,25 +908,8 @@ window.showSection = function(sectionName, element = null, updateHash = true) {
         }
     }
 
-    // Sync mobile dock navigation active tab
-    const mobileNavMap = {
-        "explore": "mobile-nav-explore",
-        "auctions": "mobile-nav-auctions",
-        "chat": "mobile-nav-chat",
-        "buyer-settings": "mobile-nav-profile",
-        "creator": "mobile-nav-profile",
-        "admin": "mobile-nav-profile"
-    };
-    const mobId = mobileNavMap[sectionName];
-    if (mobId) {
-        const mobEl = document.getElementById(mobId);
-        if (mobEl) mobEl.classList.add("active");
-    }
-
-    // Load dynamic section data
-    if (sectionName === "explore") {
-        filterAndSortProducts();
-    } else if (sectionName === "chat") {
+    // Load dynamic updates
+    if (sectionName === "chat") {
         renderChatMessages(activeChatCreator);
     } else if (sectionName === "creator") {
         loadCreatorPortalPanel();
@@ -1194,30 +1168,21 @@ function updateCartUI() {
 }
 
 // Search, Sort and Advanced filters execution
-window.filterAndSortProducts = function() {
+function filterAndSortProducts() {
     const products = JSON.parse(localStorage.getItem("undr_products")) || [];
-    const selectedCategoryChip = document.querySelector(".categories-section .category-chip.active") || document.querySelector(".category-chip.active");
-    const activeCategory = selectedCategoryChip ? (selectedCategoryChip.dataset.category || "all") : "all";
-    
-    const searchInputEl = document.getElementById("search-input");
-    const sortSelectEl = document.getElementById("sort-select");
-    const filterSizeEl = document.getElementById("filter-size");
-    const filterStyleEl = document.getElementById("filter-style");
-    const filterAvailEl = document.getElementById("filter-availability");
+    const selectedCategoryChip = document.querySelector(".category-chip.active");
+    const activeCategory = selectedCategoryChip ? selectedCategoryChip.dataset.category : "all";
+    const searchQuery = searchInput.value.toLowerCase().trim();
+    const sortOption = sortSelect.value;
 
-    const searchQuery = searchInputEl ? searchInputEl.value.toLowerCase().trim() : "";
-    const sortOption = sortSelectEl ? sortSelectEl.value : "recent";
-
-    const sizeCriterion = filterSizeEl ? filterSizeEl.value : "all";
-    const styleCriterion = filterStyleEl ? filterStyleEl.value : "all";
-    const availCriterion = filterAvailEl ? filterAvailEl.value : "all";
+    const sizeCriterion = filterSize.value;
+    const styleCriterion = filterStyle.value;
+    const availCriterion = filterAvailability.value;
 
     let filtered = products.filter(product => {
         const localData = product[currentLang] || product["en"] || {};
         const titleText = localData.title || product.title || "";
         const descText = localData.description || product.description || "";
-        const creatorName = product.creator && product.creator.name ? product.creator.name : "";
-        const creatorHandle = product.creator && product.creator.handle ? product.creator.handle : "";
         
         let matchesCategory = true;
         if (activeCategory === "destacadas") {
@@ -1230,11 +1195,9 @@ window.filterAndSortProducts = function() {
             matchesCategory = product.isAuction;
         }
 
-        const matchesSearch = !searchQuery || 
-                              titleText.toLowerCase().includes(searchQuery) || 
+        const matchesSearch = titleText.toLowerCase().includes(searchQuery) || 
                               descText.toLowerCase().includes(searchQuery) ||
-                              creatorName.toLowerCase().includes(searchQuery) ||
-                              creatorHandle.toLowerCase().includes(searchQuery);
+                              product.creator.name.toLowerCase().includes(searchQuery);
 
         const matchesSize = sizeCriterion === "all" || product.size === sizeCriterion;
         const matchesStyle = styleCriterion === "all" || product.style === styleCriterion;
@@ -1259,19 +1222,7 @@ window.filterAndSortProducts = function() {
     }
 
     renderProducts(filtered);
-};
-
-window.selectFeedCategory = function(btnElement, categoryName) {
-    const feedCategoryChips = document.querySelectorAll(".categories-section .category-chip");
-    feedCategoryChips.forEach(c => c.classList.remove("active"));
-    if (btnElement) {
-        btnElement.classList.add("active");
-    } else {
-        const target = Array.from(feedCategoryChips).find(c => c.dataset.category === categoryName);
-        if (target) target.classList.add("active");
-    }
-    filterAndSortProducts();
-};
+}
 
 // ==========================================
 // PORTAL DE LA CREADORA & KYC
@@ -2632,20 +2583,18 @@ window.processNowpaymentsCheckout = async function() {
 };
 
 // CCBill simulation submission form
-if (gatewayPaymentForm) {
-    gatewayPaymentForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (gatewayModal) gatewayModal.style.display = "none";
-        showToast(translations[currentLang].checkout_success);
+gatewayPaymentForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    gatewayModal.style.display = "none";
+    showToast(translations[currentLang].checkout_success);
 
-        setTimeout(() => {
-            if (ccbillPaymentCallback) {
-                ccbillPaymentCallback();
-                ccbillPaymentCallback = null;
-            }
-        }, 1200);
-    });
-}
+    setTimeout(() => {
+        if (ccbillPaymentCallback) {
+            ccbillPaymentCallback();
+            ccbillPaymentCallback = null;
+        }
+    }, 1200);
+});
 
 // ==========================================
 // REGISTER & PRODUCT DETAIL FLOW
@@ -2661,24 +2610,15 @@ window.openProductDetailModal = function(productId, fromProfile = false) {
     const titleText = localData.title || product.title || "";
     const descText = localData.description || product.description || "";
     
-    const imgEl = document.getElementById("detail-modal-image");
-    const avatarEl = document.getElementById("detail-modal-avatar");
-    const creatorNameEl = document.getElementById("detail-modal-creator-name");
-    const titleEl = document.getElementById("detail-modal-title");
-    const priceEl = document.getElementById("detail-modal-price");
-    const descEl = document.getElementById("detail-modal-desc");
-    const tagSizeEl = document.getElementById("detail-modal-tag-size");
-    const tagWearEl = document.getElementById("detail-modal-tag-wear");
-
-    if (imgEl) imgEl.src = product.image;
-    if (avatarEl) avatarEl.src = product.creator.avatar;
-    if (creatorNameEl) creatorNameEl.textContent = product.creator.handle;
-    if (titleEl) titleEl.textContent = titleText;
-    if (priceEl) priceEl.textContent = formatPrice(product.price);
-    if (descEl) descEl.textContent = descText;
+    document.getElementById("detail-modal-image").src = product.image;
+    document.getElementById("detail-modal-avatar").src = product.creator.avatar;
+    document.getElementById("detail-modal-creator-name").textContent = product.creator.handle;
+    document.getElementById("detail-modal-title").textContent = titleText;
+    document.getElementById("detail-modal-price").textContent = formatPrice(product.price);
+    document.getElementById("detail-modal-desc").textContent = descText;
     
-    if (tagSizeEl) tagSizeEl.textContent = `Size ${product.size}`;
-    if (tagWearEl) tagWearEl.textContent = product.wearTime;
+    document.getElementById("detail-modal-tag-size").textContent = `Size ${product.size}`;
+    document.getElementById("detail-modal-tag-wear").textContent = product.wearTime;
 
     // Handle Blur Overlay
     const blurOverlay = document.getElementById("detail-modal-blur-overlay");
@@ -2698,94 +2638,87 @@ window.openProductDetailModal = function(productId, fromProfile = false) {
     }
 
     // Bind action buttons
-    const buyBtn = document.getElementById("detail-modal-buy-btn");
-    const customBtn = document.getElementById("detail-modal-custom-btn");
-    if (buyBtn) {
-        buyBtn.onclick = () => {
-            addToCart(product.id);
-            if (productDetailsModal) productDetailsModal.style.display = "none";
-        };
-    }
-    if (customBtn) {
-        customBtn.onclick = () => {
-            openCustomRequest(product.creator.name);
-            if (productDetailsModal) productDetailsModal.style.display = "none";
-        };
-    }
+    document.getElementById("detail-modal-buy-btn").onclick = () => {
+        addToCart(product.id);
+        productDetailsModal.style.display = "none";
+    };
+    document.getElementById("detail-modal-custom-btn").onclick = () => {
+        openCustomRequest(product.creator.name);
+        productDetailsModal.style.display = "none";
+    };
 
-    if (productDetailsModal) productDetailsModal.style.display = "flex";
+    productDetailsModal.style.display = "flex";
 };
 
 // Submit register form (Hybrid Supabase + Fallback)
-const regFormEl = document.getElementById("register-form");
-if (regFormEl) {
-    regFormEl.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const name = document.getElementById("reg-name").value.trim();
-        const role = document.getElementById("reg-role").value;
-        const email = document.getElementById("reg-email").value.trim();
-        const passwordVal = document.getElementById("reg-password").value;
-        const handle = `@${name.toLowerCase().replace(/[^a-z0-9_]/g, '')}`;
+document.getElementById("register-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("reg-name").value.trim();
+    const role = document.getElementById("reg-role").value;
+    const email = document.getElementById("reg-email").value.trim();
+    const passwordVal = document.getElementById("reg-password").value;
+    const handle = `@${name.toLowerCase().replace(/[^a-z0-9_]/g, '')}`;
 
-        if (!name || !email || !passwordVal) {
-            alert(currentLang === 'es' ? 'Por favor completa todos los campos requeridos.' : 'Please fill in all required fields.');
-            return;
-        }
+    if (!name || !email || !passwordVal) {
+        alert(currentLang === 'es' ? 'Por favor completa todos los campos requeridos.' : 'Please fill in all required fields.');
+        return;
+    }
 
-        let newUser = {
-            username: name,
-            handle: handle,
-            email: email,
-            password: passwordVal,
-            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
-            balance: role === "buyer" ? 300.00 : 0.00,
-            role: role,
-            kycStatus: "not_applied"
-        };
+    let newUser = {
+        username: name,
+        handle: handle,
+        email: email,
+        password: passwordVal,
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+        balance: role === "buyer" ? 300.00 : 0.00,
+        role: role,
+        kycStatus: "not_applied"
+    };
 
-        if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected()) {
-            try {
-                const { data, error } = await window.undrAPI.auth.signUp(email, passwordVal, name, handle, role);
-                if (error) {
-                    console.warn('Supabase SignUp warning:', error);
-                    if (error.message && error.message.includes('already registered')) {
-                        const signInRes = await window.undrAPI.auth.signIn(email, passwordVal);
-                        if (signInRes.data?.user) {
-                            newUser.id = signInRes.data.user.id;
-                        }
+    // If connected to Supabase, perform cloud signup
+    if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected()) {
+        try {
+            const { data, error } = await window.undrAPI.auth.signUp(email, passwordVal, name, handle, role);
+            if (error) {
+                console.warn('Supabase SignUp warning:', error);
+                // If user already exists in DB, attempt sign-in
+                if (error.message && error.message.includes('already registered')) {
+                    const signInRes = await window.undrAPI.auth.signIn(email, passwordVal);
+                    if (signInRes.data?.user) {
+                        newUser.id = signInRes.data.user.id;
                     }
-                } else if (data?.user) {
-                    newUser.id = data.user.id;
                 }
-            } catch (err) {
-                console.warn('Supabase Auth error, using local session:', err);
+            } else if (data?.user) {
+                newUser.id = data.user.id;
             }
+        } catch (err) {
+            console.warn('Supabase Auth error, using local session:', err);
         }
+    }
 
-        const users = JSON.parse(localStorage.getItem("undr_users")) || [];
-        const existingIndex = users.findIndex(u => u.email === email || u.handle === handle);
-        if (existingIndex !== -1) {
-            users[existingIndex] = newUser;
-        } else {
-            users.push(newUser);
-        }
+    // Save to local storage for immediate application state
+    const users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    const existingIndex = users.findIndex(u => u.email === email || u.handle === handle);
+    if (existingIndex !== -1) {
+        users[existingIndex] = newUser;
+    } else {
+        users.push(newUser);
+    }
 
-        localStorage.setItem("undr_users", JSON.stringify(users));
-        localStorage.setItem("undr_current_user", JSON.stringify(newUser));
+    localStorage.setItem("undr_users", JSON.stringify(users));
+    localStorage.setItem("undr_current_user", JSON.stringify(newUser));
 
-        const regMdl = document.getElementById("register-modal");
-        if (regMdl) regMdl.style.display = "none";
-        regFormEl.reset();
-        syncUserSessionUI();
-        showToast(translations[currentLang].register_success || (currentLang === 'es' ? '¡Cuenta creada con éxito!' : 'Account created successfully!'));
-        
-        if (role === "creator") {
-            showSection('creator');
-        } else {
-            showSection('explore');
-        }
-    });
-}
+    document.getElementById("register-modal").style.display = "none";
+    document.getElementById("register-form").reset();
+    syncUserSessionUI();
+    showToast(translations[currentLang].register_success || (currentLang === 'es' ? '¡Cuenta creada con éxito!' : 'Account created successfully!'));
+    
+    if (role === "creator") {
+        showSection('creator');
+    } else {
+        showSection('explore');
+    }
+});
 
 // Google Social Login Trigger
 window.loginWithGoogle = async function() {
@@ -2806,231 +2739,225 @@ window.loginWithGoogle = async function() {
 };
 
 // Secure Login Form Submission (Brute-Force Rate Limiting)
-const loginFormEl = document.getElementById("login-form");
-if (loginFormEl) {
-    loginFormEl.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const inputVal = document.getElementById("login-username").value.trim().toLowerCase();
-        const passwordVal = document.getElementById("login-password").value;
+document.getElementById("login-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const inputVal = document.getElementById("login-username").value.trim().toLowerCase();
+    const passwordVal = document.getElementById("login-password").value;
 
-        const lockoutKey = `undr_lockout_${inputVal}`;
-        const attemptsKey = `undr_attempts_${inputVal}`;
-        
-        const lockoutUntil = parseInt(localStorage.getItem(lockoutKey) || "0");
-        if (Date.now() < lockoutUntil) {
-            const remainingSecs = Math.ceil((lockoutUntil - Date.now()) / 1000);
-            alert(currentLang === "es" ? 
-                `Esta cuenta está bloqueada temporalmente por seguridad. Inténtalo de nuevo en ${remainingSecs} segundos.` : 
-                `This account is temporarily locked for security. Try again in ${remainingSecs} seconds.`);
-            return;
-        }
+    // Rate Limiting checks
+    const lockoutKey = `undr_lockout_${inputVal}`;
+    const attemptsKey = `undr_attempts_${inputVal}`;
+    
+    const lockoutUntil = parseInt(localStorage.getItem(lockoutKey) || "0");
+    if (Date.now() < lockoutUntil) {
+        const remainingSecs = Math.ceil((lockoutUntil - Date.now()) / 1000);
+        alert(currentLang === "es" ? 
+            `Esta cuenta está bloqueada temporalmente por seguridad. Inténtalo de nuevo en ${remainingSecs} segundos.` : 
+            `This account is temporarily locked for security. Try again in ${remainingSecs} seconds.`);
+        return;
+    }
 
-        let users = JSON.parse(localStorage.getItem("undr_users")) || [];
-        
-        const cleanInput = inputVal.startsWith('@') ? inputVal : inputVal;
-        let user = users.find(u => 
-            (u.handle && u.handle.toLowerCase() === cleanInput) || 
-            (u.email && u.email.toLowerCase() === cleanInput) || 
-            (u.username && u.username.toLowerCase() === cleanInput) ||
-            (cleanInput === "buyer" && u.role === "buyer") || 
-            (cleanInput === "creator" && u.role === "creator") || 
-            (cleanInput === "admin" && u.role === "admin")
-        );
+    let users = JSON.parse(localStorage.getItem("undr_users")) || [];
+    
+    // Find matching user by email, handle, or username (also support @handle with leading @)
+    const cleanInput = inputVal.startsWith('@') ? inputVal : inputVal;
+    let user = users.find(u => 
+        (u.handle && u.handle.toLowerCase() === cleanInput) || 
+        (u.email && u.email.toLowerCase() === cleanInput) || 
+        (u.username && u.username.toLowerCase() === cleanInput) ||
+        (cleanInput === "buyer" && u.role === "buyer") || 
+        (cleanInput === "creator" && u.role === "creator") || 
+        (cleanInput === "admin" && u.role === "admin")
+    );
 
-        if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected() && inputVal.includes('@')) {
-            window.undrAPI.auth.signIn(inputVal, passwordVal).then(res => {
-                if (res.data?.user) {
-                    const spUser = res.data.user;
-                    const meta = spUser.user_metadata || {};
-                    user = {
-                        id: spUser.id,
-                        username: meta.username || spUser.email.split('@')[0],
-                        handle: meta.handle || `@${spUser.email.split('@')[0]}`,
-                        email: spUser.email,
-                        role: meta.role || 'buyer',
-                        avatar: meta.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
-                        balance: meta.role === 'creator' ? 0 : 300
-                    };
-                    localStorage.setItem("undr_current_user", JSON.stringify(user));
-                    const loginMdl = document.getElementById("login-modal");
-                    if (loginMdl) loginMdl.style.display = "none";
-                    loginFormEl.reset();
-                    syncUserSessionUI();
-                    showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
-                }
-            }).catch(err => console.warn('Supabase login fallback:', err));
-        }
-
-        if (!user) {
-            alert(currentLang === "es" ? "Cuenta no encontrada o credenciales inválidas." : "Account not found or invalid credentials.");
-            return;
-        }
-
-        const storedPassword = user.password;
-        const isDemo = !storedPassword;
-
-        if (isDemo || passwordVal === storedPassword) {
-            localStorage.removeItem(attemptsKey);
-            localStorage.removeItem(lockoutKey);
-            localStorage.setItem("undr_current_user", JSON.stringify(user));
-            
-            const loginMdl = document.getElementById("login-modal");
-            if (loginMdl) loginMdl.style.display = "none";
-            loginFormEl.reset();
-            syncUserSessionUI();
-            showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
-            showSection('explore');
-        } else {
-            let failedAttempts = parseInt(localStorage.getItem(attemptsKey) || "0");
-            failedAttempts += 1;
-            localStorage.setItem(attemptsKey, failedAttempts.toString());
-
-            if (failedAttempts >= 5) {
-                const lockTime = Date.now() + 30000;
-                localStorage.setItem(lockoutKey, lockTime.toString());
-                alert(currentLang === "es" ? 
-                    "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada por 30 segundos por seguridad." : 
-                    "Too many failed attempts. Your account has been locked for 30 seconds for security.");
-            } else {
-                alert(currentLang === "es" ? 
-                    `Contraseña incorrecta. Intento ${failedAttempts} de 5 antes de bloqueo de seguridad.` : 
-                    `Incorrect password. Attempt ${failedAttempts} of 5 before security lockout.`);
+    // Attempt Supabase login if user not found or connected
+    if (window.undrAPIReady && window.undrBackend && window.undrBackend.isConnected() && inputVal.includes('@')) {
+        window.undrAPI.auth.signIn(inputVal, passwordVal).then(res => {
+            if (res.data?.user) {
+                const spUser = res.data.user;
+                const meta = spUser.user_metadata || {};
+                user = {
+                    id: spUser.id,
+                    username: meta.username || spUser.email.split('@')[0],
+                    handle: meta.handle || `@${spUser.email.split('@')[0]}`,
+                    email: spUser.email,
+                    role: meta.role || 'buyer',
+                    avatar: meta.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100",
+                    balance: meta.role === 'creator' ? 0 : 300
+                };
+                localStorage.setItem("undr_current_user", JSON.stringify(user));
+                document.getElementById("login-modal").style.display = "none";
+                document.getElementById("login-form").reset();
+                syncUserSessionUI();
+                showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
             }
+        }).catch(err => console.warn('Supabase login fallback:', err));
+    }
+
+    if (!user) {
+        alert(currentLang === "es" ? "Cuenta no encontrada o credenciales inválidas." : "Account not found or invalid credentials.");
+        return;
+    }
+
+    // Password check: registered users must match stored password,
+    // demo/prepopulated accounts (no password set) accept any password
+    const storedPassword = user.password;
+    const isDemo = !storedPassword; // Prepopulated demo accounts have no password field
+
+    if (isDemo || passwordVal === storedPassword) {
+        // Success
+        localStorage.removeItem(attemptsKey);
+        localStorage.removeItem(lockoutKey);
+        localStorage.setItem("undr_current_user", JSON.stringify(user));
+        
+        loginModal.style.display = "none";
+        document.getElementById("login-form").reset();
+        syncUserSessionUI();
+        showToast(currentLang === 'es' ? `Sesión iniciada como ${user.username}` : `Logged in as ${user.username}`);
+        showSection('explore');
+    } else {
+        // Fail: increment attempts
+        let failedAttempts = parseInt(localStorage.getItem(attemptsKey) || "0");
+        failedAttempts += 1;
+        localStorage.setItem(attemptsKey, failedAttempts.toString());
+
+        if (failedAttempts >= 5) {
+            // Lockout account for 30 seconds
+            const lockTime = Date.now() + 30000;
+            localStorage.setItem(lockoutKey, lockTime.toString());
+            alert(currentLang === "es" ? 
+                "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada por 30 segundos por seguridad." : 
+                "Too many failed attempts. Your account has been locked for 30 seconds for security.");
+        } else {
+            alert(currentLang === "es" ? 
+                `Contraseña incorrecta. Intento ${failedAttempts} de 5 antes de bloqueo de seguridad.` : 
+                `Incorrect password. Attempt ${failedAttempts} of 5 before security lockout.`);
         }
-    });
-}
+    }
+});
 
 // ==========================================
 // CHAT PROPOSALS SUBMISSIONS
 // ==========================================
-if (chatProposalForm) {
-    chatProposalForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const style = document.getElementById("proposal-item-style").value;
-        const wear = document.getElementById("proposal-wear-time").value;
-        const notes = document.getElementById("proposal-notes").value.trim();
+chatProposalForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const style = document.getElementById("proposal-item-style").value;
+    const wear = document.getElementById("proposal-wear-time").value;
+    const notes = document.getElementById("proposal-notes").value.trim();
 
-        const chats = JSON.parse(localStorage.getItem("undr_chats"));
-        const chat = chats.find(c => c.creatorName === activeChatCreator);
-        if (!chat) return;
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === activeChatCreator);
+    if (!chat) return;
 
+    chat.messages.push({
+        sender: "user",
+        isProposal: true,
+        style: style,
+        wear: wear,
+        notes: notes,
+        status: "requested",
+        price: 0
+    });
+
+    localStorage.setItem("undr_chats", JSON.stringify(chats));
+    chatProposalModal.style.display = "none";
+    chatProposalForm.reset();
+
+    renderChatMessages(activeChatCreator);
+    renderChatSidebar();
+
+    // Trigger mock invoice response from creator after 2 seconds (if user is buyer)
+    setTimeout(() => {
+        chat.messages.push({
+            sender: "creator",
+            isProposal: true,
+            style: style,
+            wear: wear,
+            notes: notes,
+            status: "offered",
+            price: 125.00
+        });
+        localStorage.setItem("undr_chats", JSON.stringify(chats));
+        renderChatMessages(activeChatCreator);
+        renderChatSidebar();
+        showToast("Creator sent invoice for custom proposal!");
+    }, 2000);
+});
+
+// Bind proposal triggers
+document.getElementById("chat-request-custom-btn").addEventListener("click", () => {
+    chatProposalModal.style.display = "flex";
+});
+
+// Close buttons for modals
+closeDetails.addEventListener("click", () => productDetailsModal.style.display = "none");
+closeProposalModal.addEventListener("click", () => chatProposalModal.style.display = "none");
+
+// Custom product proposal request from explorer card form
+customRequestForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    customModal.style.display = "none";
+    showToast(translations[currentLang].custom_submitted);
+    
+    // Add custom proposal message to chat dynamically
+    const style = document.getElementById("custom-item-type").value;
+    const wear = document.getElementById("custom-item-duration").value;
+    const activity = document.getElementById("custom-item-activity").value;
+    const notesEl = document.getElementById("custom-item-instructions");
+    const notes = notesEl ? notesEl.value : "";
+    
+    const polaroidEl = document.getElementById("custom-extra-polaroid");
+    const isPolaroid = polaroidEl ? polaroidEl.checked : false;
+    const videoEl = document.getElementById("custom-extra-video");
+    const isVideo = videoEl ? videoEl.checked : false;
+    const price = calculateCustomProposalPrice();
+
+    let extras = [];
+    if (isPolaroid) extras.push(currentLang === "es" ? "Foto Polaroid firmada" : "Signed Polaroid photo");
+    if (isVideo) extras.push(currentLang === "es" ? "Vídeo del empaquetado" : "Packaging video proof");
+
+    const extrasText = extras.length > 0 ? extras.join(", ") : (currentLang === "es" ? "Ninguno" : "None");
+    const fullNotes = `Activity: ${activity} | Extras: ${extrasText} | Details: ${notes}`;
+
+    const chats = JSON.parse(localStorage.getItem("undr_chats"));
+    const chat = chats.find(c => c.creatorName === activeChatCreator);
+    if (chat) {
         chat.messages.push({
             sender: "user",
             isProposal: true,
             style: style,
             wear: wear,
-            notes: notes,
+            notes: fullNotes,
             status: "requested",
-            price: 0
+            price: price
         });
-
         localStorage.setItem("undr_chats", JSON.stringify(chats));
-        if (chatProposalModal) chatProposalModal.style.display = "none";
-        chatProposalForm.reset();
+    }
+    
+    customRequestForm.reset();
+    showSection('chat');
 
-        renderChatMessages(activeChatCreator);
-        renderChatSidebar();
-
-        setTimeout(() => {
-            chat.messages.push({
+    // Trigger mock invoice response from creator after 2 seconds
+    setTimeout(() => {
+        const freshChats = JSON.parse(localStorage.getItem("undr_chats"));
+        const freshChat = freshChats.find(c => c.creatorName === activeChatCreator);
+        if (freshChat) {
+            freshChat.messages.push({
                 sender: "creator",
                 isProposal: true,
                 style: style,
                 wear: wear,
-                notes: notes,
+                notes: fullNotes,
                 status: "offered",
-                price: 125.00
+                price: price
             });
-            localStorage.setItem("undr_chats", JSON.stringify(chats));
+            localStorage.setItem("undr_chats", JSON.stringify(freshChats));
             renderChatMessages(activeChatCreator);
             renderChatSidebar();
             showToast("Creator sent invoice for custom proposal!");
-        }, 2000);
-    });
-}
-
-// Bind proposal triggers
-const chatReqCustomBtn = document.getElementById("chat-request-custom-btn");
-if (chatReqCustomBtn && chatProposalModal) {
-    chatReqCustomBtn.addEventListener("click", () => {
-        chatProposalModal.style.display = "flex";
-    });
-}
-
-// Close buttons for modals
-if (closeDetails && productDetailsModal) {
-    closeDetails.addEventListener("click", () => productDetailsModal.style.display = "none");
-}
-if (closeProposalModal && chatProposalModal) {
-    closeProposalModal.addEventListener("click", () => chatProposalModal.style.display = "none");
-}
-
-// Custom product proposal request from explorer card form
-if (customRequestForm) {
-    customRequestForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (customModal) customModal.style.display = "none";
-        showToast(translations[currentLang].custom_submitted);
-        
-        const style = document.getElementById("custom-item-type").value;
-        const wear = document.getElementById("custom-item-duration").value;
-        const activity = document.getElementById("custom-item-activity").value;
-        const notesEl = document.getElementById("custom-item-instructions");
-        const notes = notesEl ? notesEl.value : "";
-        
-        const polaroidEl = document.getElementById("custom-extra-polaroid");
-        const isPolaroid = polaroidEl ? polaroidEl.checked : false;
-        const videoEl = document.getElementById("custom-extra-video");
-        const isVideo = videoEl ? videoEl.checked : false;
-        const price = calculateCustomProposalPrice();
-
-        let extras = [];
-        if (isPolaroid) extras.push(currentLang === "es" ? "Foto Polaroid firmada" : "Signed Polaroid photo");
-        if (isVideo) extras.push(currentLang === "es" ? "Vídeo del empaquetado" : "Packaging video proof");
-
-        const extrasText = extras.length > 0 ? extras.join(", ") : (currentLang === "es" ? "Ninguno" : "None");
-        const fullNotes = `Activity: ${activity} | Extras: ${extrasText} | Details: ${notes}`;
-
-        const chats = JSON.parse(localStorage.getItem("undr_chats"));
-        const chat = chats.find(c => c.creatorName === activeChatCreator);
-        if (chat) {
-            chat.messages.push({
-                sender: "user",
-                isProposal: true,
-                style: style,
-                wear: wear,
-                notes: fullNotes,
-                status: "requested",
-                price: price
-            });
-            localStorage.setItem("undr_chats", JSON.stringify(chats));
         }
-        
-        customRequestForm.reset();
-        showSection('chat');
-
-        // Trigger mock invoice response from creator after 2 seconds
-        setTimeout(() => {
-            const freshChats = JSON.parse(localStorage.getItem("undr_chats"));
-            const freshChat = freshChats.find(c => c.creatorName === activeChatCreator);
-            if (freshChat) {
-                freshChat.messages.push({
-                    sender: "creator",
-                    isProposal: true,
-                    style: style,
-                    wear: wear,
-                    notes: fullNotes,
-                    status: "offered",
-                    price: price
-                });
-                localStorage.setItem("undr_chats", JSON.stringify(freshChats));
-                renderChatMessages(activeChatCreator);
-                renderChatSidebar();
-                showToast("Creator sent invoice for custom proposal!");
-            }
-        }, 2000);
-    });
-}
+    }, 2000);
+});
 
 // Custom Premium Toast Notification (Positioned elevated above mobile dock bar)
 function showToast(message) {
@@ -3082,18 +3009,6 @@ const translations = {
         nav_cart: "My Cart",
         nav_login: "Log In",
         nav_register: "Sign Up",
-        register_btn: "Create Account",
-        login_btn: "Log In",
-        footer_terms: "Terms of Service",
-        footer_privacy: "Privacy Policy",
-        footer_cookies: "Cookie Policy",
-        footer_2257: "18 U.S.C. § 2257 Compliance",
-        footer_refunds: "Refunds & Disputes",
-        footer_copyright: "© 2026 UNDR. All Rights Reserved.",
-        opt_role_buyer: "Buyer (Underwear Buyer)",
-        opt_role_creator: "Creator/Seller (Underwear Seller)",
-        reg_age_label: "<strong>I am 18 years of age or older</strong> (or legal age of majority in my jurisdiction) and declare legal capacity to access this site.",
-        reg_terms_label: "I accept the <a href='javascript:void(0)' onclick='window.undrLegal.openLegalModal(\"terms\")' style='color: #ff4d6d; font-weight: 700; text-decoration: underline;'>Terms of Service</a>, <a href='javascript:void(0)' onclick='window.undrLegal.openLegalModal(\"privacy\")' style='color: #ff4d6d; font-weight: 700; text-decoration: underline;'>Privacy Policy</a>, and <a href='javascript:void(0)' onclick='window.undrLegal.openLegalModal(\"section2257\")' style='color: #ff4d6d; font-weight: 700; text-decoration: underline;'>18 U.S.C. § 2257 Statement</a>.",
         tag_featured: "100% Verified Authenticity",
         hero_title: "Directly from your favorite creators. Authentic, exclusive, and delivered to your door.",
         hero_btn_primary: "Explore Creators",
@@ -3221,18 +3136,6 @@ const translations = {
         nav_cart: "Mi Carrito",
         nav_login: "Iniciar Sesión",
         nav_register: "Registrarse",
-        register_btn: "Crear Cuenta",
-        login_btn: "Iniciar Sesión",
-        footer_terms: "Términos de Servicio",
-        footer_privacy: "Política de Privacidad",
-        footer_cookies: "Política de Cookies",
-        footer_2257: "Cumplimiento 18 U.S.C. § 2257",
-        footer_refunds: "Reembolsos y Disputas",
-        footer_copyright: "© 2026 UNDR. Todos los derechos reservados.",
-        opt_role_buyer: "Comprador (Comprador de ropa interior)",
-        opt_role_creator: "Creadora/Vendedora (Vendedora de ropa interior)",
-        reg_age_label: "<strong>Soy mayor de 18 años</strong> (o la mayoría de edad en mi jurisdicción) y declaro tener capacidad legal para acceder a esta plataforma.",
-        reg_terms_label: "Acepto los <a href='javascript:void(0)' onclick='window.undrLegal.openLegalModal(\"terms\")' style='color: #ff4d6d; font-weight: 700; text-decoration: underline;'>Términos de Servicio</a>, la <a href='javascript:void(0)' onclick='window.undrLegal.openLegalModal(\"privacy\")' style='color: #ff4d6d; font-weight: 700; text-decoration: underline;'>Política de Privacidad</a>, y la declaración <a href='javascript:void(0)' onclick='window.undrLegal.openLegalModal(\"section2257\")' style='color: #ff4d6d; font-weight: 700; text-decoration: underline;'>18 U.S.C. § 2257</a>.",
         tag_featured: "Autenticidad 100% Verificada",
         hero_title: "Directamente de tus creadoras favoritas. Auténtico, exclusivo y enviado a tu puerta.",
         hero_btn_primary: "Explorar Creadoras",
@@ -3353,9 +3256,9 @@ function checkAgeVerification() {
 
     const ageMdl = document.getElementById("age-modal");
     if (verified) {
-        if (ageMdl) ageMdl.style.cssText = "display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;";
+        if (ageMdl) ageMdl.style.display = "none";
     } else {
-        if (ageMdl) ageMdl.style.cssText = "display: flex !important; z-index: 100000 !important;";
+        if (ageMdl) ageMdl.style.display = "flex";
     }
 }
 
@@ -3587,33 +3490,30 @@ function setupEventListeners() {
     }
 
     // Search input
-    if (searchInput) searchInput.addEventListener("input", filterAndSortProducts);
-    if (sortSelect) sortSelect.addEventListener("change", filterAndSortProducts);
+    searchInput.addEventListener("input", filterAndSortProducts);
+    sortSelect.addEventListener("change", filterAndSortProducts);
 
     // Advanced search filter dropdown trigger
-    if (searchFilterTrigger && advancedFiltersPanel) {
-        searchFilterTrigger.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const isVisible = advancedFiltersPanel.style.display === "flex";
-            advancedFiltersPanel.style.display = isVisible ? "none" : "flex";
-            searchFilterTrigger.classList.toggle("active", !isVisible);
-        });
+    searchFilterTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isVisible = advancedFiltersPanel.style.display === "flex";
+        advancedFiltersPanel.style.display = isVisible ? "none" : "flex";
+        searchFilterTrigger.classList.toggle("active", !isVisible);
+    });
 
-        document.addEventListener("click", (e) => {
-            if (advancedFiltersPanel && !advancedFiltersPanel.contains(e.target) && e.target !== searchFilterTrigger) {
-                advancedFiltersPanel.style.display = "none";
-                searchFilterTrigger.classList.remove("active");
-            }
-        });
-    }
-
-    if (applyAdvFiltersBtn && advancedFiltersPanel && searchFilterTrigger) {
-        applyAdvFiltersBtn.addEventListener("click", () => {
-            filterAndSortProducts();
+    // Close advanced filter panel when clicking outside
+    document.addEventListener("click", (e) => {
+        if (!advancedFiltersPanel.contains(e.target) && e.target !== searchFilterTrigger) {
             advancedFiltersPanel.style.display = "none";
             searchFilterTrigger.classList.remove("active");
-        });
-    }
+        }
+    });
+
+    applyAdvFiltersBtn.addEventListener("click", () => {
+        filterAndSortProducts();
+        advancedFiltersPanel.style.display = "none";
+        searchFilterTrigger.classList.remove("active");
+    });
 
     // Drag & Drop Image listing upload
     const dropzone = document.getElementById("new-item-image-dropzone");
@@ -3782,11 +3682,10 @@ function setupEventListeners() {
             showToast(currentLang === "es" ? "¡Prenda publicada exitosamente en el mercado!" : "Item published successfully to the marketplace!");
         });
     }
-    // Category chips click handler (Main Explore Feed)
-    const feedCategoryChips = document.querySelectorAll(".categories-section .category-chip");
-    feedCategoryChips.forEach(chip => {
+    // Category chips click handler
+    categoryChips.forEach(chip => {
         chip.addEventListener("click", () => {
-            feedCategoryChips.forEach(c => c.classList.remove("active"));
+            categoryChips.forEach(c => c.classList.remove("active"));
             chip.classList.add("active");
             filterAndSortProducts();
         });
@@ -4041,32 +3940,28 @@ function setupEventListeners() {
     });
 
     // Authenticity info triggers
-    if (authInfoBtn && authModal) authInfoBtn.addEventListener("click", () => authModal.style.display = "flex");
-    if (closeAuth && authModal) closeAuth.addEventListener("click", () => authModal.style.display = "none");
-    if (closeCustom && customModal) closeCustom.addEventListener("click", () => customModal.style.display = "none");
+    authInfoBtn.addEventListener("click", () => authModal.style.display = "flex");
+    closeAuth.addEventListener("click", () => authModal.style.display = "none");
+    closeCustom.addEventListener("click", () => customModal.style.display = "none");
 
     // Chat text input send actions
-    if (chatSendMsgBtn) chatSendMsgBtn.addEventListener("click", sendTextMessageFromBar);
-    if (chatTextInput) {
-        chatTextInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") sendTextMessageFromBar();
-        });
-    }
+    chatSendMsgBtn.addEventListener("click", sendTextMessageFromBar);
+    chatTextInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendTextMessageFromBar();
+    });
 
     // Creator withdraw actions
-    if (creatorWithdrawBtn) {
-        creatorWithdrawBtn.addEventListener("click", () => {
-            const user = JSON.parse(localStorage.getItem("undr_current_user"));
-            if (!user || parseFloat(user.balance) <= 0) {
-                alert(currentLang === "es" ? "No tienes fondos suficientes para retirar." : "No balance available for withdrawal.");
-                return;
-            }
-            alert(currentLang === "es" ? `Transferencia ACH de $${user.balance} USD iniciada a tu cuenta bancaria.` : `ACH withdrawal of $${user.balance} USD initiated to your bank account.`);
-            user.balance = 0.00;
-            localStorage.setItem("undr_current_user", JSON.stringify(user));
-            syncUserSessionUI();
-        });
-    }
+    creatorWithdrawBtn.addEventListener("click", () => {
+        const user = JSON.parse(localStorage.getItem("undr_current_user"));
+        if (parseFloat(user.balance) <= 0) {
+            alert(currentLang === "es" ? "No tienes fondos suficientes para retirar." : "No balance available for withdrawal.");
+            return;
+        }
+        alert(currentLang === "es" ? `Transferencia ACH de $${user.balance} USD iniciada a tu cuenta bancaria.` : `ACH withdrawal of $${user.balance} USD initiated to your bank account.`);
+        user.balance = 0.00;
+        localStorage.setItem("undr_current_user", JSON.stringify(user));
+        syncUserSessionUI();
+    });
 
     // Interactive PPV Modal Triggers & Form Handling
     const ppvModal = document.getElementById("ppv-send-modal");
@@ -4082,14 +3977,14 @@ function setupEventListeners() {
     if (simulatePpvTriggerBtn) {
         simulatePpvTriggerBtn.addEventListener("click", () => {
             uploadedPpvImageBase64 = "";
-            if (ppvPreview) ppvPreview.style.display = "none";
-            if (ppvPrompt) ppvPrompt.style.display = "block";
-            if (ppvForm) ppvForm.reset();
-            if (ppvModal) ppvModal.style.display = "flex";
+            ppvPreview.style.display = "none";
+            ppvPrompt.style.display = "block";
+            ppvForm.reset();
+            ppvModal.style.display = "flex";
         });
     }
 
-    if (closePpvModal && ppvModal) {
+    if (closePpvModal) {
         closePpvModal.addEventListener("click", () => ppvModal.style.display = "none");
     }
 
@@ -4771,27 +4666,21 @@ function updateNotificationsCount() {
 }
 
 // Toggle notification bell trigger
-window.toggleNotificationsDropdown = function(e) {
-    if (e) e.stopPropagation();
+document.getElementById("notification-bell-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
     const panel = document.getElementById("notifications-dropdown-panel");
-    if (!panel) return;
     const isVisible = panel.style.display === "flex";
     panel.style.display = isVisible ? "none" : "flex";
     
     if (!isVisible) {
         renderNotificationsList();
     }
-};
-
-const notifBellEl = document.getElementById("notification-bell-btn");
-if (notifBellEl) {
-    notifBellEl.addEventListener("click", window.toggleNotificationsDropdown);
-}
+});
 
 document.addEventListener("click", (e) => {
     const panel = document.getElementById("notifications-dropdown-panel");
     const bellBtn = document.getElementById("notification-bell-btn");
-    if (panel && bellBtn && !panel.contains(e.target) && e.target !== bellBtn && !bellBtn.contains(e.target)) {
+    if (panel && !panel.contains(e.target) && e.target !== bellBtn && !bellBtn.contains(e.target)) {
         panel.style.display = "none";
     }
 });
@@ -5277,20 +5166,24 @@ window.updateMobileNavActive = function(element) {
 };
 
 window.handleMobileProfileClick = function() {
-    if (typeof window.openUniversalProfileEditModal === 'function') {
-        window.openUniversalProfileEditModal();
-    } else {
-        const modal = document.getElementById("edit-profile-modal") || document.getElementById("login-modal");
+    const user = JSON.parse(localStorage.getItem("undr_current_user"));
+    if (!user || user === "null") {
+        const modal = document.getElementById("login-modal");
         if (modal) modal.style.display = "flex";
+        return;
+    }
+    if (user.role === "creator") {
+        showSection("creator");
+    } else {
+        showSection("buyer-settings");
     }
 };
 
 window.toggleCartModal = function() {
     const modal = document.getElementById("cart-modal");
-    if (modal) {
-        renderMobileCartModal();
-        modal.style.display = "flex";
-    }
+    if (!modal) return;
+    renderMobileCartModal();
+    modal.style.display = "flex";
 };
 
 window.renderMobileCartModal = function() {

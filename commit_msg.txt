@@ -1,1 +1,1 @@
-fix: add vercel.json with no-cache headers for sw.js and index.html and embed inline SW unregister script in index.html head
+revert: restore original app.js, index.html, and style.css functionality from commit 996746c prior to legal overhaul while retaining updated legal documents

@@ -25,22 +25,7 @@
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Main Stylesheet -->
-    <style>#sticky-legal-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; opacity: 0 !important; pointer-events: none !important; }</style>
     <script>
-        // Automatic Service Worker cache purge to clear stale offline assets
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for (let r of registrations) {
-                    r.unregister();
-                }
-            }).catch(function(){});
-            if ('caches' in window) {
-                caches.keys().then(function(keys) {
-                    for (let k of keys) caches.delete(k);
-                }).catch(function(){});
-            }
-        }
-
         (function() {
             try {
                 if (localStorage.getItem("undr_age_verified") === "true" || sessionStorage.getItem("undr_age_verified") === "true") {
@@ -68,7 +53,7 @@
             window.location.href = "https://www.google.com";
         }
     </script>
-  <script type="module" crossorigin src="/assets/index-CNstbC1R.js"></script>
+  <script type="module" crossorigin src="/assets/index-u1QzrALh.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-B-cA62xc.css">
 </head>
 <body>
@@ -197,7 +182,7 @@
 
                 <div class="top-actions" id="auth-actions-group">
                     <!-- Notification Bell Button -->
-                    <button class="btn btn-lang" id="notification-bell-btn" onclick="toggleNotificationsDropdown(event)" style="position:relative;" title="Notifications">
+                    <button class="btn btn-lang" id="notification-bell-btn" style="position:relative;" title="Notifications">
                         <i class="fa-solid fa-bell"></i>
                         <span class="notification-badge" id="notifications-count-badge">2</span>
                     </button>
@@ -239,7 +224,7 @@
                         <h1 data-i18n="hero_title">Directly from your favorite creators. Authentic, exclusive, and delivered to your door.</h1>
                         <div class="hero-buttons">
                             <button class="btn btn-primary" onclick="document.getElementById('products-feed').scrollIntoView({behavior: 'smooth'})" data-i18n="hero_btn_primary">Explore Creators</button>
-                            <button class="btn btn-login" id="auth-info-btn" onclick="document.getElementById('auth-modal').style.display='flex'" data-i18n="hero_btn_secondary" style="border-color: var(--accent-hover); background: rgba(255,255,255,0.7);">How authenticity works?</button>
+                            <button class="btn btn-login" id="auth-info-btn" data-i18n="hero_btn_secondary" style="border-color: var(--accent-hover); background: rgba(255,255,255,0.7);">How authenticity works?</button>
                         </div>
                     </div>
                 </section>
@@ -247,11 +232,11 @@
                 <!-- Quick Categories Filter -->
                 <section class="categories-section">
                     <div class="categories-scroll">
-                        <button class="category-chip active" data-category="all" onclick="selectFeedCategory(this, 'all')" data-i18n="feed_all">All</button>
-                        <button class="category-chip" data-category="destacadas" onclick="selectFeedCategory(this, 'destacadas')" data-i18n="feed_featured">Featured</button>
-                        <button class="category-chip" data-category="nuevas" onclick="selectFeedCategory(this, 'nuevas')" data-i18n="feed_new">New Creators</button>
-                        <button class="category-chip" data-category="hoy" onclick="selectFeedCategory(this, 'hoy')" data-i18n="feed_today">Available Today</button>
-                        <button class="category-chip" data-category="subastas" onclick="selectFeedCategory(this, 'subastas')" data-i18n="feed_auctions">Exclusive Auctions</button>
+                        <button class="category-chip active" data-category="all" data-i18n="feed_all">All</button>
+                        <button class="category-chip" data-category="destacadas" data-i18n="feed_featured">Featured</button>
+                        <button class="category-chip" data-category="nuevas" data-i18n="feed_new">New Creators</button>
+                        <button class="category-chip" data-category="hoy" data-i18n="feed_today">Available Today</button>
+                        <button class="category-chip" data-category="subastas" data-i18n="feed_auctions">Exclusive Auctions</button>
                     </div>
                 </section>
 
@@ -1248,7 +1233,38 @@
         </div>
     </div>
 
-
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close-modal" id="close-edit-profile">&times;</span>
+            <div class="modal-header-branding">
+                <i class="fa-solid fa-user-pen modal-branding-icon"></i>
+                <h3>Edit Profile Details</h3>
+                <p>Customize your UNDR display identity</p>
+            </div>
+            <form class="modal-form" id="edit-profile-form">
+                <div class="form-group" style="text-align: center;">
+                    <label>Profile Avatar</label>
+                    <div id="edit-avatar-dropzone" style="border: 2px dashed var(--accent-color); border-radius: 50%; width: 100px; height: 100px; margin: 8px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: var(--secondary-bg); position: relative;">
+                        <input type="file" id="edit-avatar-file-input" accept="image/*" style="display: none;">
+                        <img id="edit-avatar-preview" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div id="edit-avatar-prompt" style="position: absolute; color: var(--primary-bg); background: rgba(0,0,0,0.5); width: 100%; bottom: 0; font-size: 0.62rem; padding: 2px 0;">Edit</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="edit-profile-name" required placeholder="e.g. Luna Diamond" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label>Unique Handle (without @)</label>
+                    <input type="text" id="edit-profile-handle" required placeholder="e.g. lunadiamond" maxlength="15" pattern="^[a-zA-Z0-9._]+$" title="Only letters, numbers, dots, and underscores allowed.">
+                    <small style="color: var(--text-muted); font-size: 0.7rem; display: block; margin-top: 2px;"><i class="fa-solid fa-shield-halved" style="color: var(--accent-hover);"></i> Restricción de seguridad: Solo se permite 1 cambio de @usuario cada 14 días.</small>
+                    <span id="edit-profile-handle-error" style="color: #ff4d6d; font-size: 0.72rem; display: block; margin-top: 4px; font-weight: 600;"></span>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Universal Profile & @Handle Edit Modal -->
     <div class="modal" id="edit-profile-modal">
@@ -1339,8 +1355,8 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Log In securely</button>
                 <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                    <span data-i18n="dont_have_account_text">Don't have an account?</span> 
-                    <a href="javascript:void(0)" onclick="document.getElementById('login-modal').style.display='none'; document.getElementById('register-modal').style.display='flex';" data-i18n="register_link_text" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Create Account</a>
+                    Don't have an account? 
+                    <a href="javascript:void(0)" onclick="document.getElementById('login-modal').style.display='none'; document.getElementById('register-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Create Account / Registrarse</a>
                 </div>
             </form>
         </div>
@@ -1377,8 +1393,8 @@
                 <div class="form-group">
                     <label for="reg-role">I want to register as a:</label>
                     <select id="reg-role">
-                        <option value="buyer" data-i18n="opt_role_buyer">Buyer (Underwear Buyer)</option>
-                        <option value="creator" data-i18n="opt_role_creator">Creator/Seller (Underwear Seller)</option>
+                        <option value="buyer">Buyer (Comprador de ropa interior)</option>
+                        <option value="creator">Creator/Seller (Vendedora de ropa interior)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1393,21 +1409,21 @@
                 <div style="background: var(--secondary-bg); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
                     <div style="display: flex; align-items: flex-start; gap: 10px;">
                         <input type="checkbox" id="reg-age" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
-                        <label for="reg-age" data-i18n="reg_age_label" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
-                            <strong>I am 18 years of age or older</strong> (or legal age of majority in my jurisdiction) and declare legal capacity to access this site.
+                        <label for="reg-age" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
+                            <strong>Soy mayor de 18 años</strong> (o la mayoría de edad en mi jurisdicción) y declaro tener capacidad legal para acceder a esta plataforma.
                         </label>
                     </div>
                     <div style="display: flex; align-items: flex-start; gap: 10px;">
                         <input type="checkbox" id="reg-terms" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
-                        <label for="reg-terms" data-i18n="reg_terms_label" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
-                            I accept the <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Terms of Service</a>, <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Privacy Policy</a>, and <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">18 U.S.C. § 2257 Statement</a>.
+                        <label for="reg-terms" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
+                            Acepto los <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Términos de Servicio</a>, la <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Política de Privacidad</a>, y la declaración <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">18 U.S.C. § 2257</a>.
                         </label>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn" style="font-weight: 700; padding: 12px;">Create Account</button>
+                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn" style="font-weight: 700; padding: 12px;">Crear Cuenta / Register</button>
                 <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                    <span data-i18n="already_have_account_text">Already have an account?</span> 
-                    <a href="javascript:void(0)" onclick="document.getElementById('register-modal').style.display='none'; document.getElementById('login-modal').style.display='flex';" data-i18n="login_link_text" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Log In</a>
+                    Already have an account? 
+                    <a href="javascript:void(0)" onclick="document.getElementById('register-modal').style.display='none'; document.getElementById('login-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Log In / Iniciar Sesión</a>
                 </div>
             </form>
         </div>
@@ -1505,15 +1521,15 @@
 
     <!-- Mobile Bottom Fixed Navigation Dock Bar -->
     <nav class="mobile-bottom-nav">
-        <a href="javascript:void(0)" class="mobile-nav-item active" id="mobile-nav-explore" onclick="showSection('explore', this);">
+        <a href="javascript:void(0)" class="mobile-nav-item active" id="mobile-nav-explore" onclick="showSection('explore'); updateMobileNavActive(this);">
             <i class="fa-solid fa-house"></i>
             <span data-i18n="nav_explore">Explore</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-auctions" onclick="showSection('auctions', this);">
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-auctions" onclick="showSection('auctions'); updateMobileNavActive(this);">
             <i class="fa-solid fa-gavel"></i>
             <span data-i18n="nav_auctions">Live</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-chat" onclick="showSection('chat', this);">
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-chat" onclick="showSection('chat'); updateMobileNavActive(this);">
             <i class="fa-solid fa-comment"></i>
             <span>Chat</span>
         </a>
@@ -1524,7 +1540,7 @@
             </div>
             <span>Cart</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-profile" onclick="handleMobileProfileClick();">
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-profile" onclick="handleMobileProfileClick(); updateMobileNavActive(this);">
             <i class="fa-solid fa-user"></i>
             <span>Profile</span>
         </a>
@@ -1608,8 +1624,8 @@
             </div>
         </div>
         <div style="display:flex; gap:6px;">
-            <button class="btn btn-primary" onclick="window.undrPWA.triggerPWAInstall()" style="padding:6px 12px; font-size:0.75rem; font-weight:bold; background:#ff4d6d; border:none; border-radius:6px;">Instalar</button>
-            <button class="btn" onclick="window.undrPWA.hideInstallBanner()" style="padding:6px; background:none; border:none; color:#9ca3af; font-size:1.1rem; cursor:pointer;">&times;</button>
+            <button className="btn btn-primary" onclick="window.undrPWA.triggerPWAInstall()" style="padding:6px 12px; font-size:0.75rem; font-weight:bold; background:#ff4d6d; border:none; border-radius:6px;">Instalar</button>
+            <button className="btn" onclick="window.undrPWA.hideInstallBanner()" style="padding:6px; background:none; border:none; color:#9ca3af; font-size:1.1rem; cursor:pointer;">&times;</button>
         </div>
     </div>
 

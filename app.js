@@ -873,9 +873,8 @@ window.logoutCurrentSession = function() {
 // Global dynamic Section switcher
 window.showSection = function(sectionName, element = null, updateHash = true) {
     document.querySelectorAll(".content-section-panel").forEach(panel => panel.classList.remove("active"));
-
-    const navItems = document.querySelectorAll(".nav-item");
-    navItems.forEach(item => item.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+    document.querySelectorAll(".mobile-nav-item").forEach(item => item.classList.remove("active"));
 
     const sidebarLeft = document.querySelector(".sidebar-left");
     if (sidebarLeft && window.innerWidth <= 900) {
@@ -912,8 +911,25 @@ window.showSection = function(sectionName, element = null, updateHash = true) {
         }
     }
 
-    // Load dynamic updates
-    if (sectionName === "chat") {
+    // Sync mobile dock navigation active tab
+    const mobileNavMap = {
+        "explore": "mobile-nav-explore",
+        "auctions": "mobile-nav-auctions",
+        "chat": "mobile-nav-chat",
+        "buyer-settings": "mobile-nav-profile",
+        "creator": "mobile-nav-profile",
+        "admin": "mobile-nav-profile"
+    };
+    const mobId = mobileNavMap[sectionName];
+    if (mobId) {
+        const mobEl = document.getElementById(mobId);
+        if (mobEl) mobEl.classList.add("active");
+    }
+
+    // Load dynamic section data
+    if (sectionName === "explore") {
+        filterAndSortProducts();
+    } else if (sectionName === "chat") {
         renderChatMessages(activeChatCreator);
     } else if (sectionName === "creator") {
         loadCreatorPortalPanel();

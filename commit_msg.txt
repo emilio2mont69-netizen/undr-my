@@ -1,1 +1,1 @@
-fix: make showSection and syncUserSessionUI 100% null-safe to guarantee menu navigation and product rendering without errors
+fix: resolve mobile bottom dock active tab highlighting, guarantee product rendering, and fix profile session trigger

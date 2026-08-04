@@ -1521,15 +1521,15 @@
 
     <!-- Mobile Bottom Fixed Navigation Dock Bar -->
     <nav class="mobile-bottom-nav">
-        <a href="javascript:void(0)" class="mobile-nav-item active" id="mobile-nav-explore" onclick="showSection('explore'); updateMobileNavActive(this);">
+        <a href="javascript:void(0)" class="mobile-nav-item active" id="mobile-nav-explore" onclick="showSection('explore', this);">
             <i class="fa-solid fa-house"></i>
             <span data-i18n="nav_explore">Explore</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-auctions" onclick="showSection('auctions'); updateMobileNavActive(this);">
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-auctions" onclick="showSection('auctions', this);">
             <i class="fa-solid fa-gavel"></i>
             <span data-i18n="nav_auctions">Live</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-chat" onclick="showSection('chat'); updateMobileNavActive(this);">
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-chat" onclick="showSection('chat', this);">
             <i class="fa-solid fa-comment"></i>
             <span>Chat</span>
         </a>
@@ -1540,7 +1540,7 @@
             </div>
             <span>Cart</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-profile" onclick="handleMobileProfileClick(); updateMobileNavActive(this);">
+        <a href="javascript:void(0)" class="mobile-nav-item" id="mobile-nav-profile" onclick="handleMobileProfileClick();">
             <i class="fa-solid fa-user"></i>
             <span>Profile</span>
         </a>

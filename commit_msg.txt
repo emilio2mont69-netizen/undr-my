@@ -1,1 +1,1 @@
-fix: update package.json main entry point to app.js to fix Vercel GitHub automatic deployment error
+fix: move vite to dependencies in package.json and re-bind alias undr-my.vercel.app

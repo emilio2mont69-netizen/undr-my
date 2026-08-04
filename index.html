@@ -28,6 +28,20 @@
     <link rel="stylesheet" href="style.css">
     <style>#sticky-legal-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; opacity: 0 !important; pointer-events: none !important; }</style>
     <script>
+        // Automatic Service Worker cache purge to clear stale offline assets
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let r of registrations) {
+                    r.unregister();
+                }
+            }).catch(function(){});
+            if ('caches' in window) {
+                caches.keys().then(function(keys) {
+                    for (let k of keys) caches.delete(k);
+                }).catch(function(){});
+            }
+        }
+
         (function() {
             try {
                 if (localStorage.getItem("undr_age_verified") === "true" || sessionStorage.getItem("undr_age_verified") === "true") {

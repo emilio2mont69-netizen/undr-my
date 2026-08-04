@@ -1,1 +1,1 @@
-fix: purge service worker cache undr-v5 and enforce network-first static asset delivery to fix unstyled page fallback
+fix: add vercel.json with no-cache headers for sw.js and index.html and embed inline SW unregister script in index.html head

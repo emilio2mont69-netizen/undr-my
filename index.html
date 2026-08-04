@@ -1343,11 +1343,11 @@
     <!-- Login Modal -->
     <div class="modal" id="login-modal">
         <div class="modal-content">
-            <span class="close-modal" id="close-login" onclick="document.getElementById('login-modal').style.display='none'">&times;</span>
+            <span class="close-modal" id="close-login" onclick="this.closest('.modal').style.display='none'">&times;</span>
             <div class="modal-header-branding">
                 <img src="./logofase.PNG" alt="UNDR" class="modal-logo">
-                <h3 data-i18n="login_title">Log In</h3>
-                <p>Access your UNDR account (Demo Profiles)</p>
+                <h3 data-i18n="login_modal_title">Log In to UNDR</h3>
+                <p data-i18n="login_modal_subtitle">Access your UNDR account</p>
             </div>
             <div class="demo-login-quick-select" style="display:flex; flex-direction:column; gap:8px;">
                 <button class="btn btn-secondary" onclick="demoLogin('buyer')"><i class="fa-solid fa-user"></i> Login as Buyer (Guest)</button>
@@ -1359,29 +1359,29 @@
             <div style="margin-top: 14px; text-align: center;">
                 <button class="btn btn-secondary btn-block" onclick="loginWithGoogle()" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffffff; color: #333333; border: 1px solid #e0e0e0; font-weight: 600; padding: 10px;">
                     <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-                    Continue with Google
+                    <span data-i18n="google_signin_text">Continue with Google</span>
                 </button>
             </div>
 
             <div style="display: flex; align-items: center; margin: 16px 0; color: var(--text-muted); font-size: 0.8rem;">
                 <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
-                <span style="padding: 0 10px;">or with email</span>
+                <span style="padding: 0 10px;" data-i18n="or_email_login">or with email</span>
                 <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
             </div>
 
             <form class="modal-form" id="login-form">
                 <div class="form-group">
-                    <label>Email or Username</label>
+                    <label data-i18n="login_user_label">Email or Username</label>
                     <input type="text" id="login-username" required placeholder="email@example.com or @handle">
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <label data-i18n="password_label">Password</label>
                     <input type="password" id="login-password" required placeholder="Your password">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Log In securely</button>
+                <button type="submit" class="btn btn-primary btn-block" data-i18n="nav_login">Log In</button>
                 <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                    Don't have an account? 
-                    <a href="javascript:void(0)" onclick="document.getElementById('login-modal').style.display='none'; document.getElementById('register-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Create Account / Registrarse</a>
+                    <span data-i18n="no_account_yet">Don't have an account?</span> 
+                    <a href="javascript:void(0)" onclick="document.getElementById('login-modal').style.display='none'; document.getElementById('register-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;" data-i18n="nav_register">Sign Up</a>
                 </div>
             </form>
         </div>
@@ -1393,21 +1393,21 @@
             <span class="close-modal" id="close-register" onclick="this.closest('.modal').style.display='none'">&times;</span>
             <div class="modal-header-branding">
                 <img src="./logofase.PNG" alt="UNDR" class="modal-logo">
-                <h3 data-i18n="register_title">Create Account</h3>
-                <p>Join the UNDR community</p>
+                <h3 data-i18n="register_modal_title">Create Account</h3>
+                <p data-i18n="register_modal_subtitle">Join the UNDR community</p>
             </div>
 
             <!-- Social Registration Google Button -->
             <div style="margin-bottom: 14px; text-align: center;">
                 <button class="btn btn-secondary btn-block" onclick="loginWithGoogle()" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffffff; color: #333333; border: 1px solid #e0e0e0; font-weight: 600; padding: 10px;">
                     <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-                    Sign up with Google
+                    <span data-i18n="google_signup_text">Sign up with Google</span>
                 </button>
             </div>
 
             <div style="display: flex; align-items: center; margin: 14px 0; color: var(--text-muted); font-size: 0.8rem;">
                 <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
-                <span style="padding: 0 10px;">or register with email</span>
+                <span style="padding: 0 10px;" data-i18n="or_email_register">or register with email</span>
                 <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
             </div>
             <form class="modal-form" id="register-form">
@@ -1416,10 +1416,10 @@
                     <input type="text" id="reg-name" required placeholder="John Doe">
                 </div>
                 <div class="form-group">
-                    <label for="reg-role">I want to register as a:</label>
+                    <label for="reg-role" data-i18n="register_as_label">I want to register as a:</label>
                     <select id="reg-role">
-                        <option value="buyer">Buyer (Comprador de ropa interior)</option>
-                        <option value="creator">Creator/Seller (Vendedora de ropa interior)</option>
+                        <option value="buyer" data-i18n="role_buyer_opt">Buyer (Purchase lingerie & wear)</option>
+                        <option value="creator" data-i18n="role_creator_opt">Creator/Seller (Sell worn garments)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1430,25 +1430,19 @@
                     <label for="reg-password" data-i18n="password_label">Password</label>
                     <input type="password" id="reg-password" required placeholder="Create a secure password">
                 </div>
-                <!-- Legal & Age Compliance Checkboxes -->
-                <div style="background: var(--secondary-bg); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
-                    <div style="display: flex; align-items: flex-start; gap: 10px;">
-                        <input type="checkbox" id="reg-age" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
-                        <label for="reg-age" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
-                            <strong>Soy mayor de 18 años</strong> (o la mayoría de edad en mi jurisdicción) y declaro tener capacidad legal para acceder a esta plataforma.
-                        </label>
-                    </div>
+                <!-- Legal & Age Compliance Checkbox -->
+                <div style="background: var(--secondary-bg); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 10px; margin-bottom: 16px;">
                     <div style="display: flex; align-items: flex-start; gap: 10px;">
                         <input type="checkbox" id="reg-terms" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-color);">
                         <label for="reg-terms" style="font-size: 0.82rem; color: var(--text-color); cursor: pointer; line-height: 1.35;">
-                            Acepto los <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Términos de Servicio</a>, la <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Política de Privacidad</a>, y la declaración <a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">18 U.S.C. § 2257</a>.
+                            <span data-i18n="accept_terms_prefix">I accept the </span><a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('terms')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;" data-i18n="terms_link_text">Terms of Service</a>, <span data-i18n="and_the_word">the </span><a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('privacy')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;" data-i18n="privacy_link_text">Privacy Policy</a>, <span data-i18n="declaration_word">and </span><a href="javascript:void(0)" onclick="window.undrLegal.openLegalModal('section2257')" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;" data-i18n="section2257_link_text">18 U.S.C. § 2257 Statement</a><span data-i18n="terms_suffix">, and confirm I am 18 years of age or older.</span>
                         </label>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" data-i18n="register_btn" style="font-weight: 700; padding: 12px;">Crear Cuenta / Register</button>
+                <button type="submit" class="btn btn-primary btn-block" data-i18n="nav_register" style="font-weight: 700; padding: 12px;">Sign Up</button>
                 <div style="margin-top: 14px; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                    Already have an account? 
-                    <a href="javascript:void(0)" onclick="document.getElementById('register-modal').style.display='none'; document.getElementById('login-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;">Log In / Iniciar Sesión</a>
+                    <span data-i18n="already_account">Already have an account?</span> 
+                    <a href="javascript:void(0)" onclick="document.getElementById('register-modal').style.display='none'; document.getElementById('login-modal').style.display='flex';" style="color: #ff4d6d; font-weight: 700; text-decoration: underline;" data-i18n="nav_login">Log In</a>
                 </div>
             </form>
         </div>

@@ -1,1 +1,1 @@
-fix: wrap age verification script correctly inside script tag in index.html head
+fix: translate all login/register modal strings with data-i18n, unify 18+ terms checkbox, and update mobile profile menu click handler

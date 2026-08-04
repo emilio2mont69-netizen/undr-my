@@ -1,1 +1,1 @@
-fix: purge stale dist cache, bump SW cache to undr-v4, and force hide sticky-legal-bar on all mobile devices
+fix: deploy fresh clean vite build with zero sticky legal bar and hard CSS suppression

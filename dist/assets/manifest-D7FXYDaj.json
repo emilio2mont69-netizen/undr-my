@@ -1,0 +1,41 @@
+{
+  "name": "UNDR — Exclusive Verified Lingerie Marketplace",
+  "short_name": "UNDR",
+  "description": "Direct-from-creator authentic wear, live auctions, 100% discreet packaging, and 18 U.S.C. § 2257 identity protection.",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0e1017",
+  "theme_color": "#ff4d6d",
+  "categories": ["shopping", "lifestyle", "social"],
+  "icons": [
+    {
+      "src": "/logofase.PNG",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logofase.PNG",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Auctions",
+      "short_name": "Auctions",
+      "description": "View live lingerie auctions with anti-sniping",
+      "url": "/#/auctions",
+      "icons": [{ "src": "/logofase.PNG", "sizes": "192x192" }]
+    },
+    {
+      "name": "Messages & Chat",
+      "short_name": "Chat",
+      "description": "Direct messages and PPV photos",
+      "url": "/#/chat",
+      "icons": [{ "src": "/logofase.PNG", "sizes": "192x192" }]
+    }
+  ]
+}

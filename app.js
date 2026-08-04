@@ -1188,21 +1188,30 @@ function updateCartUI() {
 }
 
 // Search, Sort and Advanced filters execution
-function filterAndSortProducts() {
+window.filterAndSortProducts = function() {
     const products = JSON.parse(localStorage.getItem("undr_products")) || [];
-    const selectedCategoryChip = document.querySelector(".category-chip.active");
-    const activeCategory = selectedCategoryChip ? selectedCategoryChip.dataset.category : "all";
-    const searchQuery = searchInput.value.toLowerCase().trim();
-    const sortOption = sortSelect.value;
+    const selectedCategoryChip = document.querySelector(".categories-section .category-chip.active") || document.querySelector(".category-chip.active");
+    const activeCategory = selectedCategoryChip ? (selectedCategoryChip.dataset.category || "all") : "all";
+    
+    const searchInputEl = document.getElementById("search-input");
+    const sortSelectEl = document.getElementById("sort-select");
+    const filterSizeEl = document.getElementById("filter-size");
+    const filterStyleEl = document.getElementById("filter-style");
+    const filterAvailEl = document.getElementById("filter-availability");
 
-    const sizeCriterion = filterSize.value;
-    const styleCriterion = filterStyle.value;
-    const availCriterion = filterAvailability.value;
+    const searchQuery = searchInputEl ? searchInputEl.value.toLowerCase().trim() : "";
+    const sortOption = sortSelectEl ? sortSelectEl.value : "recent";
+
+    const sizeCriterion = filterSizeEl ? filterSizeEl.value : "all";
+    const styleCriterion = filterStyleEl ? filterStyleEl.value : "all";
+    const availCriterion = filterAvailEl ? filterAvailEl.value : "all";
 
     let filtered = products.filter(product => {
         const localData = product[currentLang] || product["en"] || {};
         const titleText = localData.title || product.title || "";
         const descText = localData.description || product.description || "";
+        const creatorName = product.creator && product.creator.name ? product.creator.name : "";
+        const creatorHandle = product.creator && product.creator.handle ? product.creator.handle : "";
         
         let matchesCategory = true;
         if (activeCategory === "destacadas") {
@@ -1215,9 +1224,11 @@ function filterAndSortProducts() {
             matchesCategory = product.isAuction;
         }
 
-        const matchesSearch = titleText.toLowerCase().includes(searchQuery) || 
+        const matchesSearch = !searchQuery || 
+                              titleText.toLowerCase().includes(searchQuery) || 
                               descText.toLowerCase().includes(searchQuery) ||
-                              product.creator.name.toLowerCase().includes(searchQuery);
+                              creatorName.toLowerCase().includes(searchQuery) ||
+                              creatorHandle.toLowerCase().includes(searchQuery);
 
         const matchesSize = sizeCriterion === "all" || product.size === sizeCriterion;
         const matchesStyle = styleCriterion === "all" || product.style === styleCriterion;
@@ -1242,7 +1253,19 @@ function filterAndSortProducts() {
     }
 
     renderProducts(filtered);
-}
+};
+
+window.selectFeedCategory = function(btnElement, categoryName) {
+    const feedCategoryChips = document.querySelectorAll(".categories-section .category-chip");
+    feedCategoryChips.forEach(c => c.classList.remove("active"));
+    if (btnElement) {
+        btnElement.classList.add("active");
+    } else {
+        const target = Array.from(feedCategoryChips).find(c => c.dataset.category === categoryName);
+        if (target) target.classList.add("active");
+    }
+    filterAndSortProducts();
+};
 
 // ==========================================
 // PORTAL DE LA CREADORA & KYC
@@ -3324,9 +3347,9 @@ function checkAgeVerification() {
 
     const ageMdl = document.getElementById("age-modal");
     if (verified) {
-        if (ageMdl) ageMdl.style.display = "none";
+        if (ageMdl) ageMdl.style.cssText = "display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;";
     } else {
-        if (ageMdl) ageMdl.style.display = "flex";
+        if (ageMdl) ageMdl.style.cssText = "display: flex !important; z-index: 100000 !important;";
     }
 }
 
@@ -3753,10 +3776,11 @@ function setupEventListeners() {
             showToast(currentLang === "es" ? "¡Prenda publicada exitosamente en el mercado!" : "Item published successfully to the marketplace!");
         });
     }
-    // Category chips click handler
-    categoryChips.forEach(chip => {
+    // Category chips click handler (Main Explore Feed)
+    const feedCategoryChips = document.querySelectorAll(".categories-section .category-chip");
+    feedCategoryChips.forEach(chip => {
         chip.addEventListener("click", () => {
-            categoryChips.forEach(c => c.classList.remove("active"));
+            feedCategoryChips.forEach(c => c.classList.remove("active"));
             chip.classList.add("active");
             filterAndSortProducts();
         });
@@ -4741,21 +4765,27 @@ function updateNotificationsCount() {
 }
 
 // Toggle notification bell trigger
-document.getElementById("notification-bell-btn").addEventListener("click", (e) => {
-    e.stopPropagation();
+window.toggleNotificationsDropdown = function(e) {
+    if (e) e.stopPropagation();
     const panel = document.getElementById("notifications-dropdown-panel");
+    if (!panel) return;
     const isVisible = panel.style.display === "flex";
     panel.style.display = isVisible ? "none" : "flex";
     
     if (!isVisible) {
         renderNotificationsList();
     }
-});
+};
+
+const notifBellEl = document.getElementById("notification-bell-btn");
+if (notifBellEl) {
+    notifBellEl.addEventListener("click", window.toggleNotificationsDropdown);
+}
 
 document.addEventListener("click", (e) => {
     const panel = document.getElementById("notifications-dropdown-panel");
     const bellBtn = document.getElementById("notification-bell-btn");
-    if (panel && !panel.contains(e.target) && e.target !== bellBtn && !bellBtn.contains(e.target)) {
+    if (panel && bellBtn && !panel.contains(e.target) && e.target !== bellBtn && !bellBtn.contains(e.target)) {
         panel.style.display = "none";
     }
 });

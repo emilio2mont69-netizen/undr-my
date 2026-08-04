@@ -183,7 +183,7 @@
 
                 <div class="top-actions" id="auth-actions-group">
                     <!-- Notification Bell Button -->
-                    <button class="btn btn-lang" id="notification-bell-btn" style="position:relative;" title="Notifications">
+                    <button class="btn btn-lang" id="notification-bell-btn" onclick="toggleNotificationsDropdown(event)" style="position:relative;" title="Notifications">
                         <i class="fa-solid fa-bell"></i>
                         <span class="notification-badge" id="notifications-count-badge">2</span>
                     </button>
@@ -225,7 +225,7 @@
                         <h1 data-i18n="hero_title">Directly from your favorite creators. Authentic, exclusive, and delivered to your door.</h1>
                         <div class="hero-buttons">
                             <button class="btn btn-primary" onclick="document.getElementById('products-feed').scrollIntoView({behavior: 'smooth'})" data-i18n="hero_btn_primary">Explore Creators</button>
-                            <button class="btn btn-login" id="auth-info-btn" data-i18n="hero_btn_secondary" style="border-color: var(--accent-hover); background: rgba(255,255,255,0.7);">How authenticity works?</button>
+                            <button class="btn btn-login" id="auth-info-btn" onclick="document.getElementById('auth-modal').style.display='flex'" data-i18n="hero_btn_secondary" style="border-color: var(--accent-hover); background: rgba(255,255,255,0.7);">How authenticity works?</button>
                         </div>
                     </div>
                 </section>
@@ -233,11 +233,11 @@
                 <!-- Quick Categories Filter -->
                 <section class="categories-section">
                     <div class="categories-scroll">
-                        <button class="category-chip active" data-category="all" data-i18n="feed_all">All</button>
-                        <button class="category-chip" data-category="destacadas" data-i18n="feed_featured">Featured</button>
-                        <button class="category-chip" data-category="nuevas" data-i18n="feed_new">New Creators</button>
-                        <button class="category-chip" data-category="hoy" data-i18n="feed_today">Available Today</button>
-                        <button class="category-chip" data-category="subastas" data-i18n="feed_auctions">Exclusive Auctions</button>
+                        <button class="category-chip active" data-category="all" onclick="selectFeedCategory(this, 'all')" data-i18n="feed_all">All</button>
+                        <button class="category-chip" data-category="destacadas" onclick="selectFeedCategory(this, 'destacadas')" data-i18n="feed_featured">Featured</button>
+                        <button class="category-chip" data-category="nuevas" onclick="selectFeedCategory(this, 'nuevas')" data-i18n="feed_new">New Creators</button>
+                        <button class="category-chip" data-category="hoy" onclick="selectFeedCategory(this, 'hoy')" data-i18n="feed_today">Available Today</button>
+                        <button class="category-chip" data-category="subastas" onclick="selectFeedCategory(this, 'subastas')" data-i18n="feed_auctions">Exclusive Auctions</button>
                     </div>
                 </section>
 

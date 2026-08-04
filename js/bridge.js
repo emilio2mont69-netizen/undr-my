@@ -172,24 +172,6 @@ window.undrBackend = {
 })();
 
 function renderBackendBadge(isConnected, text) {
-    document.addEventListener('DOMContentLoaded', () => {
-        let badge = document.getElementById('backend-status-badge');
-        if (!badge) {
-            badge = document.createElement('div');
-            badge.id = 'backend-status-badge';
-            badge.style.cssText = 'position:fixed; top:12px; right:12px; z-index:999; padding:4px 10px; border-radius:20px; font-size:0.7rem; font-weight:600; font-family:sans-serif; backdrop-filter:blur(8px); box-shadow:0 2px 8px rgba(0,0,0,0.1); pointer-events:none; transition:all 0.3s ease;';
-            document.body.appendChild(badge);
-        }
-        if (isConnected) {
-            badge.style.background = 'rgba(16, 185, 129, 0.15)';
-            badge.style.color = '#10b981';
-            badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-            badge.innerHTML = `🟢 <strong>Backend:</strong> ${text}`;
-        } else {
-            badge.style.background = 'rgba(245, 158, 11, 0.15)';
-            badge.style.color = '#f59e0b';
-            badge.style.border = '1px solid rgba(245, 158, 11, 0.3)';
-            badge.innerHTML = `🟡 <strong>Backend:</strong> ${text}`;
-        }
-    });
+    // Disabled status badge overlay to prevent blocking header buttons on mobile/desktop
+    return;
 }

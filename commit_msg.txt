@@ -1,1 +1,1 @@
-fix: ensure immediate app lifecycle init and export window.toggleLanguage with toast feedback
+fix: remove fixed backend status badge overlay causing header touch block and refine mobile bottom nav layout

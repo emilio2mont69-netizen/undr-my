@@ -1,1 +1,1 @@
-revert: restore original app.js, index.html, and style.css functionality from commit 996746c prior to legal overhaul while retaining updated legal documents
+fix: update vercel.json with explicit vite framework preset, buildCommand, outputDirectory, and asset rewrite exclusions

@@ -1,6 +1,7 @@
 {
-  "version": 2,
-  "cleanUrls": true,
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "headers": [
     {
       "source": "/sw.js",
@@ -36,7 +37,7 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|sw.js|manifest.json|logofase.PNG).*)",
       "destination": "/index.html"
     }
   ]

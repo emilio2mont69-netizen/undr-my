@@ -1,1 +1,1 @@
-refactor: remove floating sticky legal bar for clean mobile and desktop UI
+refactor: rewrite legal compliance pages with exhaustive formal text, clean copyright and remove DMCA section

@@ -3344,6 +3344,7 @@ window.setCurrency = function(newCurr) {
     syncUserSessionUI();
     showToast(currentLang === "es" ? `Moneda cambiada a ${currentCurrency}` : `Currency updated to ${currentCurrency}`);
 };
+window.applyCurrency = window.setCurrency;
 
 window.calculateCustomProposalPrice = function() {
     const type = document.getElementById("custom-item-type").value;

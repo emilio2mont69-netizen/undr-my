@@ -47,6 +47,19 @@
                 document.write('<style>#age-modal { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }</style>');
             } catch(e) {}
         })();
+
+        window.setCurrency = window.setCurrency || function(curr) {
+            try { localStorage.setItem("undr_currency", curr); } catch(e){}
+            if (window.applyCurrency) { window.applyCurrency(curr); }
+            else { window.location.reload(); }
+        };
+        window.toggleLanguage = window.toggleLanguage || function() {
+            var curr = localStorage.getItem("undr_lang") || "en";
+            var next = curr === "en" ? "es" : "en";
+            try { localStorage.setItem("undr_lang", next); } catch(e){}
+            if (window.applyLanguage) { window.applyLanguage(next); }
+            else { window.location.reload(); }
+        };
     </script>
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="style.css">
@@ -213,8 +226,8 @@
                         <option value="CAD">CAD ($)</option>
                     </select>
                     <span id="session-buttons-container">
-                        <button class="btn btn-login" id="login-trigger-btn" data-i18n="nav_login">Log In</button>
-                        <button class="btn btn-register" id="register-trigger-btn" data-i18n="nav_register">Sign Up</button>
+                        <button class="btn btn-login" id="login-trigger-btn" onclick="document.getElementById('login-modal').style.display='flex'" data-i18n="nav_login">Log In</button>
+                        <button class="btn btn-register" id="register-trigger-btn" onclick="document.getElementById('register-modal').style.display='flex'" data-i18n="nav_register">Sign Up</button>
                     </span>
 
                     <!-- Notifications Dropdown Panel -->

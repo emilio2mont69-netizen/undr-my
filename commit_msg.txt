@@ -1,1 +1,1 @@
-revert: restore original app.js, index.html, and style.css functionality from commit 996746c prior to legal overhaul while retaining updated legal documents
+fix: add direct inline onclick handlers for Log In, Sign Up, Currency, and Language controls in index.html

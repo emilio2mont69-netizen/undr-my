@@ -1,1 +1,1 @@
-fix: highlight mobile bottom nav items on active tab switch and remove css important override
+fix: ensure immediate app lifecycle init and export window.toggleLanguage with toast feedback

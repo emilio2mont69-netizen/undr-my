@@ -351,11 +351,17 @@ const simulatePpvTriggerBtn = document.getElementById("simulate-ppv-trigger-btn"
 // ==========================================
 // CORE APP ENGINE & STATE LIFECYCLE
 // ==========================================
-document.addEventListener("DOMContentLoaded", () => {
+function initAppLifecycle() {
     checkAgeVerification();
     applyLanguage(currentLang);
     setupEventListeners();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAppLifecycle);
+} else {
+    initAppLifecycle();
+}
 
 // Propagate user profile changes (avatar, name, handle) into products & chats
 function syncUserDataInProducts(user) {
@@ -3307,7 +3313,12 @@ window.rejectAgeVerification = function() {
 window.toggleLanguage = function() {
     const nextLang = currentLang === "en" ? "es" : "en";
     applyLanguage(nextLang);
+    if (window.showToast) {
+        window.showToast(nextLang === "es" ? "Idioma cambiado a Español 🇪🇸" : "Language changed to English 🇺🇸");
+    }
 };
+
+window.applyLanguage = applyLanguage;
 
 function applyLanguage(lang) {
     currentLang = lang;

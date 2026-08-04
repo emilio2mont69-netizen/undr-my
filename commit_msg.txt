@@ -1,1 +1,1 @@
-fix: untrack dist directory and update .gitignore to enable clean Vercel GitHub build compilation
+fix: add strict null safety checks to showSection and syncUserSessionUI in app.js

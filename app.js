@@ -402,7 +402,6 @@ function syncUserDataInProducts(user) {
 
 // Sync layout to currently logged in profile
 function syncUserSessionUI() {
-    // First propagate any profile data changes to products & chats
     const currentUserForSync = JSON.parse(localStorage.getItem("undr_current_user"));
     if (currentUserForSync && currentUserForSync !== "null") {
         syncUserDataInProducts(currentUserForSync);
@@ -410,7 +409,6 @@ function syncUserSessionUI() {
 
     const user = JSON.parse(localStorage.getItem("undr_current_user"));
     
-    // Sync Quick Role Toolbar Pills
     const rolePills = document.querySelectorAll(".role-pill");
     rolePills.forEach(p => p.classList.remove("active"));
     if (!user || user === "null") {
@@ -421,8 +419,19 @@ function syncUserSessionUI() {
         if (activePill) activePill.classList.add("active");
     }
     
-    // Header actions element selector
     const sessionButtonsContainer = document.getElementById("session-buttons-container");
+
+    const sidebarAvatarEl = document.getElementById("sidebar-avatar");
+    const userNameDisplayEl = document.getElementById("user-name-display");
+    const userRoleDisplayEl = document.getElementById("user-role-display");
+    const userBalanceDisplayEl = document.getElementById("user-balance-display");
+    const applyToSellBtnEl = document.getElementById("apply-to-sell-btn");
+
+    const navMessagesItemEl = document.getElementById("nav-messages-item");
+    const navCreatorItemEl = document.getElementById("nav-creator-item");
+    const navAdminItemEl = document.getElementById("nav-admin-item");
+    const navBuyerSettingsItemEl = document.getElementById("nav-buyer-settings-item");
+    const cartAddonsGroupEl = document.getElementById("cart-addons-group");
 
     const profPicPreview = document.getElementById("profile-picture-preview");
     const profDispName = document.getElementById("profile-display-name");
@@ -432,33 +441,32 @@ function syncUserSessionUI() {
     const creatorPicPreview = document.getElementById("creator-picture-preview");
     const creatorDispName = document.getElementById("creator-display-name");
     const creatorDispHandle = document.getElementById("creator-display-handle");
-    const creatorDispRole = document.getElementById("creator-display-role");
 
     const editAvatarInput = document.getElementById("edit-avatar-url-input");
     const editUsernameInput = document.getElementById("edit-username-input");
 
     if (!user || user === "null") {
-        // Logged Out State (Guest View)
         const guestAvatar = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
-        sidebarAvatar.src = guestAvatar;
-        userNameDisplay.textContent = currentLang === "es" ? "Invitado" : "Guest";
-        userRoleDisplay.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
-        userRoleDisplay.style.color = "var(--text-muted)";
-        userBalanceDisplay.textContent = "";
+        if (sidebarAvatarEl) sidebarAvatarEl.src = guestAvatar;
+        if (userNameDisplayEl) userNameDisplayEl.textContent = currentLang === "es" ? "Invitado" : "Guest";
+        if (userRoleDisplayEl) {
+            userRoleDisplayEl.textContent = currentLang === "es" ? "Inicia sesión" : "Not Logged In";
+            userRoleDisplayEl.style.color = "var(--text-muted)";
+        }
+        if (userBalanceDisplayEl) userBalanceDisplayEl.textContent = "";
 
         if (profPicPreview) profPicPreview.src = guestAvatar;
         if (profDispName) profDispName.textContent = currentLang === "es" ? "Usuario Invitado" : "Guest User";
         if (profDispHandle) profDispHandle.textContent = "@guest";
         if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Sin sesión" : "Not Logged In";
 
-        applyToSellBtn.style.display = "none";
-        navMessagesItem.style.display = "flex";
-        navCreatorItem.style.display = "none";
-        navAdminItem.style.display = "none";
-        document.getElementById("nav-buyer-settings-item").style.display = "flex";
-        cartAddonsGroup.style.display = "none";
+        if (applyToSellBtnEl) applyToSellBtnEl.style.display = "none";
+        if (navMessagesItemEl) navMessagesItemEl.style.display = "flex";
+        if (navCreatorItemEl) navCreatorItemEl.style.display = "none";
+        if (navAdminItemEl) navAdminItemEl.style.display = "none";
+        if (navBuyerSettingsItemEl) navBuyerSettingsItemEl.style.display = "flex";
+        if (cartAddonsGroupEl) cartAddonsGroupEl.style.display = "none";
 
-        // Header buttons show Log In / Sign Up
         if (sessionButtonsContainer) {
             sessionButtonsContainer.innerHTML = `
                 <button class="btn btn-login" id="login-trigger-btn" onclick="document.getElementById('login-modal').style.display='flex'">${currentLang === "es" ? "Iniciar Sesión" : "Log In"}</button>
@@ -466,18 +474,17 @@ function syncUserSessionUI() {
             `;
         }
     } else {
-        // Logged In State
-        sidebarAvatar.src = user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
-        userNameDisplay.textContent = user.username;
-        userBalanceDisplay.textContent = formatPrice(user.balance);
+        if (sidebarAvatarEl) sidebarAvatarEl.src = user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100";
+        if (userNameDisplayEl) userNameDisplayEl.textContent = user.username;
+        if (userBalanceDisplayEl) userBalanceDisplayEl.textContent = formatPrice(user.balance);
 
         const handleStr = user.handle || `@${user.username.toLowerCase().replace(/\s+/g, '')}`;
 
-        if (profPicPreview) profPicPreview.src = user.avatar || sidebarAvatar.src;
+        if (profPicPreview) profPicPreview.src = user.avatar || (sidebarAvatarEl ? sidebarAvatarEl.src : "");
         if (profDispName) profDispName.textContent = user.username;
         if (profDispHandle) profDispHandle.textContent = handleStr;
 
-        if (creatorPicPreview) creatorPicPreview.src = user.avatar || sidebarAvatar.src;
+        if (creatorPicPreview) creatorPicPreview.src = user.avatar || (sidebarAvatarEl ? sidebarAvatarEl.src : "");
         if (creatorDispName) creatorDispName.textContent = user.username;
         if (creatorDispHandle) creatorDispHandle.textContent = handleStr;
 
@@ -490,44 +497,51 @@ function syncUserSessionUI() {
         if (editAvatarInput) editAvatarInput.value = user.avatar || "";
         if (editUsernameInput) editUsernameInput.value = user.username || "";
         if (editBuyerHandleInput) editBuyerHandleInput.value = handleStr;
-        
-        // User Role translations
+
         if (user.role === "buyer") {
-            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
+            if (userRoleDisplayEl) {
+                userRoleDisplayEl.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
+                userRoleDisplayEl.style.color = "var(--text-muted)";
+            }
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Comprador" : "Buyer Account";
-            userRoleDisplay.style.color = "var(--text-muted)";
-            applyToSellBtn.style.display = "block";
-            navMessagesItem.style.display = "flex";
-            navCreatorItem.style.display = "none";
-            navAdminItem.style.display = "none";
-            document.getElementById("nav-buyer-settings-item").style.display = "flex";
-            cartAddonsGroup.style.display = "block"; // Buyers see cart extras
+            if (applyToSellBtnEl) applyToSellBtnEl.style.display = "block";
+            if (navMessagesItemEl) navMessagesItemEl.style.display = "flex";
+            if (navCreatorItemEl) navCreatorItemEl.style.display = "none";
+            if (navAdminItemEl) navAdminItemEl.style.display = "none";
+            if (navBuyerSettingsItemEl) navBuyerSettingsItemEl.style.display = "flex";
+            if (cartAddonsGroupEl) cartAddonsGroupEl.style.display = "block";
         } else if (user.role === "creator") {
-            userRoleDisplay.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
+            if (userRoleDisplayEl) {
+                userRoleDisplayEl.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
+                userRoleDisplayEl.style.color = "var(--accent-hover)";
+            }
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Cuenta Creadora" : "Creator Account";
-            userRoleDisplay.style.color = "var(--accent-hover)";
-            applyToSellBtn.style.display = "none";
-            navMessagesItem.style.display = "flex";
-            navCreatorItem.style.display = "flex";
-            navAdminItem.style.display = "none";
-            document.getElementById("nav-buyer-settings-item").style.display = "none";
-            cartAddonsGroup.style.display = "none"; // Creators don't see cart extras
+            if (applyToSellBtnEl) applyToSellBtnEl.style.display = "none";
+            if (navMessagesItemEl) navMessagesItemEl.style.display = "flex";
+            if (navCreatorItemEl) navCreatorItemEl.style.display = "flex";
+            if (navAdminItemEl) navAdminItemEl.style.display = "none";
+            if (navBuyerSettingsItemEl) navBuyerSettingsItemEl.style.display = "none";
+            if (cartAddonsGroupEl) cartAddonsGroupEl.style.display = "none";
         } else if (user.role === "admin") {
-            userRoleDisplay.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
+            if (userRoleDisplayEl) {
+                userRoleDisplayEl.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
+                userRoleDisplayEl.style.color = "#ff4d6d";
+            }
             if (profDispRole) profDispRole.textContent = currentLang === "es" ? "Administrador" : "Staff Admin";
-            userRoleDisplay.style.color = "#ff4d6d";
-            applyToSellBtn.style.display = "none";
-            navMessagesItem.style.display = "none";
-            navCreatorItem.style.display = "none";
-            navAdminItem.style.display = "flex";
-            document.getElementById("nav-buyer-settings-item").style.display = "none";
-            cartAddonsGroup.style.display = "none";
+            if (applyToSellBtnEl) applyToSellBtnEl.style.display = "none";
+            if (navMessagesItemEl) navMessagesItemEl.style.display = "none";
+            if (navCreatorItemEl) navCreatorItemEl.style.display = "none";
+            if (navAdminItemEl) navAdminItemEl.style.display = "flex";
+            if (navBuyerSettingsItemEl) navBuyerSettingsItemEl.style.display = "none";
+            if (cartAddonsGroupEl) cartAddonsGroupEl.style.display = "none";
         }
 
-        // Toggle auth action buttons in header
         if (sessionButtonsContainer) {
             sessionButtonsContainer.innerHTML = `
-                <button class="btn btn-login" onclick="logoutCurrentSession()"><i class="fa-solid fa-sign-out-alt"></i> ${currentLang === 'es' ? 'Salir' : 'Log Out'}</button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:0.85rem; font-weight:700; color:var(--text-color);">${user.username}</span>
+                    <button class="btn btn-login" onclick="logoutUser()" style="padding:6px 12px; font-size:0.75rem;">${currentLang === "es" ? "Cerrar Sesión" : "Log Out"}</button>
+                </div>
             `;
         }
     }
@@ -862,13 +876,8 @@ window.logoutCurrentSession = function() {
 
 // Global dynamic Section switcher
 window.showSection = function(sectionName, element = null, updateHash = true) {
-    exploreSection.classList.remove("active");
-    chatSection.classList.remove("active");
-    creatorSection.classList.remove("active");
-    adminSection.classList.remove("active");
-    creatorProfileSection.classList.remove("active");
-    buyerSettingsSection.classList.remove("active");
-    auctionsSection.classList.remove("active");
+    const panels = document.querySelectorAll(".content-section-panel");
+    panels.forEach(panel => panel.classList.remove("active"));
 
     const navItems = document.querySelectorAll(".nav-item");
     navItems.forEach(item => item.classList.remove("active"));
